@@ -23,7 +23,7 @@ namespace QuickMail.Services;
 /// </summary>
 public partial class BugReportService : IBugReportService, IDisposable
 {
-    // MailBoXX: the issue tracker comes from AppIdentity (empty until MailBoXX has one); tests
+    // MailBox MatriX: the issue tracker comes from AppIdentity (empty until MailBox MatriX has one); tests
     // inject their own, as they do the relay coordinates.
     private readonly string _repoOwner;
     private readonly string _repoName;
@@ -65,7 +65,7 @@ public partial class BugReportService : IBugReportService, IDisposable
         PurgeLegacyToken(credentials);
 
         _http = new HttpClient(handler) { Timeout = TimeSpan.FromSeconds(15) };
-        _http.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(AppIdentity.Name, Helpers.AppVersion.Display));
+        _http.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(AppIdentity.TechnicalName, Helpers.AppVersion.Display));
         _http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
 
@@ -78,7 +78,7 @@ public partial class BugReportService : IBugReportService, IDisposable
         {
             using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _cts.Token);
             using var request = new HttpRequestMessage(HttpMethod.Post, _relayUrl);
-            request.Headers.Add("X-MailBoXX-Key", _relayKey);
+            request.Headers.Add("X-MailBoxMatriX-Key", _relayKey);
 
             // Labels are applied by the relay, not sent from here: a client that names its own
             // labels lets anyone holding the extracted key apply arbitrary ones.
@@ -143,7 +143,7 @@ public partial class BugReportService : IBugReportService, IDisposable
     {
         var title = Uri.EscapeDataString(report.Summary ?? string.Empty);
         var body  = Uri.EscapeDataString(Truncate(BuildReportText(report), MaxFallbackUrlBodyLength));
-        // MailBoXX: no issue tracker yet -> no URL; the report is still copied to the clipboard.
+        // MailBox MatriX: no issue tracker yet -> no URL; the report is still copied to the clipboard.
         if (_repoOwner.Length == 0 || _repoName.Length == 0) return string.Empty;
         return $"https://github.com/{_repoOwner}/{_repoName}/issues/new?title={title}&body={body}&labels=bug,user-reported";
     }
@@ -172,7 +172,7 @@ public partial class BugReportService : IBugReportService, IDisposable
         }
 
         sb.AppendLine().AppendLine("### Environment");
-        sb.AppendLine($"- MailBoXX version: {Helpers.AppVersion.Display}");
+        sb.AppendLine($"- MailBox MatriX version: {Helpers.AppVersion.Display}");
         sb.AppendLine($"- OS: {Environment.OSVersion.VersionString}");
         sb.AppendLine($"- .NET runtime: {Environment.Version}");
 

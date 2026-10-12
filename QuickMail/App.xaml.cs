@@ -220,7 +220,7 @@ public partial class App : Application
                 "Usage: QuickMail.exe [options]\n\n" +
                 "Options:\n" +
                 "  --profileDir <path>   Store all data in <path> instead of the default\n" +
-                "                        %AppData%\\MailBoXX directory. The directory is\n" +
+                "                        %AppData%\\MailBoxMatriX directory. The directory is\n" +
                 "                        created if it does not already exist.\n\n" +
                 "  --online              Run in fully online mode: fetch everything live from\n" +
                 "                        IMAP on every folder selection. Nothing is read from\n" +
@@ -228,12 +228,12 @@ public partial class App : Application
                 "  --updateFeed <path>   Check for updates in <path> (a folder or URL of\n" +
                 "                        Velopack packages) instead of GitHub Releases.\n" +
                 "                        For testing update delivery.\n\n" +
-                "  --startup             Passed by Windows when it starts MailBoXX as you\n" +
+                "  --startup             Passed by Windows when it starts MailBox MatriX as you\n" +
                 "                        sign in (Settings > Startup). Starts minimized if\n" +
                 "                        that option is on.\n\n" +
                 "  --help                Show this message and exit.\n\n" +
-                "  /debug                Write verbose debug output to mailboxx.log.",
-                "MailBoXX",
+                "  /debug                Write verbose debug output to mailboxmatrix.log.",
+                "MailBox MatriX",
                 MessageBoxButton.OK,
                 MessageBoxImage.Information);
             Shutdown();
@@ -623,7 +623,7 @@ public partial class App : Application
         catch (Exception ex)
         {
             // Log the exception chain before WER kills the process so the cause
-            // survives in %APPDATA%\MailBoXX\mailboxx.log.
+            // survives in %APPDATA%\MailBoxMatriX\mailboxmatrix.log.
             for (var cur = ex; cur != null; cur = cur.InnerException)
                 LogService.Log("Startup", cur);
             throw;
@@ -721,7 +721,7 @@ public partial class App : Application
     {
         MessageBox.Show(
             $"Cannot use profile directory:\n  {dir}\n\n{reason}\n\nCheck the --profileDir argument and try again.",
-            "MailBoXX — Invalid Profile Directory",
+            "MailBox MatriX — Invalid Profile Directory",
             MessageBoxButton.OK,
             MessageBoxImage.Error);
     }
@@ -749,7 +749,7 @@ public partial class App : Application
         {
             MessageBox.Show(
                 $"An unexpected error occurred and was logged.\n\n{e.Exception.GetType().Name}: {e.Exception.Message}",
-                "MailBoXX",
+                "MailBox MatriX",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
         }

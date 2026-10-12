@@ -11,7 +11,7 @@ using Xunit;
 namespace QuickMail.Tests;
 
 /// <summary>
-/// MailBoXX: Mark as Unread (Ctrl+U, context menu, command bar), the row envelope that toggles
+/// MailBox MatriX: Mark as Unread (Ctrl+U, context menu, command bar), the row envelope that toggles
 /// read state, and clicking the open message again to close it.
 /// </summary>
 public class MarkUnreadTests

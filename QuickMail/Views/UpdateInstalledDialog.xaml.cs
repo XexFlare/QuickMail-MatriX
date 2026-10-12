@@ -13,7 +13,7 @@ public partial class UpdateInstalledDialog : Window
     public UpdateInstalledDialog(string version, string whatsNewUrl)
     {
         InitializeComponent();
-        MessageText.Text = $"MailBoXX was updated to version {version}.";
+        MessageText.Text = $"MailBox MatriX was updated to version {version}.";
         WhatsNewLink.NavigateUri = new Uri(whatsNewUrl);
         Loaded += (_, _) => ExitButton.Focus();
     }

@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 namespace QuickMail.Services.ContextImages;
 
 /// <summary>
-/// MailBoXX contextual images, step 1: decide which picture category suits a message, from the
+/// MailBox MatriX contextual images, step 1: decide which picture category suits a message, from the
 /// sender's display name (or address) and the subject line ONLY — never the body, attachments or
 /// anything else. Pure, deterministic and local: no network, no AI model. Unmatched mail gets no
 /// category, which means the neutral row.

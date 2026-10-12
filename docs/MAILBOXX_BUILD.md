@@ -1,4 +1,4 @@
-# MailBoXX: Build, test and package
+# MailBox MatriX: Build, test and package
 
 Every command here was run on the development machine on 2026-10-11 (Windows 11, x64), unless it is
 marked *not yet run*.
@@ -26,13 +26,13 @@ dotnet test QuickMail.Tests/QuickMail.Tests.csproj -c Debug --no-build
 
 The last full run passed 4,796 tests, with 0 failures and 16 skipped (the 16 are upstream skips).
 `DateTimeFieldEntryTests.SteppingWithAnArrow_LeavesTheValueUnselected` failed once under full-suite
-load and passed 3 of 3 times on its own. It is a timing-sensitive upstream WPF test that MailBoXX has
+load and passed 3 of 3 times on its own. It is a timing-sensitive upstream WPF test that MailBox MatriX has
 not changed.
 
 Guard tests to know about:
 - `ThemeRegressionGuardTests` (upstream): view XAML may not hard-code colours or numeric font sizes.
   Use `Theme.*` tokens.
-- `BuiltInThemeTests` and `MailBoXXThemeTests`: WCAG contrast for every built-in theme. The MailBoXX
+- `BuiltInThemeTests` and `MailBoXXThemeTests`: WCAG contrast for every built-in theme. The MailBox MatriX
   tests composite translucent tokens over white and black worst cases.
 - `ContextImageTests`: classifier, persistence, privacy (no message text in the store), and that the
   bundled pictures exist.
@@ -51,7 +51,7 @@ disabled. Radicale provides CalDAV/CardDAV on 5232.
 
 The last run had 38–39 passed, 1–2 failed and 9 skipped. The failures are always in `CalDavTests`:
 Radicale drops one HTTP response per run ("The response ended prematurely"), and which test fails
-varies. This happened identically before any MailBoXX UI change. All IMAP, SMTP and POP3 tests pass.
+varies. This happened identically before any MailBox MatriX UI change. All IMAP, SMTP and POP3 tests pass.
 The skips need live internet, real-provider accounts (`LIVE_*` variables), or hit a documented
 GreenMail limitation.
 
@@ -59,10 +59,10 @@ GreenMail limitation.
 
 ```powershell
 dotnet run --project Tools/QuickMail.Fixtures -c Debug -- --out $env:TEMP\mbx-fixture
-.\QuickMail\bin\Debug\MailBoXX.exe --ui-probe inbox --theme mailboxx-light --profileDir $env:TEMP\mbx-fixture --capture-dir $env:TEMP\mbx-shots
+.\QuickMail\bin\Debug\MailBoxMatriX.exe --ui-probe inbox --theme mailboxx-light --profileDir $env:TEMP\mbx-fixture --capture-dir $env:TEMP\mbx-shots
 ```
 
-Surfaces include `inbox`, `reading-pane`, `menu-bar` (added by MailBoXX), `compose` and
+Surfaces include `inbox`, `reading-pane`, `menu-bar` (added by MailBox MatriX), `compose` and
 `settings-appearance`. Use `--theme mailboxx-dark` and `--text-scale 150` for the other cases.
 Probe mode turns networking off. The capture uses `PrintWindow`, and falls back to copying from the
 screen only if that comes back blank, so **run captures when the desktop is not in use**.
@@ -89,34 +89,34 @@ This regenerates `Assets/ContextImages/{light,dark}/*.jpg` (14 categories × 2 v
 dotnet publish QuickMail/QuickMail.csproj -c Release -o publish
 ```
 
-This produces `publish\MailBoXX.exe`: single-file, self-contained, ReadyToRun, win-x64, 306 MB. It
+This produces `publish\MailBoxMatriX.exe`: single-file, self-contained, ReadyToRun, win-x64, 306 MB. It
 runs on Windows 10/11 x64 without .NET installed. It was smoke-tested against the local GreenMail
 server (it synced 4 messages and showed contextual pictures). `build.bat publish` does the same.
 The size could roughly halve with `EnableCompressionInSingleFile`, at some startup cost. That has not
 been evaluated.
 
 **Installer (*not yet run*):** `build.bat installer` packs a Velopack Setup.exe and MSI with package
-ID `MailBoXX`. It needs:
+ID `MailBox MatriX`. It needs:
 1. The Velopack CLI at the version in `.github/vpk-version`: `dotnet tool install -g vpk --version <that>`.
 2. A **code-signing** setup. Upstream signs through Azure Artifact Signing in CI, which belongs to
-   upstream's account. MailBoXX needs its own (decision D9).
+   upstream's account. MailBox MatriX needs its own (decision D9).
 3. A **release feed** for updates. `AppIdentity.UpdateRepoUrl` is empty, so the app makes no update
-   checks until MailBoXX has a releases repository.
+   checks until MailBox MatriX has a releases repository.
 4. A licence-collection step (see `THIRD-PARTY-NOTICES.md`).
 
 **CI:** the workflows in `.github/workflows` are upstream QuickMail's: they build `QuickMail.exe`
 and use upstream's signing and relay secrets. They have **not** been adapted and will not work for
-MailBoXX as they stand.
+MailBox MatriX as they stand.
 
-## 7. Data locations (MailBoXX identity)
+## 7. Data locations (MailBox MatriX identity)
 
 | What | Where |
 |---|---|
-| Settings, cache, contacts, rules | `%AppData%\MailBoXX\` (`mail.db`, `config.ini`, …) |
-| Contextual-picture choices | `%AppData%\MailBoXX\context-images.db` |
-| Log (only when enabled) | `%AppData%\MailBoXX\mailboxx.log` |
-| WebView2 data | `%LocalAppData%\MailBoXX\WebView2*` |
-| Passwords | Windows Credential Manager, targets `MailBoXX:<account id>` |
+| Settings, cache, contacts, rules | `%AppData%\MailBoxMatriX\` (`mail.db`, `config.ini`, …) |
+| Contextual-picture choices | `%AppData%\MailBoxMatriX\context-images.db` |
+| Log (only when enabled) | `%AppData%\MailBoxMatriX\mailboxmatrix.log` |
+| WebView2 data | `%LocalAppData%\MailBoxMatriX\WebView2*` |
+| Passwords | Windows Credential Manager, targets `MailBoxMatriX:<account id>` |
 
 `--profileDir <folder>` moves the settings, cache, picture choices and log into that folder. WebView2
 data and Credential Manager entries stay where they are, except in `--ui-probe` mode, which keeps

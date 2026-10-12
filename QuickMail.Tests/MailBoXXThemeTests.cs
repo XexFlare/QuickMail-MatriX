@@ -10,7 +10,7 @@ using Xunit;
 namespace QuickMail.Tests;
 
 /// <summary>
-/// WCAG policy for the MailBoXX surface tokens, in every built-in theme. Several of these
+/// WCAG policy for the MailBox MatriX surface tokens, in every built-in theme. Several of these
 /// tokens are translucent (sidebar tint over a blurred picture, row washes, the reading
 /// surface over the scenic background), so each check composites the token over its real
 /// underlay first — and where the underlay is a photograph of unknown brightness, over
@@ -36,7 +36,7 @@ public class MailBoXXThemeTests
     }
 
     [Fact]
-    public void SystemTheme_FollowsTheMailBoXXBuiltIns()
+    public void SystemTheme_FollowsTheMailBoxMatriXBuiltIns()
     {
         var ids = new ThemeStore(new ProfileContext(Path.Combine(Path.GetTempPath(), $"MBX-ThemeTests-{Guid.NewGuid():N}")))
             .LoadBuiltIns().Select(t => t.Id).ToList();

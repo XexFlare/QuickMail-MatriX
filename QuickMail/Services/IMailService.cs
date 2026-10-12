@@ -54,7 +54,7 @@ public interface IMailService : IDisposable
     Task MarkReadBatchAsync(Guid accountId, string folderName, IList<string> messageIds, CancellationToken ct = default);
 
     /// <summary>
-    /// MailBoXX: clears the server read state (\Seen) on messages. Every real backend implements
+    /// MailBox MatriX: clears the server read state (\Seen) on messages. Every real backend implements
     /// it; the default only spares test doubles that never mark mail unread, and fails loudly
     /// rather than pretending to succeed.
     /// </summary>

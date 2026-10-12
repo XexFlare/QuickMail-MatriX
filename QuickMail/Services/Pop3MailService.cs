@@ -812,7 +812,7 @@ public class Pop3MailService : IMailService
         }
 
         const string notKept =
-            "MailBoXX did not keep the original of this message when it was downloaded, and it is no longer on the server.";
+            "MailBox MatriX did not keep the original of this message when it was downloaded, and it is no longer on the server.";
 
         // A message written here (a sent copy, a draft) never came from the server to be fetched again.
         if (messageId.StartsWith(LocalIdPrefix, StringComparison.Ordinal))
@@ -1003,7 +1003,7 @@ public class Pop3MailService : IMailService
             HtmlBody          = msg.HtmlBody ?? string.Empty,
             Attachments       = attachments,
             InlineImages      = InlineImagesOf(msg),
-            DraftComposeMode  = ImapMailService.ParseComposeMode(msg.Headers["X-MailBoXX-Compose-Mode"]),
+            DraftComposeMode  = ImapMailService.ParseComposeMode(msg.Headers["X-MailBoxMatriX-Compose-Mode"]),
         };
 
         ImapMailService.PopulateCalendar(detail, ImapMailService.FindCalendarText(msg));
@@ -1109,7 +1109,7 @@ public class Pop3MailService : IMailService
     /// </summary>
     private const string OnlineModeExplanation =
         "POP3 accounts store their mail locally, and --online mode runs without the local store. " +
-        "Restart MailBoXX without --online to use this account.";
+        "Restart MailBox MatriX without --online to use this account.";
 
     private static bool IsInbox(string folderName) =>
         string.Equals(folderName, InboxFolder, StringComparison.OrdinalIgnoreCase);

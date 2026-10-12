@@ -1,12 +1,12 @@
-# MailBoXX
+# MailBox MatriX
 
 A local-first desktop email client for Windows, inspired by the layout and calm of the
 Windows 10 Mail app. It has a blue sidebar, a compact message list with a picture behind each row,
 and messages that open on a translucent surface over a scenic background.
 
-MailBoXX is a fork of **[QuickMail](https://github.com/kellylford/QuickMail)** by Kelly Ford (MIT).
+MailBox MatriX is a fork of **[QuickMail](https://github.com/kellylford/QuickMail)** by Kelly Ford (MIT).
 QuickMail supplies the proven parts: mail protocols, sync, offline cache, search, security and
-accessibility. MailBoXX replaces the look and removes what a small, local-first client does not need.
+accessibility. MailBox MatriX replaces the look and removes what a small, local-first client does not need.
 
 > **Status:** development build. It is not yet released or signed. See
 > `docs/IMPLEMENTATION_STATUS.md` for what is done, what is verified, and what is pending.
@@ -25,7 +25,7 @@ accessibility. MailBoXX replaces the look and removes what a small, local-first 
   View → Pictures Behind Messages.
 - **Keyboard:** the classic menu bar is hidden until you press **Alt**. Every QuickMail shortcut and
   the command palette (**Ctrl+Shift+P**) still work.
-- **Themes:** MailBoXX Light and Dark follow Windows. Windows High Contrast is honoured, and decorative
+- **Themes:** MailBox MatriX Light and Dark follow Windows. Windows High Contrast is honoured, and decorative
   pictures are turned off under it.
 
 ## Build and run
@@ -36,7 +36,7 @@ Requirements: Windows 10/11 and the .NET 10 SDK.
 dotnet build QuickMail.sln -c Debug
 dotnet run --project QuickMail -c Debug
 dotnet test QuickMail.Tests/QuickMail.Tests.csproj -c Debug
-dotnet publish QuickMail/QuickMail.csproj -c Release -o publish   # -> publish\MailBoXX.exe
+dotnet publish QuickMail/QuickMail.csproj -c Release -o publish   # -> publish\MailBoxMatriX.exe
 ```
 
 See `docs/MAILBOXX_BUILD.md` for integration tests, offline UI captures, packaging and the artwork
@@ -45,16 +45,16 @@ generator. See `docs/AUTHENTICATION.md` before signing in to real accounts.
 ## Repository layout
 
 The C# projects keep QuickMail's names (`QuickMail/`, `QuickMail.Tests/`, namespace `QuickMail.*`)
-so upstream fixes can still be merged. The shipped program is `MailBoXX.exe`.
+so upstream fixes can still be merged. The shipped program is `MailBoxMatriX.exe`.
 
 | Path | Contents |
 |---|---|
 | `QuickMail/` | The WPF application |
-| `QuickMail/Services/ContextImages/` | MailBoXX's contextual-picture feature (isolated) |
-| `QuickMail/Themes/BuiltIn/mailboxx-*.json` | MailBoXX themes |
-| `Tools/MailBoXX.ArtGen/` | Generates MailBoXX's original artwork and icon |
-| `Product_Requirements.md`, `Design Reference/` | MailBoXX product definition |
-| `docs/` | MailBoXX docs (`ARCHITECTURE_AUDIT.md`, `IMPLEMENTATION_STATUS.md`, …) plus QuickMail's own docs |
+| `QuickMail/Services/ContextImages/` | MailBox MatriX's contextual-picture feature (isolated) |
+| `QuickMail/Themes/BuiltIn/mailboxx-*.json` | MailBox MatriX themes |
+| `Tools/MailBoXX.ArtGen/` | Generates MailBox MatriX's original artwork and icon |
+| `Product_Requirements.md`, `Design Reference/` | MailBox MatriX product definition |
+| `docs/` | MailBox MatriX docs (`ARCHITECTURE_AUDIT.md`, `IMPLEMENTATION_STATUS.md`, …) plus QuickMail's own docs |
 
 ## Licence
 

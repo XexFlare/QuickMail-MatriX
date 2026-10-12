@@ -14,8 +14,8 @@ public class UpdateCheckService : IUpdateCheckService, IDisposable
 {
     // Single source of truth for the project location — VelopackRuntime and MainViewModel
     // build their URLs from these rather than repeating the literal.
-    // MailBoXX: the release repository comes from AppIdentity. While it is empty no update request
-    // is made at all (CheckForUpdateAsync), so MailBoXX can never be offered QuickMail's releases.
+    // MailBox MatriX: the release repository comes from AppIdentity. While it is empty no update request
+    // is made at all (CheckForUpdateAsync), so MailBox MatriX can never be offered QuickMail's releases.
     public const string RepoUrl = AppIdentity.UpdateRepoUrl;
     public const string ReleasesPageUrl = RepoUrl == "" ? "" : $"{RepoUrl}/releases";
     private static readonly string ApiUrl = RepoUrl.StartsWith("https://github.com/", StringComparison.Ordinal)
@@ -56,7 +56,7 @@ public class UpdateCheckService : IUpdateCheckService, IDisposable
         _feedOverride = updateFeedOverride;
         _http = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
         _http.DefaultRequestHeaders.UserAgent.Add(
-            new ProductInfoHeaderValue(AppIdentity.Name, _currentVersion));
+            new ProductInfoHeaderValue(AppIdentity.TechnicalName, _currentVersion));
     }
 
     public bool SelfUpdatePending => _pendingUpdate is not null;
@@ -65,7 +65,7 @@ public class UpdateCheckService : IUpdateCheckService, IDisposable
     {
         if (RepoUrl.Length == 0 && _feedOverride is null)
         {
-            LogService.Debug("UpdateCheckService: no MailBoXX release feed configured; update check skipped.");
+            LogService.Debug("UpdateCheckService: no MailBox MatriX release feed configured; update check skipped.");
             return null;
         }
 
@@ -185,7 +185,7 @@ public class UpdateCheckService : IUpdateCheckService, IDisposable
                 {
                     await mgr.DownloadUpdatesAsync(update, cancelToken: _cts.Token).ConfigureAwait(false);
                     _downloadCompleted = true;
-                    LogService.Log($"Update {version} downloaded; it will be applied when MailBoXX exits.");
+                    LogService.Log($"Update {version} downloaded; it will be applied when MailBox MatriX exits.");
                 }
                 catch (Exception ex)
                 {

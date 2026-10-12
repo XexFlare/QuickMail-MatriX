@@ -565,7 +565,7 @@ public class XamlParseTests
     public void ThemedControls_XamlParsesWithoutException()
     {
         EnsureApplication();
-        var uri = new Uri("pack://application:,,,/MailBoXX;component/Styles/ThemedControls.xaml", UriKind.Absolute);
+        var uri = new Uri("pack://application:,,,/MailBoxMatriX;component/Styles/ThemedControls.xaml", UriKind.Absolute);
         var dict = new ResourceDictionary { Source = uri };
         Assert.True(dict.Count > 0);
     }

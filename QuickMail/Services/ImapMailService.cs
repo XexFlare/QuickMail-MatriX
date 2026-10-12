@@ -19,7 +19,7 @@ namespace QuickMail.Services;
 
 public class ImapMailService : IMailService, IChangeNotifier, IConnectionProbe
 {
-    private static readonly string[] ComposeModeHeaders = ["X-MailBoXX-Compose-Mode"];
+    private static readonly string[] ComposeModeHeaders = ["X-MailBoxMatriX-Compose-Mode"];
 
     private const int DefaultMaxConnectionsPerAccount = 6;
     private const int AbsoluteMaxConnectionsPerAccount = 15;
@@ -534,7 +534,7 @@ public class ImapMailService : IMailService, IChangeNotifier, IConnectionProbe
                 HtmlBody      = htmlText,
                 Attachments   = attachments,
                 InlineImages  = ExtractInlineImages(s.Body),
-                DraftComposeMode = ParseComposeMode(s.Headers?["X-MailBoXX-Compose-Mode"]),
+                DraftComposeMode = ParseComposeMode(s.Headers?["X-MailBoxMatriX-Compose-Mode"]),
             };
 
             PopulateCalendar(detail, rawCalendarIcs);

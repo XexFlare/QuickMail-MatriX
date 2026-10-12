@@ -17,7 +17,7 @@
         FontSize="{DynamicResource Theme.FontSizeBase}"
         StateChanged="MbxWindow_StateChanged">
 
-    <!-- MailBoXX: borderless frame. The app draws its own caption buttons over the scenic main
+    <!-- MailBox MatriX: borderless frame. The app draws its own caption buttons over the scenic main
          area (MainWindow.MailBoXX.cs); resizing and Aero Snap stay with Windows. -->
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="6" GlassFrameThickness="0"
@@ -31,7 +31,7 @@
         <local:StringToVisibilityConverter      x:Key="StringToVisibilityConverter"/>
         <local:StringToBrushConverter           x:Key="StringToBrushConverter"/>
 
-        <!-- ── MailBoXX shell resources ── Every color and size is a Theme.* token
+        <!-- ── MailBox MatriX shell resources ── Every color and size is a Theme.* token
              (ThemeRegressionGuardTests); these styles are self-contained so they also work under
              High Contrast, where QuickMail withdraws ThemedControls. -->
         <local:InitialConverter x:Key="InitialConverter"/>
@@ -43,7 +43,7 @@
         <local:AvatarColorIndexConverter x:Key="AvatarColorIndexConverter"/>
         <!-- Replaced at runtime when the user picks their own picture (Settings). -->
         <BitmapImage x:Key="Mbx.ScenicImageSource"
-                     UriSource="pack://application:,,,/MailBoXX;component/Assets/Scenic/serengeti-kopjes.jpg"/>
+                     UriSource="pack://application:,,,/MailBoxMatriX;component/Assets/Scenic/serengeti-kopjes.jpg"/>
 
         <Style x:Key="Mbx.CaptionButton" TargetType="Button">
             <Setter Property="Width" Value="46"/>
@@ -589,7 +589,7 @@
     </Window.InputBindings>
 
 
-    <!-- MailBoXX layout: sidebar | message list | splitter | scenic main area.
+    <!-- MailBox MatriX layout: sidebar | message list | splitter | scenic main area.
          Row 0 is the Alt-revealed menu bar (zero height until the menus have keyboard focus),
          row 2 the status strip under the list. MbxWindowFrame pads the maximized window.
 
@@ -1014,7 +1014,7 @@
                 <MenuItem Header="Manage _Themes…"
                           Click="MenuManageThemes_Click"
                           AutomationProperties.Name="Manage Themes"/>
-                <!-- MailBoXX: contextual pictures behind message rows (chosen locally). -->
+                <!-- MailBox MatriX: contextual pictures behind message rows (chosen locally). -->
                 <MenuItem x:Name="ContextImagesMenuItem"
                           Header="Pictures _Behind Messages"
                           IsCheckable="True"
@@ -1088,8 +1088,8 @@
                           AutomationProperties.Name="Grant Admin Consent for Your Organization"
                           Click="MenuAdminConsent_Click"/>
                 <Separator/>
-                <MenuItem Header="_About MailBoXX"
-                          AutomationProperties.Name="About MailBoXX"
+                <MenuItem Header="_About MailBox MatriX"
+                          AutomationProperties.Name="About MailBox MatriX"
                           Click="MenuAbout_Click"/>
             </MenuItem>
 
@@ -1151,7 +1151,7 @@
                         <local:AriaHiddenTextBlock Text="&#xE715;" FontFamily="Segoe MDL2 Assets"
                                                    FontSize="{DynamicResource Theme.FontSizeHeader}"
                                                    VerticalAlignment="Center"/>
-                        <TextBlock x:Name="SidebarTitle" Text="MailBoXX" FontSize="{DynamicResource Theme.FontSizeHeader}"
+                        <TextBlock x:Name="SidebarTitle" Text="MailBox MatriX" FontSize="{DynamicResource Theme.FontSizeHeader}"
                                    FontWeight="SemiBold" Margin="10,0,0,0" VerticalAlignment="Center"
                                    Focusable="False"
                                    Visibility="{Binding IsSidebarCompact, Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
@@ -1302,7 +1302,7 @@
                                         </Style>
                                     </local:AriaHiddenTextBlock.Style>
                                 </local:AriaHiddenTextBlock>
-                                <!-- Provider badge: MailBoXX's own coloured letter, not a logo. -->
+                                <!-- Provider badge: MailBox MatriX's own coloured letter, not a logo. -->
                                 <Border Width="22" Height="22" CornerRadius="3" VerticalAlignment="Center">
                                     <Border.Style>
                                         <Style TargetType="Border">
@@ -2058,7 +2058,7 @@
                                 </Style.Triggers>
                             </Style>
                         </ListView.Style>
-                        <!-- MailBoXX: no columns; each row is the stacked layout in the container template below. -->
+                        <!-- MailBox MatriX: no columns; each row is the stacked layout in the container template below. -->
                         <ListView.ItemContainerStyle>
                             <Style TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListViewItem}}">
                                 <!-- Flag colour strip: takes space only on a flagged message, so the
@@ -2084,7 +2084,7 @@
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="ListViewItem">
-                                            <!-- MailBoXX row. Layers, back to front: read/unread tint; the
+                                            <!-- MailBox MatriX row. Layers, back to front: read/unread tint; the
                                                  contextual image (right-anchored, faded in from the text side by
                                                  the opacity mask, drawn as a brush so the text decides the row
                                                  height); hover/selection wash with the selected-row marker; the

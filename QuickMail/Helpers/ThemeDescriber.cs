@@ -65,7 +65,7 @@ public static class ThemeDescriber
             ("info",              "Information",            "informational text and icons"),
             ("infoBackground",    "Information background", "the fill behind informational messages"),
         }),
-        ("MailBoXX surfaces", new[]
+        ("MailBox MatriX surfaces", new[]
         {
             ("sidebarBackground",    "Sidebar background",       "the blue navigation sidebar"),
             ("sidebarTint",          "Sidebar tint",             "the blue wash over the blurred picture behind the sidebar"),

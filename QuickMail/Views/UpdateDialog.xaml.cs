@@ -25,8 +25,8 @@ public partial class UpdateDialog : Window
         _restartToUpdate = restartToUpdate;
         InitializeComponent();
         MessageText.Text =
-            $"Version {version} of MailBoXX is available and will be installed automatically " +
-            "the next time MailBoXX starts.";
+            $"Version {version} of MailBox MatriX is available and will be installed automatically " +
+            "the next time MailBox MatriX starts.";
         WhatsNewLink.NavigateUri = new Uri(whatsNewUrl);
         Loaded += (_, _) => RestartButton.Focus();
         Closed += (_, _) => { _restartCts.Cancel(); _restartCts.Dispose(); };

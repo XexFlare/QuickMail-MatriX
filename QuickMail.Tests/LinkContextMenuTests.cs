@@ -214,7 +214,7 @@ public class LinkContextMenuTests
 
         var text = LinkContextMenuSupport.TextScript("Could not copy the link address.");
         Assert.DoesNotContain("aria-live", text, System.StringComparison.Ordinal);
-        Assert.Contains("MailBoXX: Could not copy the link address.", text,
+        Assert.Contains("MailBox MatriX: Could not copy the link address.", text,
                         System.StringComparison.Ordinal);
     }
 
@@ -231,7 +231,7 @@ public class LinkContextMenuTests
         Assert.Contains("text.Length > 0 && AccessibilityHelper.WouldAnnounce", source,
                         System.StringComparison.Ordinal);
 
-        Assert.DoesNotContain("MailBoXX:", LinkContextMenuSupport.TextScript(string.Empty),
+        Assert.DoesNotContain("MailBox MatriX:", LinkContextMenuSupport.TextScript(string.Empty),
                               System.StringComparison.Ordinal);
     }
     /// <summary>
@@ -533,7 +533,7 @@ public class LinkContextMenuTests
     }
 
     /// <summary>Open retracts on success too, so a retry retires the earlier notice.</summary>
-    /// <remarks>MailBoXX: opt-in like the other tests that launch programs. It really opens the
+    /// <remarks>MailBox MatriX: opt-in like the other tests that launch programs. It really opens the
     /// link in the default browser, so every local run put an example.com tab on the desktop.</remarks>
     [Fact(Skip = "Opens the default browser — set QUICKMAIL_RUN_PROCESS_TESTS=1 to run.",
           SkipUnless = nameof(ProcessTests.Enabled), SkipType = typeof(ProcessTests))]

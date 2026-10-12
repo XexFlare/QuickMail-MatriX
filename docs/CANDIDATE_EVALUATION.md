@@ -1,4 +1,4 @@
-# MailBoXX: Base-Project Candidate Evaluation
+# MailBox MatriX: Base-Project Candidate Evaluation
 
 **Date:** 2026-10-11 · **Status:** For review, no base project selected · **Scope:** read-only research; no SDKs installed, nothing built or executed
 
@@ -20,7 +20,7 @@
 | `X:\Code\MailboXX` (all files) | Only `Product_Requirements.md`, the design reference image, and my own `docs/ARCHITECTURE_AUDIT.md`. **No prior candidate research.** |
 | Other folders under `X:\Code` (`*.md`, `*.txt`, `*.json`) | No mention of QuickMail, Skim, Pelton or MailAggregator |
 | Claude Code memory for this project | Empty |
-| Your claude.ai artifacts (13 listed) | None relates to MailBoXX or email clients |
+| Your claude.ai artifacts (13 listed) | None relates to MailBox MatriX or email clients |
 | Earlier claude.ai chats | **Not accessible** from this environment |
 
 **Nothing from the original evaluation could be recovered.** I have not reviewed the original reasoning, scoring or any other candidates it may have covered. The only record of earlier decisions is the summary you gave me:
@@ -47,7 +47,7 @@ The names were not given as URLs, so I matched them by GitHub search:
 
 ---
 
-## 2. Comparison against MailBoXX requirements
+## 2. Comparison against MailBox MatriX requirements
 
 ### 2.1 Summary matrix
 
@@ -84,22 +84,22 @@ The names were not given as URLs, so I matched them by GitHub search:
   - Account autodiscovery that respects privacy: a local catalogue first, online tiers can be turned off, and plaintext authentication is refused.
   - No telemetry SDKs. The only outbound non-mail calls are the GitHub update check, Mozilla autoconfig, DNS-over-HTTPS (Cloudflare) for autodiscovery, and the optional bug-report relay.
   - A strong accessibility record, which serves PRD §11.
-  - The MIT licence leaves MailBoXX free to choose its own licence, provided the MIT notice is kept.
+  - The MIT licence leaves MailBox MatriX free to choose its own licence, provided the MIT notice is kept.
 - **Material problems:**
-  1. **The UI layer is the most monolithic part of the code, and it is exactly what MailBoXX replaces.** `Views/MainWindow.xaml.cs` has 8,322 lines and `ViewModels/MainViewModel.cs` has 10,984 **[src]**. The redesign will mean careful surgery, not just restyling.
+  1. **The UI layer is the most monolithic part of the code, and it is exactly what MailBox MatriX replaces.** `Views/MainWindow.xaml.cs` has 8,322 lines and `ViewModels/MainViewModel.cs` has 10,984 **[src]**. The redesign will mean careful surgery, not just restyling.
   2. **The UI conventions are screen-reader- and keyboard-first:** classic three panes, tab strip, tree view, command palette **[src]**. They are good for accessibility but visually far from Windows 10 Mail. The shell and message row need rebuilding **[est]**. WPF can do everything the design needs: image-filled rows with gradients, square corners (the WPF default), custom window chrome. The acrylic-style blurred sidebar is the hardest part in WPF, so a pre-blurred image is the practical route **[est]**.
   3. **Gmail OAuth is effectively unavailable upstream** (#369), and Microsoft accounts default to IMAP rather than Graph **[src]**. Any fork needs its own verified Google OAuth client regardless of base, so this is not unique to QuickMail. But QuickMail's Gmail OAuth path has had less real-world use.
   4. **Young project with one maintainer:** five months old, released as v0.8.x **[api]**. The rapid change makes upstream merges costly, though the MIT licence makes diverging easy.
-  5. **More scope than MailBoXX needs:** calendar, CalDAV/CardDAV, contacts, rules, templates, Markdown compose, saved views **[src]**. It can be hidden; there is no backend to strip.
+  5. **More scope than MailBox MatriX needs:** calendar, CalDAV/CardDAV, contacts, rules, templates, Markdown compose, saved views **[src]**. It can be hidden; there is no backend to strip.
 - **Verdict [est]:** still suitable. No disqualifying problem found. Its main cost is rebuilding the UI.
 
 **Skim:** a high-quality, privacy-respecting core (Rust, keyring, ammonia, FTS5) with a lean scope. **Rejected on PRD §1/§5.1:** the entire UI is a web app in WebView2 **[src]**. Its AI assistant and co-writer conflict with PRD §3 but are optional and removable. It is the strongest option *if* you ever relaxed the native-UI requirement, both for styling ease and for Android (Tauri 2 mobile).
 
-**Pelton:** cross-platform with a broad feature set. **Rejected on PRD §1/§5.1** (Svelte in a Wails webview) **[src]**. It also includes an **MCP server that exposes mailbox data to AI agents** and a VirusTotal integration **[src]**, both of which would need review or removal under PRD §8.2/§9. It is GPL-3.0 and its core is Go, which no other part of the MailBoXX direction uses.
+**Pelton:** cross-platform with a broad feature set. **Rejected on PRD §1/§5.1** (Svelte in a Wails webview) **[src]**. It also includes an **MCP server that exposes mailbox data to AI agents** and a VirusTotal integration **[src]**, both of which would need review or removal under PRD §8.2/§9. It is GPL-3.0 and its core is Go, which no other part of the MailBox MatriX direction uses.
 
 **MailAggregator:** native WPF with a clean `Core`/`Desktop` split **[src]**. **Rejected on licence:** PolyForm Noncommercial 1.0.0 is not an open-source licence and prohibits commercial use **[src]**. Publishing a fork would be restricted, and paid distribution (including a paid Store listing) would be ruled out. It is also small, uses the unmaintained-looking ModernWpfUI 0.9.6, has no installer, and saw no commits after 2026-05-14 **[api]**.
 
-**Wino Mail (comparison only):** see `docs/ARCHITECTURE_AUDIT.md`. It has the closest existing UI to the design, the most mature codebase and a modular core. Against it: GPL-3.0; **a commercial backend woven into its core** (Wino account, billing, cloud AI that uploads message bodies, Sentry), with about 90 files plus package references in the synchronizers to remove; plaintext credentials on Windows; and the heaviest build (Native AOT, MSIX, pinned SDK). The upstream project is heading toward a paid, account-based model that diverges from MailBoXX's goals **[est]**.
+**Wino Mail (comparison only):** see `docs/ARCHITECTURE_AUDIT.md`. It has the closest existing UI to the design, the most mature codebase and a modular core. Against it: GPL-3.0; **a commercial backend woven into its core** (Wino account, billing, cloud AI that uploads message bodies, Sentry), with about 90 files plus package references in the synchronizers to remove; plaintext credentials on Windows; and the heaviest build (Native AOT, MSIX, pinned SDK). The upstream project is heading toward a paid, account-based model that diverges from MailBox MatriX's goals **[est]**.
 
 ### 2.3 Is the shortlist sufficient?
 
@@ -120,14 +120,14 @@ Yes, with one note. **Wino Mail was not on the original shortlist and is the onl
 | Work to reach the design | **High**: rebuild shell and row, inside monolithic files | **Lower**: themes, pivot and date headers exist |
 | Maturity | Young, one maintainer | Five years, many contributors |
 
-In short, QuickMail has **the right foundations (local-first, secure, permissively licensed, simple to build) and the wrong look**. Wino Mail has **the right look and the wrong foundations** for MailBoXX's privacy and no-backend goals. Changing the look is work MailBoXX has to do anyway. Removing a commercial backend from a sync core is work it should not have to do.
+In short, QuickMail has **the right foundations (local-first, secure, permissively licensed, simple to build) and the wrong look**. Wino Mail has **the right look and the wrong foundations** for MailBox MatriX's privacy and no-backend goals. Changing the look is work MailBox MatriX has to do anyway. Removing a commercial backend from a sync core is work it should not have to do.
 
 **What would change this recommendation:** the spike shows the WPF shell cannot reasonably be separated from `MainWindow`/`MainViewModel`, or that row images with virtualisation perform poorly. In that case, Wino Mail becomes the stronger choice despite its removal work.
 
 ### Proposed validation spike (after approval, before committing)
 1. Install the .NET 10 SDK (needs your approval). Create the two credential stub files from `docs/*.example`. Build and run the tests unmodified, and record the results.
 2. Connect test accounts: an Outlook.com account (via both IMAP and Graph) and Gmail with an app password. Check offline reading and the outbox.
-3. Build a throwaway prototype of the MailBoXX sidebar and an image-backed row on a branch. Measure how much of `MainWindow.xaml(.cs)` it touches, and check scrolling on more than 5,000 messages.
+3. Build a throwaway prototype of the MailBox MatriX sidebar and an image-backed row on a branch. Measure how much of `MainWindow.xaml(.cs)` it touches, and check scrolling on more than 5,000 messages.
 
 ---
 
@@ -147,7 +147,7 @@ In short, QuickMail has **the right foundations (local-first, secure, permissive
 
 1. **Q1: Which QuickMail?** Confirm the original research meant `kellylford/QuickMail` (the upstream project) and not the `DinamicaTech/QuickMail` "Eudora QuickMail" fork. I recommend the upstream: it has more history and contributors, and the fork adds a third-party brand that refers to the Eudora name.
 2. **Q2: Run the validation spike?** It needs approval to install the .NET 10 SDK (and later the Velopack CLI). No application code would change outside a throwaway branch.
-3. **Q3: Fork licence.** QuickMail's MIT licence lets MailBoXX stay MIT or adopt another licence. Which do you prefer? This affects whether GPL code (for example Wino Mail snippets) could ever be borrowed.
+3. **Q3: Fork licence.** QuickMail's MIT licence lets MailBox MatriX stay MIT or adopt another licence. Which do you prefer? This affects whether GPL code (for example Wino Mail snippets) could ever be borrowed.
 4. **Q4: Wino Mail as the formal fallback?** Should it be recorded as the fallback if the spike fails, given it was not on the original shortlist?
 5. **Q5: Existing audit.** `docs/ARCHITECTURE_AUDIT.md` was written against Wino Mail. If QuickMail is confirmed, should I rewrite it against QuickMail after the spike?
 

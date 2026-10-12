@@ -20,7 +20,7 @@ public sealed record ContextImageChoice(
     long CreatedUtcTicks);
 
 /// <summary>
-/// MailBoXX contextual images, step 2: the choices, kept in their own small SQLite file
+/// MailBox MatriX contextual images, step 2: the choices, kept in their own small SQLite file
 /// (context-images.db in the profile folder) so the feature stays separate from the mail store and
 /// can be deleted without touching mail. Bounded: at most <see cref="MaxRows"/> rows; the oldest are
 /// pruned. Never stores message bodies — only the key, the category and the matched phrase.

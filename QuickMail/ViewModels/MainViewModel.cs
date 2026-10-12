@@ -349,7 +349,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         FullName    = "\u0000AllArchive",
         DisplayName = "All Archive"
     };
-    /// <summary>MailBoXX: every account's Junk folder merged into one list, as All Trash does for Trash.</summary>
+    /// <summary>MailBox MatriX: every account's Junk folder merged into one list, as All Trash does for Trash.</summary>
     public static readonly MailFolderModel AllJunkFolder = new()
     {
         FullName    = "\u0000AllJunk",
@@ -523,7 +523,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             return "Select a folder in the folder tree first.";
 
         if (IsCalendarFolderName(folder.FullName))
-            return $"'{node.Label}' is a calendar, not a mail folder, so MailBoXX cannot start there.";
+            return $"'{node.Label}' is a calendar, not a mail folder, so MailBox MatriX cannot start there.";
 
         var isVirtual = AllVirtualFolders.Any(v =>
             string.Equals(v.FullName, folder.FullName, StringComparison.Ordinal));
@@ -547,7 +547,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         cfg.StartupFolderLabel = folder.DisplayName;
         _configService.Save(cfg);
 
-        return $"MailBoXX will open in {folder.DisplayName}.";
+        return $"MailBox MatriX will open in {folder.DisplayName}.";
     }
 
     /// <summary>
@@ -558,7 +558,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         var cfg = _configService.Load();
         if (string.IsNullOrEmpty(cfg.StartupFolder))
-            return "No startup folder is set. MailBoXX already opens in All Mail.";
+            return "No startup folder is set. MailBox MatriX already opens in All Mail.";
 
         var previous = string.IsNullOrWhiteSpace(cfg.StartupFolderLabel)
             ? cfg.StartupFolder : cfg.StartupFolderLabel;
@@ -567,7 +567,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         cfg.StartupFolderLabel   = string.Empty;
         _configService.Save(cfg);
 
-        return $"Startup folder '{previous}' cleared. MailBoXX will open in All Mail.";
+        return $"Startup folder '{previous}' cleared. MailBox MatriX will open in All Mail.";
     }
 
     // ── Folder tree expansion (#590) ─────────────────────────────────────────
@@ -1169,8 +1169,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [NotifyPropertyChangedFor(nameof(IsContactMailView))]
     [NotifyPropertyChangedFor(nameof(IsSearchResultsView))]
     [NotifyPropertyChangedFor(nameof(SearchResultsQuery))]
-    [NotifyPropertyChangedFor(nameof(IsAllMailOpen))]          // MailBoXX: the sidebar's Mailboxes button
-    [NotifyPropertyChangedFor(nameof(IsCombinedFolderView))]   // MailBoXX: combined folder list
+    [NotifyPropertyChangedFor(nameof(IsAllMailOpen))]          // MailBox MatriX: the sidebar's Mailboxes button
+    [NotifyPropertyChangedFor(nameof(IsCombinedFolderView))]   // MailBox MatriX: combined folder list
     private MailFolderModel? _selectedFolder;
 
     // Selecting the calendar folder (or leaving it) swaps the View Mode menu between the mail
@@ -1179,13 +1179,13 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         RebuildViewModeOptions();
         UpdateRulesStatusText();   // the rule summary shows what applies in a shared mailbox's folders (#678)
-        RefreshMainFolders();      // MailBoXX: combined folders while Mailboxes is open, else the account's
+        RefreshMainFolders();      // MailBox MatriX: combined folders while Mailboxes is open, else the account's
     }
 
     partial void OnSelectedAccountChanged(AccountModel? value)
     {
         UpdateRulesStatusText();
-        RefreshMainFolders();   // MailBoXX: the sidebar's short folder list follows the account
+        RefreshMainFolders();   // MailBox MatriX: the sidebar's short folder list follows the account
     }
 
     [ObservableProperty]
@@ -1551,7 +1551,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private string ComputeWindowTitle()
     {
             if (IsMessageOpen && !string.IsNullOrWhiteSpace(MessageDetail?.Subject))
-                return $"{MessageDetail.Subject} - MailBoXX";
+                return $"{MessageDetail.Subject} - MailBox MatriX";
             if (ActiveView != null)
             {
                 var suffix = IsSearchActive && !string.IsNullOrWhiteSpace(SearchText)
@@ -1559,7 +1559,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
                     : IsFilterActive
                     ? $" — {FilterLabel}"
                     : string.Empty;
-                return $"{ActiveView.Name}{suffix} - MailBoXX";
+                return $"{ActiveView.Name}{suffix} - MailBox MatriX";
             }
             if (SelectedFolder != null && !SelectedFolder.IsHeader)
             {
@@ -1574,9 +1574,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
                     : IsFilterActive
                     ? $" — {FilterLabel}"
                     : string.Empty;
-                return $"{folderPart}{suffix} - MailBoXX";
+                return $"{folderPart}{suffix} - MailBox MatriX";
             }
-            return "MailBoXX";
+            return "MailBox MatriX";
     }
 
     // ── Tab & Window Management (Phase 6) ────────────────────────────────────────
@@ -3033,7 +3033,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             execute: () => TutorialRequested?.Invoke(this, EventArgs.Empty)));
 
         registry.Register(new CommandDefinition(
-            id: "help.about", category: "Help", title: "About MailBoXX",
+            id: "help.about", category: "Help", title: "About MailBox MatriX",
             execute: () => AboutRequested?.Invoke(this, EventArgs.Empty)));
 
         registry.Register(new CommandDefinition(
@@ -3323,7 +3323,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
         else
         {
-            // MailBoXX: with no startup folder chosen, open the default account's Inbox rather
+            // MailBox MatriX: with no startup folder chosen, open the default account's Inbox rather
             // than the combined All Mail; a chosen one (or its fallback notice) is unchanged.
             SelectStartupFolder(startupFolder
                 ?? (string.IsNullOrWhiteSpace(startupCfg.StartupFolder) ? DefaultStartupInbox() : null)
@@ -4720,7 +4720,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     /// client). Scoped per folder to the returned date range so messages older than the fetch window
     /// — simply not returned — are not wrongly dropped. Call after an aggregate/virtual merge.
     /// </summary>
-    /// <remarks>MailBoXX: the decision itself is <see cref="FindVanishedMessages"/>.</remarks>
+    /// <remarks>MailBox MatriX: the decision itself is <see cref="FindVanishedMessages"/>.</remarks>
     private void RemoveVanishedMessages(IReadOnlyList<MailMessageSummary> newMessages,
         IReadOnlyCollection<(Guid AccountId, string Folder)>? incrementalFolders = null)
     {
@@ -5272,7 +5272,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             MergeFolderNodes(FolderTree, roots);
         // New node objects start unmarked; restore the default calendar's marker on the rebuild.
         MarkDefaultCalendarNodes();
-        RefreshMainFolders();   // MailBoXX: a merge can add an account's folders without raising FolderTree
+        RefreshMainFolders();   // MailBox MatriX: a merge can add an account's folders without raising FolderTree
     }
 
     /// <summary>
@@ -6507,7 +6507,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     /// Which shown messages a fetch shows to have vanished from the server. A folder's fetch result
     /// is taken as a complete snapshot of that folder from its oldest returned date onward, so a shown
     /// message in that span that was not returned is gone.
-    /// <para>MailBoXX fix: folders in <paramref name="incrementalFolders"/> were fetched with "UIDs
+    /// <para>MailBox MatriX fix: folders in <paramref name="incrementalFolders"/> were fetched with "UIDs
     /// after the last one seen". That result is NOT a snapshot of any date span: by IMAP semantics an
     /// "n:*" range with no newer mail still returns the highest-UID message, and UID order need not
     /// follow date order (appended, imported or migrated mail). Treating it as a snapshot removed every
@@ -7702,7 +7702,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     }
 
     /// <summary>
-    /// MailBoXX: the reverse of <see cref="MarkMessagesReadAsync"/> — optimistic in the list, then
+    /// MailBox MatriX: the reverse of <see cref="MarkMessagesReadAsync"/> — optimistic in the list, then
     /// the local store and the server (\Seen cleared), then a server-authoritative count refresh.
     /// An open message stays open and stays unread: marking read happens only when a message is opened.
     /// </summary>
@@ -7735,7 +7735,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     }
 
     /// <summary>
-    /// MailBoXX: the row envelope. Any unread message among them → all read; otherwise all unread.
+    /// MailBox MatriX: the row envelope. Any unread message among them → all read; otherwise all unread.
     /// </summary>
     public Task ToggleMessagesReadAsync(IReadOnlyList<MailMessageSummary> messages)
         => messages.Any(m => !m.IsRead) ? MarkMessagesReadAsync(messages) : MarkMessagesUnreadAsync(messages);
@@ -9033,9 +9033,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
         // shared accounts whose ParentAccountId points at nothing — unconnectable and unrepairable.
         var sharedChildren = AccountModel.SharedChildrenOf(account, Accounts);
         var prompt = sharedChildren.Count == 0
-            ? $"Remove the account '{account.AccountLabel}'? This only removes it from MailBoXX — your mail on the server is not affected."
+            ? $"Remove the account '{account.AccountLabel}'? This only removes it from MailBox MatriX — your mail on the server is not affected."
             : $"Removing '{account.AccountLabel}' will also remove its shared mailbox{(sharedChildren.Count == 1 ? "" : "es")}: "
-              + $"{string.Join(", ", sharedChildren.Select(c => c.AccountLabel))}. This only removes them from MailBoXX — your mail on the server is not affected.";
+              + $"{string.Join(", ", sharedChildren.Select(c => c.AccountLabel))}. This only removes them from MailBox MatriX — your mail on the server is not affected.";
         // Fail closed: an unwired or declined confirmation removes nothing.
         if (ConfirmationRequested?.Invoke(prompt, "Remove Account") != true) return;
 
@@ -9207,7 +9207,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             foreach (var n in FlattenAllNodes(FolderTree))
                 if (n.Folder is { } mf && mf.AccountId == accountId)
                     n.NotifyUnreadChanged();
-        RefreshMainFolders();   // MailBoXX: the combined folders' totals
+        RefreshMainFolders();   // MailBox MatriX: the combined folders' totals
     }
 
     /// <summary>
@@ -10261,7 +10261,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         // Per-attachment subfolder so two messages with the same attachment name
         // (invoice.pdf, invoice.pdf) don't overwrite each other in %TEMP%\QuickMail.
-        var tempDir = Path.Combine(Path.GetTempPath(), "MailBoXX", Guid.NewGuid().ToString("N"));
+        var tempDir = Path.Combine(Path.GetTempPath(), "MailBox MatriX", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(tempDir);
         var tempPath = Path.Combine(tempDir, safeFileName);
         await File.WriteAllBytesAsync(tempPath, att.Content!);
@@ -10979,8 +10979,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
         // the existing x64 binary in current\. The user is still emulated, and because
         // NativeArmNoticeVersion was stamped above, this notice never says so again. Uninstalling
         // first is what keeps the switch from failing silently.
-        Announce("This PC has an ARM processor, and MailBoXX has an ARM version that runs faster on it. " +
-                 "Switching means uninstalling MailBoXX first, then installing the ARM version. " +
+        Announce("This PC has an ARM processor, and MailBox MatriX has an ARM version that runs faster on it. " +
+                 "Switching means uninstalling MailBox MatriX first, then installing the ARM version. " +
                  "See Get the ARM Version in the Help menu.", AnnouncementCategory.Result);
     }
 
@@ -11033,7 +11033,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         if (!ok && !cancellationToken.IsCancellationRequested)
             // No promise of a next-start install: when the download failed, nothing is
             // staged — the next launch re-checks and tries the download again.
-            Announce("The update could not be applied right now. MailBoXX will try again the next time it starts.", AnnouncementCategory.Result);
+            Announce("The update could not be applied right now. MailBox MatriX will try again the next time it starts.", AnnouncementCategory.Result);
     }
 
     // Startup check: silent when already up to date (announcing "no updates" on every launch
@@ -11054,7 +11054,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 UpdateReleaseUrl    = info.HtmlUrl;
                 // Result, not Status: a one-time discovery outcome. Users who silence background
                 // Status chatter (the main reason that setting exists) must still hear this.
-                Announce($"MailBoXX update available: version {info.Version}. Check the Help menu.", AnnouncementCategory.Result);
+                Announce($"MailBox MatriX update available: version {info.Version}. Check the Help menu.", AnnouncementCategory.Result);
             }
             else
             {

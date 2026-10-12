@@ -17,7 +17,7 @@
              outcome is announced as a Result when the flow finishes — a screen-reader user would not
              otherwise find this static/updated text. -->
         <TextBlock x:Name="StatusText" DockPanel.Dock="Top" TextWrapping="Wrap" Margin="0,0,0,8"
-                   Text="Sign in as a Global Administrator to grant MailBoXX access for your whole organization. This is a one-time setup — afterwards everyone in your organization signs in with no consent prompts."/>
+                   Text="Sign in as a Global Administrator to grant MailBox MatriX access for your whole organization. This is a one-time setup — afterwards everyone in your organization signs in with no consent prompts."/>
 
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
             <Button x:Name="CloseBtn" Content="_Cancel" Click="CloseButton_Click" MinWidth="72"/>

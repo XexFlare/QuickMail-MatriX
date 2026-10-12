@@ -765,7 +765,7 @@ public class Pop3MailServiceTests
         {
             m.Cc.Add(new MailboxAddress("Cc Person", "cc@example.com"));
             m.ReplyTo.Add(new MailboxAddress("Reply Person", "reply@example.com"));
-            m.Headers.Add("X-MailBoXX-Compose-Mode", "markdown");
+            m.Headers.Add("X-MailBoxMatriX-Compose-Mode", "markdown");
         });
 
         var detail = Pop3MailService.BuildDetail(Guid.NewGuid(), "u", msg, "Drafts", isRead: true);

@@ -74,7 +74,7 @@ public partial class MainViewModel
                 if (parent == null)
                 {
                     SetStatusEvenIfUnchanged(
-                        $"Could not reconnect {label}: the account it belongs to is no longer in MailBoXX.",
+                        $"Could not reconnect {label}: the account it belongs to is no longer in MailBox MatriX.",
                         AnnouncementCategory.Result);
                     return;
                 }
@@ -94,7 +94,7 @@ public partial class MainViewModel
             var account = FindAccount(id);
             if (account == null)
             {
-                SetStatusEvenIfUnchanged($"{label} was removed from MailBoXX.", AnnouncementCategory.Result);
+                SetStatusEvenIfUnchanged($"{label} was removed from MailBox MatriX.", AnnouncementCategory.Result);
                 return;
             }
             if (parent != null)
@@ -103,7 +103,7 @@ public partial class MainViewModel
                 if (parent == null)
                 {
                     SetStatusEvenIfUnchanged(
-                        $"Could not reconnect {label}: the account it belongs to is no longer in MailBoXX.",
+                        $"Could not reconnect {label}: the account it belongs to is no longer in MailBox MatriX.",
                         AnnouncementCategory.Result);
                     return;
                 }

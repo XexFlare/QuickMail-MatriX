@@ -268,7 +268,7 @@ internal sealed class MessageSaveUi : IMessageSaveUi
             }
             else
             {
-                tempFile = Path.Combine(Path.GetTempPath(), $"{AppIdentity.Name}-{Guid.NewGuid():N}.html");
+                tempFile = Path.Combine(Path.GetTempPath(), $"{AppIdentity.TechnicalName}-{Guid.NewGuid():N}.html");
                 await File.WriteAllTextAsync(tempFile, html, ct);
                 core.Navigate(new Uri(tempFile).AbsoluteUri);
             }

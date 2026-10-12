@@ -123,11 +123,11 @@ public class ThemeServiceTests : IDisposable
     {
         using var light = NewService(osLight: true);
         light.Initialize(Config("system"));
-        Assert.Equal("System, showing MailBoXX Light", light.ConfiguredThemeName);
+        Assert.Equal("System, showing MailBox MatriX Light", light.ConfiguredThemeName);
 
         using var dark = NewService(osLight: false);
         dark.Initialize(Config("system"));
-        Assert.Equal("System, showing MailBoXX Dark", dark.ConfiguredThemeName);
+        Assert.Equal("System, showing MailBox MatriX Dark", dark.ConfiguredThemeName);
     }
 
     [StaFact]

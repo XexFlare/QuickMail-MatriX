@@ -56,7 +56,7 @@ public static class ThemeKeys
     public const string Info              = Prefix + "Info";
     public const string InfoBackground    = Prefix + "InfoBackground";
 
-    // ── MailBoXX surfaces (30) ────────────────────────────────────────────────
+    // ── MailBox MatriX surfaces (30) ────────────────────────────────────────────────
     // The Windows 10 Mail-style shell: blue sidebar, tinted message rows with
     // envelope indicators, and the translucent reading surface over the scenic
     // main area. Alpha (#AARRGGBB) is meaningful on the tint/wash/surface tokens.
@@ -87,7 +87,7 @@ public static class ThemeKeys
     /// <summary>The message list body (~90% opaque) over the window-wide picture.</summary>
     public const string ListSurface          = Prefix + "ListSurface";
     public const string MainAreaBackground   = Prefix + "MainAreaBackground";
-    /// <summary>Account badges in the sidebar: MailBoXX's own coloured letters per provider.</summary>
+    /// <summary>Account badges in the sidebar: MailBox MatriX's own coloured letters per provider.</summary>
     public const string ProviderOutlook      = Prefix + "ProviderOutlook";
     public const string ProviderGmail        = Prefix + "ProviderGmail";
     public const string ProviderHotmail      = Prefix + "ProviderHotmail";
@@ -124,7 +124,7 @@ public static class ThemeKeys
     public const string ListRowPadding = Prefix + "ListRowPadding";
 
     /// <summary>camelCase JSON name → application resource key, for all 45 color tokens
-    /// (QuickMail's 26 plus the 19 MailBoXX surface tokens).</summary>
+    /// (QuickMail's 26 plus the 19 MailBox MatriX surface tokens).</summary>
     public static readonly IReadOnlyDictionary<string, string> ColorTokens =
         new Dictionary<string, string>(StringComparer.Ordinal)
         {

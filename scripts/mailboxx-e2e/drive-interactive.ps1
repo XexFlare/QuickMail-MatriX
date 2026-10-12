@@ -3,7 +3,7 @@ param(
     [Parameter(Mandatory)] [string]$Profile,
     [Parameter(Mandatory)] [string]$OutDir
 )
-# Drives the real MailBoXX window with Windows UI Automation against the local GreenMail profile.
+# Drives the real MailBox MatriX window with Windows UI Automation against the local GreenMail profile.
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName UIAutomationClient, UIAutomationTypes, System.Drawing, System.Windows.Forms
 Add-Type @"

@@ -227,7 +227,7 @@ public class ConfigModel
     /// <summary>Override sender HTML colors/fonts with theme colors in the reading pane. Default off.</summary>
     public bool AppearanceForceMessageTheme { get; set; } = false;
 
-    /// <summary>MailBoXX: draw a picture behind each message row, chosen locally from the sender and
+    /// <summary>MailBox MatriX: draw a picture behind each message row, chosen locally from the sender and
     /// subject (never the body; nothing is sent anywhere). Default on.</summary>
     public bool ContextImages { get; set; } = true;
 
@@ -348,7 +348,7 @@ public class ConfigModel
     public string LogFormat { get; set; } = "actionFirst";
 
     /// <summary>
-    /// Whether to write log entries to mailboxx.log. Default off.
+    /// Whether to write log entries to mailboxmatrix.log. Default off.
     /// When off and /debug is not active, Log() is a no-op.
     /// /debug always overrides this setting and forces logging on.
     /// </summary>

@@ -287,7 +287,7 @@ public class IcsModel
         var sb = new StringBuilder();
         sb.AppendLine("BEGIN:VCALENDAR");
         sb.AppendLine("VERSION:2.0");
-        sb.AppendLine("PRODID:-//MailBoXX//EN");
+        sb.AppendLine("PRODID:-//MailBox MatriX//EN");
         sb.AppendLine("METHOD:REPLY");
         sb.AppendLine("BEGIN:VEVENT");
         if (!string.IsNullOrWhiteSpace(Uid))
@@ -320,7 +320,7 @@ public class IcsModel
         var sb = new StringBuilder();
         sb.AppendLine("BEGIN:VCALENDAR");
         sb.AppendLine("VERSION:2.0");
-        sb.AppendLine("PRODID:-//MailBoXX//EN");
+        sb.AppendLine("PRODID:-//MailBox MatriX//EN");
         if (includeMethod)
             sb.AppendLine("METHOD:PUBLISH");
         sb.AppendLine("BEGIN:VEVENT");

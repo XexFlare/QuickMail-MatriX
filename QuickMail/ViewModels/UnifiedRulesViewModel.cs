@@ -595,7 +595,7 @@ public partial class UnifiedRulesViewModel : ObservableObject
         catch (Exception ex)
         {
             StatusText = ex.Message.Contains("ErrorNotSupportedMessageRule", StringComparison.OrdinalIgnoreCase)
-                ? "This rule can't be changed from MailBoXX — edit it in Outlook."
+                ? "This rule can't be changed from MailBox MatriX — edit it in Outlook."
                 : ex.Message;
             LogService.Log("UnifiedRules: server write failed", ex);
             return StatusText;

@@ -633,7 +633,7 @@ public partial class MessageWindow : Window
         // Only QuickMail's own links, which carry this run's token; one the sender wrote does nothing.
         if (!QuickMailLinks.TryParse(uri, out var action))
         {
-            LogService.Log("MessageWindow: ignored a quickmail: link that MailBoXX did not create.");
+            LogService.Log("MessageWindow: ignored a quickmail: link that MailBox MatriX did not create.");
             return;
         }
         switch (action)

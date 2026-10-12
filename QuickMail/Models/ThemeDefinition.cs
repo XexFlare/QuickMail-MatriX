@@ -151,8 +151,8 @@ public class ThemeDefinition
         var version = raw.FormatVersion ?? 1;
         if (version > CurrentFormatVersion)
             throw new ThemeFormatException(
-                $"This theme uses format version {version}, which was created by a newer version of MailBoXX. " +
-                "Update MailBoXX to use it.");
+                $"This theme uses format version {version}, which was created by a newer version of MailBox MatriX. " +
+                "Update MailBox MatriX to use it.");
 
         if (string.IsNullOrWhiteSpace(raw.Id))
             throw new ThemeFormatException("The theme has no \"id\". Every theme needs a short identifier, e.g. \"my-theme\".");

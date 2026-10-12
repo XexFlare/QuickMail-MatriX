@@ -12,9 +12,9 @@ namespace QuickMail.Services;
 
 public class OAuthService : IOAuthService
 {
-    // MailBoXX: upstream QuickMail's Entra registration, kept only so a development build can sign in.
-    // It must be replaced with a MailBoXX registration before any distribution (docs/AUTHENTICATION.md);
-    // set MAILBOXX_MS_CLIENT_ID to test with a MailBoXX registration without rebuilding.
+    // MailBox MatriX: upstream QuickMail's Entra registration, kept only so a development build can sign in.
+    // It must be replaced with a MailBox MatriX registration before any distribution (docs/AUTHENTICATION.md);
+    // set MAILBOXX_MS_CLIENT_ID to test with a MailBox MatriX registration without rebuilding.
     private const string UpstreamClientId = "bcdc84f1-d37c-4581-b14a-a01f7b3a1312";
     private static readonly string ClientId =
         Environment.GetEnvironmentVariable("MAILBOXX_MS_CLIENT_ID") is { Length: > 0 } id ? id.Trim() : UpstreamClientId;
@@ -234,7 +234,7 @@ public class OAuthService : IOAuthService
         _msal = PublicClientApplicationBuilder
             .Create(ClientId)
             .WithAuthority(Authority)
-            // MailBoXX: interactive sign-in opens the user's default browser; MSAL listens on an
+            // MailBox MatriX: interactive sign-in opens the user's default browser; MSAL listens on an
             // http://localhost loopback port for the redirect, then the browser shows the page from
             // SignInBrowserOptions. The redirect must be registered under the app's "Mobile and
             // desktop applications" platform (any port is accepted for localhost). Set explicitly
@@ -415,19 +415,19 @@ public class OAuthService : IOAuthService
     // the token cache so a later silent acquisition for them succeeds without a second prompt. Used to
     // fold contact/calendar consent into the mail sign-in (see SignInInteractiveWithContactsAsync).
     /// <summary>
-    /// MailBoXX: the page the user's browser shows after the Microsoft sign-in redirect. Plain,
+    /// MailBox MatriX: the page the user's browser shows after the Microsoft sign-in redirect. Plain,
     /// self-contained HTML — nothing is loaded from anywhere.
     /// </summary>
     private static readonly SystemWebViewOptions SignInBrowserOptions = new()
     {
         HtmlMessageSuccess =
-            "<!doctype html><html><head><meta charset=\"utf-8\"><title>MailBoXX</title></head>" +
+            "<!doctype html><html><head><meta charset=\"utf-8\"><title>MailBox MatriX</title></head>" +
             "<body style=\"font-family:'Segoe UI',sans-serif;margin:48px\"><h1>Signed in</h1>" +
-            "<p>You can close this tab and return to MailBoXX.</p></body></html>",
+            "<p>You can close this tab and return to MailBox MatriX.</p></body></html>",
         HtmlMessageError =
-            "<!doctype html><html><head><meta charset=\"utf-8\"><title>MailBoXX</title></head>" +
+            "<!doctype html><html><head><meta charset=\"utf-8\"><title>MailBox MatriX</title></head>" +
             "<body style=\"font-family:'Segoe UI',sans-serif;margin:48px\"><h1>Sign-in did not complete</h1>" +
-            "<p>Close this tab and return to MailBoXX to try again.</p></body></html>",
+            "<p>Close this tab and return to MailBox MatriX to try again.</p></body></html>",
     };
 
     private async Task<OAuthResult> SignInInteractiveAsync(AccountModel account, string[] scopes, bool firstConnect, string[]? extraScopesToConsent, CancellationToken ct)
@@ -444,7 +444,7 @@ public class OAuthService : IOAuthService
         AcquireTokenInteractiveParameterBuilder Build(string[]? extras)
         {
             var b = _msal.AcquireTokenInteractive(scopes)
-                // MailBoXX: system browser (no embedded WebView2 sign-in window, so no MSAL Desktop /
+                // MailBox MatriX: system browser (no embedded WebView2 sign-in window, so no MSAL Desktop /
                 // Broker / NativeInterop dependency). Tokens are cached exactly as before.
                 .WithUseEmbeddedWebView(false)
                 .WithSystemWebViewOptions(SignInBrowserOptions)

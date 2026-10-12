@@ -29,7 +29,7 @@ public class ToolBarStyleKeyTests
         WpfTestHost.EnsureStyles("AccessibleStyles"); // registers the pack:// scheme first
         var themed = new ResourceDictionary
         {
-            Source = new Uri("pack://application:,,,/MailBoXX;component/Styles/ThemedControls.xaml", UriKind.Absolute),
+            Source = new Uri("pack://application:,,,/MailBoxMatriX;component/Styles/ThemedControls.xaml", UriKind.Absolute),
         };
 
         object key = name switch

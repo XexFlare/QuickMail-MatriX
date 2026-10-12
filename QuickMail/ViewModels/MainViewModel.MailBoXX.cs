@@ -10,7 +10,7 @@ using QuickMail.Models;
 namespace QuickMail.ViewModels;
 
 /// <summary>
-/// MailBoXX sidebar state: the selected account's main folders (Windows Mail's short folder list,
+/// MailBox MatriX sidebar state: the selected account's main folders (Windows Mail's short folder list,
 /// with "More" leading to QuickMail's full folder tree), and which sidebar parts are collapsed.
 /// </summary>
 public partial class MainViewModel

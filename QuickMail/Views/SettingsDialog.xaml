@@ -263,7 +263,7 @@
                                 <CheckBox Content="Show a _notification when new mail arrives"
                                           IsChecked="{Binding NotifyOnNewMail, Mode=TwoWay}"
                                           AutomationProperties.Name="Show a notification when new mail arrives"/>
-                                <TextBlock Text="Windows shows a notification when new mail arrives in an inbox while MailBoXX is running."
+                                <TextBlock Text="Windows shows a notification when new mail arrives in an inbox while MailBox MatriX is running."
                                            Foreground="{DynamicResource Theme.TextSecondary}" FontSize="{DynamicResource Theme.FontSizeSmall}" Margin="0,3,0,8" TextWrapping="Wrap"/>
 
                                 <CheckBox Content="Show a notification when a _watched conversation gets a reply"
@@ -275,7 +275,7 @@
                                 <CheckBox Content="_Keep running in the notification area when I close the window"
                                           IsChecked="{Binding CloseToTray, Mode=TwoWay}"
                                           AutomationProperties.Name="Keep running in the notification area when I close the window"/>
-                                <TextBlock Text="Closing the window hides MailBoXX to the notification area (system tray) instead of exiting, so notifications keep arriving. Restore it from the tray icon or a notification; use File then Exit, or the tray icon's Exit, to quit."
+                                <TextBlock Text="Closing the window hides MailBox MatriX to the notification area (system tray) instead of exiting, so notifications keep arriving. Restore it from the tray icon or a notification; use File then Exit, or the tray icon's Exit, to quit."
                                            Foreground="{DynamicResource Theme.TextSecondary}" FontSize="{DynamicResource Theme.FontSizeSmall}" Margin="0,3,0,0" TextWrapping="Wrap"/>
                             </StackPanel>
                         </GroupBox>
@@ -284,7 +284,7 @@
                         <GroupBox Header="Desktop Shortc_ut" Padding="10" Margin="0,10,0,0"
                                   AutomationProperties.Name="Desktop shortcut settings">
                             <StackPanel>
-                                <CheckBox Content="Keep a MailBoXX shortcut _on the desktop"
+                                <CheckBox Content="Keep a MailBox MatriX shortcut _on the desktop"
                                           IsChecked="{Binding DesktopShortcut, Mode=TwoWay}"
                                           AutomationProperties.Name="Desktop shortcut"/>
                                 <TextBlock Text="The Start Menu entry is always available; this adds or removes the desktop shortcut. Applied when settings are saved."
@@ -346,7 +346,7 @@
                                 <CheckBox Content="Enable custom _announcements"
                                           IsChecked="{Binding CustomAnnouncements, Mode=TwoWay}"
                                           FontWeight="SemiBold"
-                                          AutomationProperties.Name="Enable all custom screen reader announcements from MailBoXX"/>
+                                          AutomationProperties.Name="Enable all custom screen reader announcements from MailBox MatriX"/>
                                 <TextBlock Text="When off, only native control announcements are spoken."
                                            Foreground="{DynamicResource Theme.TextSecondary}" FontSize="{DynamicResource Theme.FontSizeSmall}" Margin="0,2,0,8"/>
 
@@ -464,12 +464,12 @@
                                 <CheckBox Content="Do_wnload and install updates automatically"
                                           IsChecked="{Binding AutoUpdate, Mode=TwoWay}"
                                           AutomationProperties.Name="Download and install updates automatically"/>
-                                <TextBlock Text="When off, the Help menu still reports available updates but nothing is downloaded or installed. Takes effect the next time MailBoXX starts. Applies to installed copies; the portable exe never updates itself."
+                                <TextBlock Text="When off, the Help menu still reports available updates but nothing is downloaded or installed. Takes effect the next time MailBox MatriX starts. Applies to installed copies; the portable exe never updates itself."
                                            Foreground="{DynamicResource Theme.TextSecondary}" FontSize="{DynamicResource Theme.FontSizeSmall}" Margin="0,3,0,8" TextWrapping="Wrap"/>
                                 <CheckBox Content="Show a _message after an update has been installed"
                                           IsChecked="{Binding ShowUpdateInstalledAlerts, Mode=TwoWay}"
                                           AutomationProperties.Name="Show a message after an update has been installed"/>
-                                <TextBlock Text="Shows the MailBoXX Update Installed dialog once, on the first start after an update."
+                                <TextBlock Text="Shows the MailBox MatriX Update Installed dialog once, on the first start after an update."
                                            Foreground="{DynamicResource Theme.TextSecondary}" FontSize="{DynamicResource Theme.FontSizeSmall}" Margin="0,3,0,0" TextWrapping="Wrap"/>
                             </StackPanel>
                         </GroupBox>
@@ -481,7 +481,7 @@
                                 <CheckBox Content="Sign in with _Google for Gmail accounts"
                                           IsChecked="{Binding GoogleSignIn, Mode=TwoWay}"
                                           AutomationProperties.Name="Sign in with Google for Gmail accounts"/>
-                                <TextBlock Text="Google no longer authorizes MailBoXX for new accounts, so Gmail normally uses an app password. Turn this on only if your Google authorization predates that change — it adds a Gmail (sign in with Google) provider and a Google option under Authentication. Takes effect the next time MailBoXX starts. Gmail accounts already using Google sign-in keep working whether this is on or off."
+                                <TextBlock Text="Google no longer authorizes MailBox MatriX for new accounts, so Gmail normally uses an app password. Turn this on only if your Google authorization predates that change — it adds a Gmail (sign in with Google) provider and a Google option under Authentication. Takes effect the next time MailBox MatriX starts. Gmail accounts already using Google sign-in keep working whether this is on or off."
                                            Foreground="{DynamicResource Theme.TextSecondary}" FontSize="{DynamicResource Theme.FontSizeSmall}" Margin="0,3,0,0" TextWrapping="Wrap"/>
                             </StackPanel>
                         </GroupBox>
@@ -493,24 +493,24 @@
                                 <CheckBox Content="Offer _POP3 when adding an account"
                                           IsChecked="{Binding OfferPop3, Mode=TwoWay}"
                                           AutomationProperties.Name="Offer POP3 when adding an account"/>
-                                <TextBlock Text="Adds POP3/SMTP to the Connection method list under Advanced settings in Add Account, for mail services that offer no IMAP. Takes effect the next time MailBoXX starts. POP3 downloads each message to this computer and keeps it there — MailBoXX's own Inbox, Sent, Drafts and Trash — so the local copy is the only copy once a message leaves the server. Accounts already using POP3 keep working whether this is on or off."
+                                <TextBlock Text="Adds POP3/SMTP to the Connection method list under Advanced settings in Add Account, for mail services that offer no IMAP. Takes effect the next time MailBox MatriX starts. POP3 downloads each message to this computer and keeps it there — MailBox MatriX's own Inbox, Sent, Drafts and Trash — so the local copy is the only copy once a message leaves the server. Accounts already using POP3 keep working whether this is on or off."
                                            Foreground="{DynamicResource Theme.TextSecondary}" FontSize="{DynamicResource Theme.FontSizeSmall}" Margin="0,3,0,0" TextWrapping="Wrap"/>
                             </StackPanel>
                         </GroupBox>
 
                         <!-- QuickMail Logging Group -->
-                        <GroupBox Header="MailBoXX _Logging" Padding="10" Margin="0,0,0,15"
-                                  AutomationProperties.Name="MailBoXX logging settings">
+                        <GroupBox Header="MailBox MatriX _Logging" Padding="10" Margin="0,0,0,15"
+                                  AutomationProperties.Name="MailBox MatriX logging settings">
                             <StackPanel>
                                 <CheckBox Content="Enable _logging"
                                           IsChecked="{Binding EnableLogging, Mode=TwoWay}"
                                           AutomationProperties.Name="Enable logging"/>
                                 <Button x:Name="DeleteLogButton"
-                                        Content="_Delete MailBoXX logs"
+                                        Content="_Delete MailBox MatriX logs"
                                         HorizontalAlignment="Left"
                                         Margin="0,10,0,0"
                                         Click="DeleteLogButton_Click"
-                                        AutomationProperties.Name="Delete MailBoXX logs"/>
+                                        AutomationProperties.Name="Delete MailBox MatriX logs"/>
                                 <TextBlock Text="Deletes the application log, the connection diagnostics log, and any saved debug screenshots."
                                            Foreground="{DynamicResource Theme.TextSecondary}" FontSize="{DynamicResource Theme.FontSizeSmall}" Margin="0,3,0,0" TextWrapping="Wrap"/>
                             </StackPanel>
@@ -523,7 +523,7 @@
                                 <CheckBox Content="_Record connection diagnostics"
                                           IsChecked="{Binding ConnectionDiagnostics, Mode=TwoWay}"
                                           AutomationProperties.Name="Record connection diagnostics"/>
-                                <TextBlock Text="Records how MailBoXX connects to your mail servers, and adds Connection Diagnostics to the Help menu so you can check each account's real connection state and save a report. Turn this on when an account reports the wrong status or mail stops arriving, then reproduce the problem. It takes effect straight away — no restart needed. The report includes your account names, mail server names and addresses, but never passwords or message content."
+                                <TextBlock Text="Records how MailBox MatriX connects to your mail servers, and adds Connection Diagnostics to the Help menu so you can check each account's real connection state and save a report. Turn this on when an account reports the wrong status or mail stops arriving, then reproduce the problem. It takes effect straight away — no restart needed. The report includes your account names, mail server names and addresses, but never passwords or message content."
                                            Foreground="{DynamicResource Theme.TextSecondary}" FontSize="{DynamicResource Theme.FontSizeSmall}" Margin="0,3,0,0" TextWrapping="Wrap"/>
                             </StackPanel>
                         </GroupBox>
@@ -562,7 +562,7 @@
                                 <CheckBox Content="Capture _screenshots of new windows"
                                           IsChecked="{Binding ScreenshotCaptureEnabled, Mode=TwoWay}"
                                           AutomationProperties.Name="Capture screenshots of new windows"/>
-                                <TextBlock Text="Saves a picture of each window you open, for visual review. This session only — it turns itself off when MailBoXX closes, and every window's title bar warns while it is on. Images stay on this computer."
+                                <TextBlock Text="Saves a picture of each window you open, for visual review. This session only — it turns itself off when MailBox MatriX closes, and every window's title bar warns while it is on. Images stay on this computer."
                                            Foreground="{DynamicResource Theme.TextSecondary}" FontSize="{DynamicResource Theme.FontSizeSmall}" Margin="0,3,0,8" TextWrapping="Wrap"/>
                                 <Button Content="_Open screenshots folder"
                                         Command="{Binding OpenScreenshotsFolderCommand}"
@@ -646,7 +646,7 @@
                             <StackPanel>
                                 <TextBlock TextWrapping="Wrap" Margin="0,0,0,8"
                                            Foreground="{DynamicResource Theme.TextSecondary}" FontSize="{DynamicResource Theme.FontSizeSmall}"
-                                           Text="Where MailBoXX opens each time it starts. You can also set this from the folder tree: select a folder, open its context menu, and choose Set as Startup Folder."/>
+                                           Text="Where MailBox MatriX opens each time it starts. You can also set this from the folder tree: select a folder, open its context menu, and choose Set as Startup Folder."/>
                                 <Label x:Name="StartupFolderLabelControl"
                                        Content="Opens _in:"
                                        Target="{Binding ElementName=StartupFolderBox}"
@@ -680,7 +680,7 @@
                             <StackPanel>
                                 <TextBlock TextWrapping="Wrap" Margin="0,0,0,8"
                                            Foreground="{DynamicResource Theme.TextSecondary}" FontSize="{DynamicResource Theme.FontSizeSmall}"
-                                           Text="How much mail to check when MailBoXX starts. New mail still arrives in your inboxes right away whichever you choose. Other folders are caught up by the background check on the General tab — if you have set that to Off, they are only checked when you open them."/>
+                                           Text="How much mail to check when MailBox MatriX starts. New mail still arrives in your inboxes right away whichever you choose. Other folders are caught up by the background check on the General tab — if you have set that to Off, they are only checked when you open them."/>
                                 <StackPanel KeyboardNavigation.TabNavigation="Once"
                                             KeyboardNavigation.DirectionalNavigation="Cycle"
                                             helpers:RadioGroupNavigation.SelectionFollowsFocus="True">
@@ -700,7 +700,7 @@
                                                  IsChecked="{Binding IsStartupSyncScopeAll, Mode=TwoWay}"
                                                  GroupName="StartupSyncScope"
                                                  AutomationProperties.Name="Every folder"
-                                                 AutomationProperties.HelpText="Checks every folder on every account before settling. Slowest start, and how MailBoXX behaved before this setting existed."/>
+                                                 AutomationProperties.HelpText="Checks every folder on every account before settling. Slowest start, and how MailBox MatriX behaved before this setting existed."/>
                                 </StackPanel>
                             </StackPanel>
                         </GroupBox>
@@ -711,24 +711,24 @@
                                   AutomationProperties.Name="Windows sign-in settings">
                             <StackPanel>
                                 <StackPanel Visibility="{Binding IsLaunchAtSignInSupported, Converter={StaticResource BoolToVisibilityConverter}}">
-                                    <CheckBox Content="Start MailBoXX aut_omatically when I sign in to Windows"
+                                    <CheckBox Content="Start MailBox MatriX aut_omatically when I sign in to Windows"
                                               IsChecked="{Binding LaunchAtSignIn, Mode=TwoWay}"
-                                              AutomationProperties.Name="Start MailBoXX automatically when I sign in to Windows"
+                                              AutomationProperties.Name="Start MailBox MatriX automatically when I sign in to Windows"
                                               AutomationProperties.HelpText="{Binding LaunchAtSignInHelp}"/>
                                     <TextBlock Text="{Binding LaunchAtSignInHelp}"
                                                FontWeight="SemiBold" Margin="0,3,0,0" TextWrapping="Wrap"/>
-                                    <TextBlock Text="Off unless you turn it on. MailBoXX is then listed in Task Manager's Startup apps and in Windows Settings under Apps, Startup, where you can also turn it off. Applied when settings are saved."
+                                    <TextBlock Text="Off unless you turn it on. MailBox MatriX is then listed in Task Manager's Startup apps and in Windows Settings under Apps, Startup, where you can also turn it off. Applied when settings are saved."
                                                Foreground="{DynamicResource Theme.TextSecondary}" FontSize="{DynamicResource Theme.FontSizeSmall}" Margin="0,3,0,8" TextWrapping="Wrap"/>
 
                                     <CheckBox Content="Start _minimized"
                                               IsChecked="{Binding StartMinimizedAtSignIn, Mode=TwoWay}"
                                               AutomationProperties.Name="Start minimized"/>
-                                    <TextBlock Text="When Windows starts MailBoXX, it does not open its window over what you are doing: it starts in the notification area if Keep running in the notification area is on (General tab), and otherwise minimized on the taskbar."
+                                    <TextBlock Text="When Windows starts MailBox MatriX, it does not open its window over what you are doing: it starts in the notification area if Keep running in the notification area is on (General tab), and otherwise minimized on the taskbar."
                                                Foreground="{DynamicResource Theme.TextSecondary}" FontSize="{DynamicResource Theme.FontSizeSmall}" Margin="0,3,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
                                 <!-- Read-only rather than a disabled check box: a disabled control is
                                      skipped by Tab, so the reason would be unreachable from the keyboard. -->
-                                <TextBox Text="Available in the installed version of MailBoXX. This copy is portable or a development build, and Windows would lose track of it if it were moved."
+                                <TextBox Text="Available in the installed version of MailBox MatriX. This copy is portable or a development build, and Windows would lose track of it if it were moved."
                                          IsReadOnly="True" TextWrapping="Wrap"
                                          AutomationProperties.Name="Start at sign-in"
                                          Visibility="{Binding IsLaunchAtSignInUnsupported, Converter={StaticResource BoolToVisibilityConverter}}"/>

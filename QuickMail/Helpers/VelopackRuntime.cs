@@ -19,7 +19,7 @@ public static class VelopackRuntime
         {
             // The source is never contacted here; construction only inspects the local
             // install layout via IsInstalled.
-            // MailBoXX: with no release repository yet, point the (never contacted) source at the
+            // MailBox MatriX: with no release repository yet, point the (never contacted) source at the
             // app folder — IsInstalled only inspects the local install layout.
             return (Services.UpdateCheckService.RepoUrl.Length == 0
                     ? new UpdateManager(AppContext.BaseDirectory)

@@ -103,8 +103,8 @@ public class BugReportServiceTests
         Assert.Equal("https://github.com/kellylford/QuickMail/issues/999", result.IssueUrl);
         Assert.Equal(HttpMethod.Post, handler.LastRequest!.Method);
         Assert.Equal(RelayUrl, handler.LastRequest!.RequestUri!.ToString());
-        Assert.Equal("relay-key", Assert.Single(handler.LastRequest!.Headers.GetValues("X-MailBoXX-Key")));
-        Assert.DoesNotContain("mailboxx.log", handler.LastRequestBody, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal("relay-key", Assert.Single(handler.LastRequest!.Headers.GetValues("X-MailBoxMatriX-Key")));
+        Assert.DoesNotContain("mailboxmatrix.log", handler.LastRequestBody, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -183,9 +183,9 @@ public class BugReportServiceTests
     }
 
     [Fact]
-    public void BuildFallbackUrl_WithoutAMailBoXXIssueTracker_OpensNoPage()
+    public void BuildFallbackUrl_WithoutAMailBoxMatriXIssueTracker_OpensNoPage()
     {
-        // MailBoXX has no issue tracker yet (AppIdentity): a report must never be sent to
+        // MailBox MatriX has no issue tracker yet (AppIdentity): a report must never be sent to
         // QuickMail's tracker. The text still reaches the user through the clipboard.
         var service = new BugReportService(new FakeCredentialService(),
             new FakeHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK)), relayUrl: "", relayKey: "");
@@ -220,9 +220,9 @@ public class BugReportServiceTests
         Assert.Contains(report.WhatHappened, text);
         Assert.Contains(report.WhatExpected, text);
         Assert.Contains(report.StepsToReproduce, text);
-        Assert.Contains("MailBoXX version", text);
+        Assert.Contains("MailBox MatriX version", text);
         Assert.Contains("OS:", text);
-        Assert.DoesNotContain("mailboxx.log", text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("mailboxmatrix.log", text, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

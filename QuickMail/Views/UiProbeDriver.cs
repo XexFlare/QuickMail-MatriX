@@ -205,7 +205,7 @@ internal sealed class UiProbeDriver
                 return await CaptureChildWindowAsync(() => ExecuteCommand("view.rowFields"),
                     w => w is RowFieldsWindow, path);
 
-            // MailBoXX: the menu bar is hidden until Alt; this enters menu mode the way Alt does.
+            // MailBox MatriX: the menu bar is hidden until Alt; this enters menu mode the way Alt does.
             case "menu-bar":
                 // Let startup's own focus placement (FocusActiveMessagePanel) land first, or it
                 // takes focus back from the menus and the bar correctly hides again.

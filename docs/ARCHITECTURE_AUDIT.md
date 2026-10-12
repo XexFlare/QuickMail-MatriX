@@ -1,4 +1,4 @@
-# MailBoXX: Architecture Audit and Validation (QuickMail base)
+# MailBox MatriX: Architecture Audit and Validation (QuickMail base)
 
 > **Update (2026-10-11):** QuickMail was approved as the base and the implementation phases have been
 > carried out. This audit is kept as the pre-implementation record. For what was actually built,
@@ -7,7 +7,7 @@
 **Date:** 2026-10-11 · **Status:** Validation complete, awaiting approval before implementation
 **Proposed base:** QuickMail, `github.com/kellylford/QuickMail`, commit `f51602efff83826ef57e7aaa57a71e4cce779536` (2026-10-08, v0.8.55)
 **Comparison candidate:** Wino Mail (Appendix B). It is not the assumed base.
-**Proposed MailBoXX licence:** MIT, subject to the obligations in §4.4
+**Proposed MailBox MatriX licence:** MIT, subject to the obligations in §4.4
 
 **Evidence labels:**
 - **[verified]**: established by reading source, building, testing or running it in this validation.
@@ -35,7 +35,7 @@
 - It can be removed by deleting that folder.
 - Nothing else was installed. Velopack is only needed to build installers; Java is only needed for the integration-test servers.
 
-### 0.2 Working copies (outside the MailBoXX docs folder)
+### 0.2 Working copies (outside the MailBox MatriX docs folder)
 
 | Path | Purpose |
 |---|---|
@@ -98,12 +98,12 @@ Key: **R** = reusable as-is · **M** = needs modification · **N** = missing · 
 | Row-wide contextual image with gradient (§6.4) | **M** (rendering) / **N** (selection) | Rendering technique prototyped. Selection and persistence are not built (out of scope). |
 | Unread blue tint and closed envelope; read neutral and open transparent envelope (§6.5) | **M** | Prototyped. State is shown by envelope shape and bold weight, so it doesn't depend on colour alone. |
 | Scenic main-area background (§6.6) | **N** | Not prototyped. Needs the right pane restructured (the reading pane is currently docked under the list). |
-| Message open view (§6.1) | **M** | Today the reading pane is docked below the list. MailBoXX needs it in the main area (decision D4). |
+| Message open view (§6.1) | **M** | Today the reading pane is docked below the list. MailBox MatriX needs it in the main area (decision D4). |
 | Square, flat styling (§6.2) | **R/M** | WPF default chrome is already square. The work is new tokens and templates. |
 | Focused / Other tabs, "All" filter, date group headers (design reference) | **N** | No Focused/Other or date grouping exists **[verified by search]**. Graph exposes `inferenceClassification`; IMAP has no equivalent. |
 | Multiple accounts (§7) | **R** | Unlimited |
-| Outlook / Hotmail / Microsoft 365 (§7) | **R/M** | IMAP+OAuth by default, Graph opt-in. Needs a **MailBoXX Entra app registration**. |
-| Gmail (§7) | **M** | App password works. OAuth needs MailBoXX's own Google Cloud client and **Google verification** for public release. |
+| Outlook / Hotmail / Microsoft 365 (§7) | **R/M** | IMAP+OAuth by default, Graph opt-in. Needs a **MailBox MatriX Entra app registration**. |
+| Gmail (§7) | **M** | App password works. OAuth needs MailBox MatriX's own Google Cloud client and **Google verification** for public release. |
 | IMAP/SMTP generic, POP3 (§7) | **R** | |
 | Read, navigate, compose, send, reply, reply-all, forward (§7) | **R** [repo] | Not exercised against a live server in this validation |
 | Attachments (§7) | **R** [repo] | |
@@ -114,7 +114,7 @@ Key: **R** = reusable as-is · **M** = needs modification · **N** = missing · 
 | Contextual image selection, persistence, cache, privacy (§8) | **N** | Design is unchanged from the earlier plan (§5.3) |
 | Secure credentials, OAuth, safe HTML, no secret logging (§9) | **R** | Already meets the bar. Fix the Microsoft broker licence issue (§4.4). |
 | No hosted backend or subscription (§2.4) | **R/M** | No backend. Repoint or remove the bug relay and the update source. |
-| Packaging (§12) | **M** | Velopack pipeline reusable. Needs MailBoXX identity, a signing account, and notices. |
+| Packaging (§12) | **M** | Velopack pipeline reusable. Needs MailBox MatriX identity, a signing account, and notices. |
 | Calendar, contacts, rules, templates, saved views, Markdown compose | **X** | More than PRD §4 needs. Hide entry points in v1; decide removal later (D6). |
 | Menu bar, toolbar, status bar | **X/M** | Not in the design. Removing them affects access keys and discoverability (§A.3, item 8). |
 
@@ -129,16 +129,16 @@ Key: **R** = reusable as-is · **M** = needs modification · **N** = missing · 
 | Component | Change |
 |---|---|
 | `QuickMail/Services/*.Credentials.cs` handling | Make a clean clone build: commit placeholder partials, or use an MSBuild fallback, with real values injected by CI |
-| `Services/OAuthService.cs` (Microsoft client ID), Google client | MailBoXX registrations |
-| `Services/UpdateCheckService.cs`, `Helpers/VelopackRuntime.cs` | Point updates at the MailBoXX repository |
-| `Services/BugReportService.cs` + `relay/` | Remove, or replace with a MailBoXX-owned relay or a plain "open GitHub issue" link (D11) |
-| `Theming/ThemeKeys.cs`, `Themes/BuiltIn/*.json`, `Services/ThemeService.cs` | Add a MailBoXX theme and new tokens (sidebar gradient, row tints, envelope colours, image fade) and make it the default |
+| `Services/OAuthService.cs` (Microsoft client ID), Google client | MailBox MatriX registrations |
+| `Services/UpdateCheckService.cs`, `Helpers/VelopackRuntime.cs` | Point updates at the MailBox MatriX repository |
+| `Services/BugReportService.cs` + `relay/` | Remove, or replace with a MailBox MatriX-owned relay or a plain "open GitHub issue" link (D11) |
+| `Theming/ThemeKeys.cs`, `Themes/BuiltIn/*.json`, `Services/ThemeService.cs` | Add a MailBox MatriX theme and new tokens (sidebar gradient, row tints, envelope colours, image fade) and make it the default |
 | `Views/MainWindow.xaml` | Shell layout: sidebar, message row, main area, reading view placement |
 | `ViewModels/MainViewModel.cs` | Small additions: primary account for the profile area, and later the context-image path per row |
-| `QuickMail.csproj`, assembly metadata, icons, installer config | MailBoXX name, version, publisher |
+| `QuickMail.csproj`, assembly metadata, icons, installer config | MailBox MatriX name, version, publisher |
 | `CLAUDE.md`, `CONTRIBUTING.md`, docs | Rewrite for the fork. Upstream's `CLAUDE.md` contains build guidance only; no unsafe agent instructions were found **[verified by keyword scan]**. |
 
-**Add:** context-image service and store (`Services/ContextImages/*`), a MailBoXX theme JSON, image assets with a licence manifest, `THIRD-PARTY-NOTICES.md`, `FORK_NOTES.md`.
+**Add:** context-image service and store (`Services/ContextImages/*`), a MailBox MatriX theme JSON, image assets with a licence manifest, `THIRD-PARTY-NOTICES.md`, `FORK_NOTES.md`.
 
 **Hide in v1 (not delete):** calendar and contacts entry points (the folder tree's "Calendar" node, menus), rules, templates, saved views.
 
@@ -166,11 +166,11 @@ Key: **R** = reusable as-is · **M** = needs modification · **N** = missing · 
 ### 4.3 Upstream build hygiene
 
 - A clean clone doesn't compile (§0.3).
-- Real Google and relay secrets are injected by CI and "baked into" upstream's release binaries **[repo]**. MailBoXX must use its own secrets and never reuse upstream's.
+- Real Google and relay secrets are injected by CI and "baked into" upstream's release binaries **[repo]**. MailBox MatriX must use its own secrets and never reuse upstream's.
 
-### 4.4 Licensing (proposed MailBoXX licence: MIT)
+### 4.4 Licensing (proposed MailBox MatriX licence: MIT)
 
-**Upstream:** `LICENSE` is MIT, "Copyright (c) 2026 Kelly Ford" **[verified]**. A MIT-licensed fork is permitted. Obligation: keep this copyright and permission notice in all copies, and add a MailBoXX copyright line.
+**Upstream:** `LICENSE` is MIT, "Copyright (c) 2026 Kelly Ford" **[verified]**. A MIT-licensed fork is permitted. Obligation: keep this copyright and permission notice in all copies, and add a MailBox MatriX copyright line.
 
 **Shipped dependencies.** The app's full transitive package graph (`dotnet list package --include-transitive`), with licences read from each restored `.nuspec` **[verified]**:
 
@@ -180,17 +180,17 @@ Key: **R** = reusable as-is · **M** = needs modification · **N** = missing · 
 | Apache-2.0 | Google.Apis, Google.Apis.Auth, Google.Apis.Core, SQLitePCLRaw.* | Include the licence, and any NOTICE file contents |
 | BSD-2-Clause | Markdig | Include the copyright and licence |
 | Microsoft BSD-3-style | Microsoft.Web.WebView2 (SDK) | Reproduce the notice; no endorsement |
-| **Microsoft Software License Terms (proprietary)** | **Microsoft.Identity.Client.NativeInterop 0.20.6** (transitive through MSAL.Desktop → Broker) | **§3e: "you will not … share, publish, distribute, or lease the software".** §2a allows Microsoft data collection. **Read literally, this conflicts with redistributing it in a MailBoXX installer.** Clarify with Microsoft, or drop the broker (WAM) dependency and use MSAL's system-browser sign-in (D12). |
+| **Microsoft Software License Terms (proprietary)** | **Microsoft.Identity.Client.NativeInterop 0.20.6** (transitive through MSAL.Desktop → Broker) | **§3e: "you will not … share, publish, distribute, or lease the software".** §2a allows Microsoft data collection. **Read literally, this conflicts with redistributing it in a MailBox MatriX installer.** Clarify with Microsoft, or drop the broker (WAM) dependency and use MSAL's system-browser sign-in (D12). |
 | Build-only (not shipped) | Roslynator.Analyzers (Apache-2.0), Microsoft.NET.ILLink.Tasks | None for distribution |
 
 **Other components:**
 - The WebView2 **Runtime** is installed separately under Microsoft's terms (the installer bootstraps it).
 - SQLite (inside e_sqlite3) is public domain.
-- **The sample row image in the spike is cropped from the MailBoXX design reference. It is for local prototyping only and must not be committed or shipped.**
+- **The sample row image in the spike is cropped from the MailBox MatriX design reference. It is for local prototyping only and must not be committed or shipped.**
 
-**Trademarks:** "QuickMail" is not claimed as a trademark in the repository, but rebrand fully anyway. The `DinamicaTech` fork uses the "Eudora" name; MailBoXX should not.
+**Trademarks:** "QuickMail" is not claimed as a trademark in the repository, but rebrand fully anyway. The `DinamicaTech` fork uses the "Eudora" name; MailBox MatriX should not.
 
-**Conclusion:** MIT is viable for MailBoXX. The one open item is the MSAL NativeInterop terms.
+**Conclusion:** MIT is viable for MailBox MatriX. The one open item is the MSAL NativeInterop terms.
 
 ---
 
@@ -222,13 +222,13 @@ Principles proven or learned in the spike:
 
 | Phase | Outcome | Main files | Preserve | Acceptance |
 |---|---|---|---|---|
-| **0. Fork baseline** | MailBoXX repo from the pinned upstream commit; clean clone builds; CI green | `.csproj`, credential partials, `.github/workflows`, `FORK_NOTES.md`, `LICENSE` (+ MailBoXX line) | Everything | Clean clone builds with no manual steps; 4,741+ tests pass; `--ui-probe` captures work |
-| **1. Identity, privacy, licence** | Own Entra and Google clients; updates from the MailBoXX repo; bug relay removed or replaced; MSAL broker decision applied; notices file | `OAuthService.cs`, `GoogleOAuthService*`, `UpdateCheckService.cs`, `VelopackRuntime.cs`, `BugReportService.cs`, `THIRD-PARTY-NOTICES.md` | Auth flows, Credential Manager, CSP | No traffic to upstream endpoints (proxy capture); sign-in works with test accounts (§7 D13) |
-| **2. MailBoXX theme and sidebar** | Tokenised version of the prototyped sidebar; profile area from a new VM property; focus ring visible on blue; calendar and other extras hidden | `Theming/ThemeKeys.cs`, `Themes/BuiltIn/mailboxx.json`, `MainWindow.xaml`, `MainViewModel` (small) | Account and folder behaviour, keyboard navigation, `RowSpeech` | `ThemeRegressionGuardTests` pass; High Contrast and 150% text checked in probe; Narrator reads accounts and folders as before |
+| **0. Fork baseline** | MailBox MatriX repo from the pinned upstream commit; clean clone builds; CI green | `.csproj`, credential partials, `.github/workflows`, `FORK_NOTES.md`, `LICENSE` (+ MailBox MatriX line) | Everything | Clean clone builds with no manual steps; 4,741+ tests pass; `--ui-probe` captures work |
+| **1. Identity, privacy, licence** | Own Entra and Google clients; updates from the MailBox MatriX repo; bug relay removed or replaced; MSAL broker decision applied; notices file | `OAuthService.cs`, `GoogleOAuthService*`, `UpdateCheckService.cs`, `VelopackRuntime.cs`, `BugReportService.cs`, `THIRD-PARTY-NOTICES.md` | Auth flows, Credential Manager, CSP | No traffic to upstream endpoints (proxy capture); sign-in works with test accounts (§7 D13) |
+| **2. MailBox MatriX theme and sidebar** | Tokenised version of the prototyped sidebar; profile area from a new VM property; focus ring visible on blue; calendar and other extras hidden | `Theming/ThemeKeys.cs`, `Themes/BuiltIn/mailboxx.json`, `MainWindow.xaml`, `MainViewModel` (small) | Account and folder behaviour, keyboard navigation, `RowSpeech` | `ThemeRegressionGuardTests` pass; High Contrast and 150% text checked in probe; Narrator reads accounts and folders as before |
 | **3. Message list** | Tokenised version of the prototyped row; envelope icons; date group headers; header search, sync and select | `MainWindow.xaml`, new `Views/Mbx*` controls, `MainViewModel.Search` | Selection, multi-select, context menu, flags, view modes, virtualisation | Guard tests pass; 5,000-message scroll stays smooth; read/unread distinguishable in greyscale |
 | **4. Main area and reading view** | Scenic background in the main column; message opens there; menu and toolbar removed or collapsed behind the command palette | `MainWindow.xaml(.cs)`, reading-pane code | Reader security, keyboard access to every command | Every menu command still reachable (command palette or shortcut); reading and compose work in the probe and against GreenMail |
 | **5. Contextual images v1** | Local deterministic selection, persistence, neutral fallback | `Services/ContextImages/*`, `mail.db` migration, row template | Sync never waits on images | Zero outbound requests from image selection; unit tests for the classifier and persistence |
-| **v0.1 gate** | Signed Velopack installer under the MailBoXX identity | installer config, signing | | Install, update and uninstall verified on a clean VM |
+| **v0.1 gate** | Signed Velopack installer under the MailBox MatriX identity | installer config, signing | | Install, update and uninstall verified on a clean VM |
 | Later | Focused/Other (Graph), online image provider, extracting a core library for Android | | | |
 
 Phase 0 depends on approval. Phases 2–5 depend on Phase 1's identity work only for live testing; the probe and fixture tooling lets UI work proceed offline.
@@ -241,9 +241,9 @@ Phase 0 depends on approval. Phases 2–5 depend on Phase 1's identity work only
 |---|---|---|
 | D4 | Where opened mail appears: in the main (scenic) area, replacing the docked reading pane, or in a separate window? | Main area |
 | D6 | Calendar, contacts, rules, templates, saved views: hide in v1, or delete? | Hide |
-| D11 | Bug reporting: remove the relay, run a MailBoXX relay, or link to GitHub issues? | GitHub link (no hosted service) |
+| D11 | Bug reporting: remove the relay, run a MailBox MatriX relay, or link to GitHub issues? | GitHub link (no hosted service) |
 | D12 | MSAL WAM broker (NativeInterop terms): drop it for browser sign-in, or seek clarification from Microsoft? | Drop it; browser sign-in is fully supported by MSAL |
-| D13 | **Test accounts for Phase 1.** No accounts were used in this validation. Live testing needs: (a) a MailBoXX **Microsoft Entra** app registration, free, multi-tenant plus personal accounts, `IMAP.AccessAsUser.All`/`SMTP.Send` and Graph `Mail.*` scopes per `docs/ENTRA-APP-REGISTRATION.md`; (b) a **dedicated** Outlook.com test mailbox; (c) a dedicated Gmail test account with 2-step verification and an **app password**, or (d) a MailBoXX **Google Cloud** OAuth client in "testing" mode, limited to listed test users. Alternatively, (e) install Java 11+ and use upstream's local GreenMail servers, which need no real accounts. | Start with (e), then add (a)+(b)+(c) |
+| D13 | **Test accounts for Phase 1.** No accounts were used in this validation. Live testing needs: (a) a MailBox MatriX **Microsoft Entra** app registration, free, multi-tenant plus personal accounts, `IMAP.AccessAsUser.All`/`SMTP.Send` and Graph `Mail.*` scopes per `docs/ENTRA-APP-REGISTRATION.md`; (b) a **dedicated** Outlook.com test mailbox; (c) a dedicated Gmail test account with 2-step verification and an **app password**, or (d) a MailBox MatriX **Google Cloud** OAuth client in "testing" mode, limited to listed test users. Alternatively, (e) install Java 11+ and use upstream's local GreenMail servers, which need no real accounts. | Start with (e), then add (a)+(b)+(c) |
 | D14 | Remove the menu bar and toolbar (as in the design), keeping everything reachable through the command palette and shortcuts? | Yes, in Phase 4 |
 | D15 | Focused/Other in v0.1 (Microsoft accounts only), or defer? | Defer |
 | D8 | Licensed scenic background and row-image library: who sources them? | Commission or CC0 |
@@ -255,7 +255,7 @@ Phase 0 depends on approval. Phases 2–5 depend on Phase 1's identity work only
 
 ### A.1 What was prototyped
 
-Exactly the two items requested: the **MailBoXX sidebar** and **one image-backed message row**. No features were removed. Contextual image selection, the scenic main area and the reading view were not touched.
+Exactly the two items requested: the **MailBox MatriX sidebar** and **one image-backed message row**. No features were removed. Contextual image selection, the scenic main area and the reading view were not touched.
 
 ### A.2 Files changed (branch `spike/mailboxx-sidebar-row`, uncommitted)
 
@@ -263,7 +263,7 @@ Exactly the two items requested: the **MailBoXX sidebar** and **one image-backed
 |---|---|
 | `QuickMail/Views/MainWindow.xaml` | +200 / −122 lines across three regions: window resources (+9: converter, sidebar gradient, sample `ImageBrush`); left pane (scoped token overrides, header with "New mail" bound to the existing `NewMessageCommand`, profile footer whose settings gear uses `ManageAccountsCommand`, row indices shifted); `MessageList` (removed the `GridView` columns and rewrote the item container template) |
 | `QuickMail/QuickMail.csproj` | +5: `<Resource Include="Assets\Prototype\*.jpg"/>` |
-| `QuickMail/Views/MailBoXXSpikeConverters.cs` | New, 27 lines: `InitialConverter` (avatar letter) |
+| `QuickMail/Views/MailBox MatriXSpikeConverters.cs` | New, 27 lines: `InitialConverter` (avatar letter) |
 | `QuickMail/Assets/Prototype/row-sample.jpg` | New: 343×238 crop from the design reference (prototype only) |
 | **C# code-behind, view models, services** | **No changes** |
 
@@ -276,7 +276,7 @@ The full diff is in `X:\Code\MailboXX-spike\evidence\spike.patch`.
 3. **There is no "current user" in the view model.** `SelectedAccount` is null in unified views such as "All Mail", so the profile footer rendered empty. The spike bound it to `Accounts[0]`; production needs a proper property.
 4. **The focus ring is outside the scope.** `FocusVisualStyle` renders in the adorner layer, so sidebar token overrides don't reach it, and its colour on blue is unverified. Probe screenshots don't show keyboard focus. A sidebar-specific focus style is likely needed.
 5. **Images must not drive layout.** An `Image` element in an auto-height row made the image row grow at 150% text scale. Painting through an `ImageBrush` fixed it (compare `07-spike-150-fixed.png` with `09-spike-150.png`).
-6. **Styling guard tests.** `ThemeRegressionGuardTests` failed on the spike's hard-coded colours and font sizes, as intended. Production MailBoXX styling must be tokens in the theme JSON. This also gives dark, High Contrast and text-scale support for free.
+6. **Styling guard tests.** `ThemeRegressionGuardTests` failed on the spike's hard-coded colours and font sizes, as intended. Production MailBox MatriX styling must be tokens in the theme JSON. This also gives dark, High Contrast and text-scale support for free.
 7. **Converters live in the 8.3k-line `MainWindow.xaml.cs`.** New code should go in separate files, as the spike did.
 8. **Menu and toolbar.** These remain in the spike. Removing them for the design affects access keys and discoverability; the command palette (`CommandRegistry`) is the replacement path. Not tested.
 9. **Reading pane and main area.** These were not prototyped. The reading pane is docked in the same right-hand `Grid` as the list and referenced by name (`MessageBody`, `SubjectField`, …), so relocating it is the main remaining coupling risk.
@@ -324,7 +324,7 @@ The full diff is in `X:\Code\MailboXX-spike\evidence\spike.patch`.
 
 Audited earlier at commit `c238bc2` (2026-10-11).
 - **Strengths:** the closest existing Windows 10 Mail look (background themes, Focused/Other pivot, date headers, reading frame), a modular `net10.0` core already shared with macOS, and five years of maturity.
-- **Weaknesses for MailBoXX:**
+- **Weaknesses for MailBoxMatriX:**
   - GPL-3.0 copyleft.
   - A commercial backend woven into its core (Wino account, billing, a 3-account limit, cloud "Mail Intelligence" that uploads message bodies to `api.winomail.app`, Sentry telemetry with a hard-coded DSN), with about 90 files and package references inside the synchronizers to remove.
   - **Plaintext IMAP/SMTP passwords and Gmail refresh tokens** on Windows.

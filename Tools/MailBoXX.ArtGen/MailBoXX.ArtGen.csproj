@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <!-- MailBoXX: generates the original placeholder artwork shipped with the app (scenic
+  <!-- MailBox MatriX: generates the original placeholder artwork shipped with the app (scenic
        background, contextual-image category art). Everything is drawn from code, so the output
        carries no third-party licence. Run: dotnet run -project Tools/MailBoXX.ArtGen -c Release -->
   <PropertyGroup>

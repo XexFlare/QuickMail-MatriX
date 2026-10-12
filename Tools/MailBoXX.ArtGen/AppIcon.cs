@@ -8,7 +8,7 @@ using Path = System.Windows.Shapes.Path;
 namespace MailBoXX.ArtGen;
 
 /// <summary>
-/// The MailBoXX application icon: a square (no rounded corners, per the design) in the sidebar
+/// The MailBox MatriX application icon: a square (no rounded corners, per the design) in the sidebar
 /// blue with a white envelope. Written as a multi-size .ico whose entries are PNG images.
 /// </summary>
 internal static class AppIcon

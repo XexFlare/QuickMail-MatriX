@@ -13,7 +13,7 @@ using QuickMail.Services.ContextImages;
 namespace QuickMail.Views;
 
 /// <summary>
-/// MailBoXX shell behaviour for the main window: the self-drawn caption (move, minimize,
+/// MailBox MatriX shell behaviour for the main window: the self-drawn caption (move, minimize,
 /// maximize, close), the menu bar that stays out of sight until Alt, and the always-visible
 /// search box. Kept apart from MainWindow.xaml.cs so upstream QuickMail code stays recognisable.
 /// </summary>
@@ -178,7 +178,7 @@ public partial class MainWindow
             var store = profileDir is null ? null : new ContextImageStore(profileDir);
             // Owned by the row converter for the app's lifetime; disposed (flushing pending
             // choices) when this window closes.
-            var service = new ContextImageService(store, typeof(MainWindow).Assembly.GetName().Name ?? AppIdentity.Name)
+            var service = new ContextImageService(store, typeof(MainWindow).Assembly.GetName().Name ?? AppIdentity.TechnicalName)
             {
                 Enabled = _configService.Load().ContextImages,
             };

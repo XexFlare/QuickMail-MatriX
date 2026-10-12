@@ -1,13 +1,13 @@
-"""MailBoXX demo mailbox content: Xexin's three accounts with tech, gaming and sci-fi mail.
+"""MailBox MatriX demo mailbox content: Xexin's three accounts with tech, gaming and sci-fi mail.
 
 All senders and brands are fictional and every address uses the reserved .test domain, so nothing
 here can reach a real person or company. Dates are relative to "now" when the demo is seeded, so
-the mail always falls inside MailBoXX's default 30-day sync range.
+the mail always falls inside MailBox MatriX's default 30-day sync range.
 """
 
 OWNER = "Xexin"
 
-# (account key, display name shown in MailBoXX, address)
+# (account key, display name shown in MailBox MatriX, address)
 ACCOUNTS = [
     ("outlook", "Outlook", "xexin@outlook.test"),
     ("gmail", "Gmail", "xexin.plays@gmail.test"),

@@ -216,7 +216,7 @@ public class ComposeViewModelModeTests
     public void WindowTitle_NoSubject_ShowsKindModeAndApp()
     {
         var vm = MakeVm();
-        Assert.Equal("New Message - Plain Text - MailBoXX", vm.WindowTitle);
+        Assert.Equal("New Message - Plain Text - MailBox MatriX", vm.WindowTitle);
     }
 
     [Fact]
@@ -224,7 +224,7 @@ public class ComposeViewModelModeTests
     {
         var vm = MakeVm();
         vm.Subject = "Lunch on Friday";
-        Assert.Equal("Lunch on Friday - Plain Text - MailBoXX", vm.WindowTitle);
+        Assert.Equal("Lunch on Friday - Plain Text - MailBox MatriX", vm.WindowTitle);
     }
 
     [Fact]
@@ -240,10 +240,10 @@ public class ComposeViewModelModeTests
         };
 
         vm.SetMode(ComposeMode.Html);
-        Assert.Equal("Lunch on Friday - HTML - MailBoXX", vm.WindowTitle);
+        Assert.Equal("Lunch on Friday - HTML - MailBox MatriX", vm.WindowTitle);
         Assert.True(titleChanges > 0, "mode change must notify WindowTitle so the taskbar updates");
 
         vm.SetMode(ComposeMode.Markdown);
-        Assert.Equal("Lunch on Friday - Markdown - MailBoXX", vm.WindowTitle);
+        Assert.Equal("Lunch on Friday - Markdown - MailBox MatriX", vm.WindowTitle);
     }
 }

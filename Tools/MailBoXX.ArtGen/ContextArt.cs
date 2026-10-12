@@ -12,7 +12,7 @@ namespace MailBoXX.ArtGen;
 /// Row-shaped (wide, short) illustrations for the contextual-image categories. Each is a soft
 /// gradient backdrop with a simple motif drawn on the right two-thirds — the row fades the left
 /// side into its text, so nothing important lives there. Two colour variants per category.
-/// The category names must match MailBoXX's ContextImageCategories.
+/// The category names must match MailBox MatriX's ContextImageCategories.
 /// </summary>
 internal static class ContextArt
 {

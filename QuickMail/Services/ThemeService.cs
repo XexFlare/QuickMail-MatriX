@@ -29,7 +29,7 @@ public class ThemeService : IThemeService
     /// <summary>The virtual theme id that follows the OS: light↔dark and HC passthrough.</summary>
     public const string SystemThemeId = "system";
 
-    /// <summary>MailBoXX: the built-ins the System theme follows for OS light and dark mode.</summary>
+    /// <summary>MailBox MatriX: the built-ins the System theme follows for OS light and dark mode.</summary>
     public const string SystemLightThemeId = "mailboxx-light";
     public const string SystemDarkThemeId = "mailboxx-dark";
 
@@ -406,7 +406,7 @@ public class ThemeService : IThemeService
         colors["info"]                = windowText;
         colors["infoBackground"]      = window;
 
-        // MailBoXX surfaces: opaque system colors only (imagery is hidden via
+        // MailBox MatriX surfaces: opaque system colors only (imagery is hidden via
         // ImageryOpacity). Selection is carried by the marker bar and focus
         // outline, so the row wash stays transparent and text keeps WindowText.
         const string none = "#00000000";
@@ -551,7 +551,7 @@ public class ThemeService : IThemeService
             var brush = new SolidColorBrush(Color.FromArgb(a, r, g, b));
             brush.Freeze();
             dict[resourceKey] = brush;
-            // MailBoXX: the same token as a Color ("Theme.X.Color"), so XAML can build scoped
+            // MailBox MatriX: the same token as a Color ("Theme.X.Color"), so XAML can build scoped
             // brushes and gradients that still follow the active theme.
             dict[resourceKey + ColorSuffix] = Color.FromArgb(a, r, g, b);
         }
@@ -575,7 +575,7 @@ public class ThemeService : IThemeService
         // list's original shipped rendering (its template hardcoded 2,1).
         dict[ThemeKeys.ListRowPadding] = _compactList ? new Thickness(2, 1, 2, 1) : new Thickness(4, 3, 4, 3);
 
-        // MailBoXX: decorative imagery (scenic background, row images) is drawn only
+        // MailBox MatriX: decorative imagery (scenic background, row images) is drawn only
         // outside High Contrast.
         dict[ThemeKeys.ImageryOpacity] = _isHighContrast ? 0.0 : 1.0;
         dict[ThemeKeys.ImagerySet] = string.Equals(resolved.Base, "dark", StringComparison.OrdinalIgnoreCase) ? "dark" : "light";

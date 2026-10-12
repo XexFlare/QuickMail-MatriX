@@ -440,7 +440,7 @@ public sealed class MessageSaver
     {
         MessageOriginalUnavailableException gone => gone.Message,
         _ when ConnectionFailure.IsConnectionFailure(ex, ct) || ex is AccountNotConnectedException
-            => "MailBoXX cannot reach the server right now, and the original message is only on the server.",
+            => "MailBox MatriX cannot reach the server right now, and the original message is only on the server.",
         _ => null,
     };
 

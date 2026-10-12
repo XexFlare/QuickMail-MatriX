@@ -63,7 +63,7 @@ public partial class MailMessageSummary : ObservableObject
     private bool _hasAttachments;
 
     /// <summary>
-    /// MailBoXX: local file of the contextual image drawn behind this message's row, or null for
+    /// MailBox MatriX: local file of the contextual image drawn behind this message's row, or null for
     /// the neutral row. Presentation only — set from the local context-image store, never from
     /// the server, and never required for reading or syncing mail.
     /// </summary>
@@ -170,7 +170,7 @@ public partial class MailMessageSummary : ObservableObject
     }
 
     /// <summary>
-    /// MailBoXX: the row's visible time, as Windows Mail showed it — "8:48 AM" today, "Mon 2:02 PM"
+    /// MailBox MatriX: the row's visible time, as Windows Mail showed it — "8:48 AM" today, "Mon 2:02 PM"
     /// yesterday, "Fri 10/27" earlier this year, "10/27/2016" before that. Visual only: screen readers
     /// keep <see cref="DateDisplay"/> (RowSpeech), so what is spoken does not change.
     /// </summary>

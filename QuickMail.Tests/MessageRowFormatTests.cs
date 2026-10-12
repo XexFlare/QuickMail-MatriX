@@ -6,7 +6,7 @@ using Xunit;
 
 namespace QuickMail.Tests;
 
-/// <summary>MailBoXX message rows (step c): the friendly time and the per-sender circle colour.</summary>
+/// <summary>MailBox MatriX message rows (step c): the friendly time and the per-sender circle colour.</summary>
 public class MessageRowFormatTests
 {
     // Tuesday 31 October 2017, as in the reference image.

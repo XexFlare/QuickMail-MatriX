@@ -32,8 +32,8 @@ public partial class MarkdownPreviewWindow : Window
     public MarkdownPreviewWindow(string? subject, string htmlFragment, string? themeCss = null)
     {
         Title = string.IsNullOrWhiteSpace(subject)
-            ? "Compose — Preview — MailBoXX"
-            : $"{subject.Trim()} — Preview — MailBoXX";
+            ? "Compose — Preview — MailBox MatriX"
+            : $"{subject.Trim()} — Preview — MailBox MatriX";
 
         _html = BuildHtml(subject, htmlFragment, themeCss);
         InitializeComponent();

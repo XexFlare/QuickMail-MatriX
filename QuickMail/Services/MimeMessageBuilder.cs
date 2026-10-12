@@ -19,7 +19,7 @@ namespace QuickMail.Services;
 public static class MimeMessageBuilder
 {
     /// <summary>The User-Agent string for outgoing mail — one source of truth for every sender.</summary>
-    internal static readonly string AppUserAgent = "MailBoXX/" + AppVersion.Display;
+    internal static readonly string AppUserAgent = "MailBox MatriX/" + AppVersion.Display;
 
     /// <summary>
     /// Serializes a <see cref="MimeMessage"/> to base64-encoded ASCII bytes — the form Graph's
@@ -52,7 +52,7 @@ public static class MimeMessageBuilder
 
         // Tag non-plain-text drafts so they can be reopened in the original mode.
         if (compose.Mode != ComposeMode.PlainText)
-            message.Headers.Add("X-MailBoXX-Compose-Mode", compose.Mode.ToString().ToLowerInvariant());
+            message.Headers.Add("X-MailBoxMatriX-Compose-Mode", compose.Mode.ToString().ToLowerInvariant());
 
         message.From.Add(new MailboxAddress(account.SenderDisplayName, account.Username));
         AddressParser.AddAddresses(message.To,  compose.To);

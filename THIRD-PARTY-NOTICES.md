@@ -1,10 +1,10 @@
 # Third-party notices
 
-MailBoXX is licensed under the MIT License (see `LICENSE`). It is based on **QuickMail**
+MailBox MatriX is licensed under the MIT License (see `LICENSE`). It is based on **QuickMail**
 (https://github.com/kellylford/QuickMail), Copyright (c) 2026 Kelly Ford, also MIT. Its copyright
 and permission notice are retained in `LICENSE`.
 
-## Components shipped in `MailBoXX.exe`
+## Components shipped in `MailBoxMatriX.exe`
 
 Verified on 2026-10-11 from the restored packages' `.nuspec` licence metadata
 (`dotnet list QuickMail/QuickMail.csproj package --include-transitive`).
@@ -36,7 +36,7 @@ Verified on 2026-10-11 from the restored packages' `.nuspec` licence metadata
 **Not bundled:** the **Microsoft Edge WebView2 Runtime** is installed separately on Windows under
 Microsoft's own terms.
 
-**Removed by MailBoXX:** `Microsoft.Identity.Client.Desktop`, `.Broker` and `.NativeInterop`.
+**Removed by MailBoxMatriX:** `Microsoft.Identity.Client.Desktop`, `.Broker` and `.NativeInterop`.
 NativeInterop's Microsoft Software License Terms restrict redistribution (§3e); see
 `docs/AUTHENTICATION.md`.
 
@@ -48,7 +48,7 @@ NativeInterop's Microsoft Software License Terms restrict redistribution (§3e);
   NuGet cache (`%USERPROFILE%\.nuget\packages\<id>\<version>\`). A release step should collect them
   into a `licenses\` folder next to the installer contents. This step is **not yet automated**
   (see `docs/MAILBOXX_BUILD.md`).
-- WebView2 SDK: keep Microsoft's notice. Do not use Microsoft's name to endorse MailBoXX.
+- WebView2 SDK: keep Microsoft's notice. Do not use Microsoft's name to endorse MailBox MatriX.
 
 ## Photographs
 
@@ -96,8 +96,8 @@ licences that allow redistribution and modification without share-alike or non-c
 | `QuickMail/Assets/ContextImages/{light,dark}/entertainment-1.jpg` | *Cinema Seats I (51830912465).jpg* | Eden, Janine and Jim from New York City | Creative Commons Attribution 2.0 (CC BY 2.0), https://creativecommons.org/licenses/by/2.0/ | https://commons.wikimedia.org/wiki/File:Cinema_Seats_I_(51830912465).jpg | Cropped to 3.2:1 and resized to 960 × 300; light set blended 50% toward white, dark set 65% toward #202124; re-encoded as JPEG |
 | `QuickMail/Assets/ContextImages/{light,dark}/entertainment-2.jpg` | *Film reel. Kodachrome movie film roll cameras only Daylight type. Baugnez 44 Historical Center WW2 museum 2012.jpg* | nick@ | Creative Commons Attribution 2.0 (CC BY 2.0), https://creativecommons.org/licenses/by/2.0/ | https://commons.wikimedia.org/wiki/File:Film_reel._Kodachrome_movie_film_roll_cameras_only_Daylight_type._Baugnez_44_Historical_Center_WW2_museum_2012.jpg | Cropped to 3.2:1 and resized to 960 × 300; light set blended 50% toward white, dark set 65% toward #202124; re-encoded as JPEG |
 
-## MailBoXX's own artwork
+## MailBox MatriX's own artwork
 
 The application icon (`QuickMail/Assets/App`) is an original work drawn from code by
-`Tools/MailBoXX.ArtGen` and is covered by MailBoXX's MIT licence. The same tool can still draw
+`Tools/MailBoXX.ArtGen` and is covered by MailBox MatriX's MIT licence. The same tool can still draw
 placeholder row pictures (`--placeholder-context-art`); they are not shipped.

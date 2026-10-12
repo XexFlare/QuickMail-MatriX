@@ -18,7 +18,7 @@ internal sealed class TrayIconManager : IDisposable
     {
         _icon = new System.Windows.Forms.NotifyIcon
         {
-            Text    = "MailBoXX",
+            Text    = "MailBox MatriX",
             Icon    = LoadAppIcon(),
             Visible = false,
         };
@@ -34,9 +34,9 @@ internal sealed class TrayIconManager : IDisposable
         _icon.DoubleClick += (_, _) => onOpen();
 
         var menu     = new System.Windows.Forms.ContextMenuStrip();
-        var openItem = new System.Windows.Forms.ToolStripMenuItem("&Open MailBoXX");
+        var openItem = new System.Windows.Forms.ToolStripMenuItem("&Open MailBox MatriX");
         openItem.Click += (_, _) => onOpen();
-        var exitItem = new System.Windows.Forms.ToolStripMenuItem("E&xit MailBoXX");
+        var exitItem = new System.Windows.Forms.ToolStripMenuItem("E&xit MailBox MatriX");
         exitItem.Click += (_, _) => onExit();
         menu.Items.Add(openItem);
         menu.Items.Add(exitItem);

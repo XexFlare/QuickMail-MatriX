@@ -8,7 +8,7 @@ using Xunit;
 namespace QuickMail.Tests;
 
 /// <summary>
-/// MailBoXX regression: All Mail removed most of a folder's messages when an incremental
+/// MailBox MatriX regression: All Mail removed most of a folder's messages when an incremental
 /// ("UIDs after the last seen") fetch returned only the highest-UID message and that message was
 /// older than the others (mail appended, imported or migrated out of date order).
 /// </summary>

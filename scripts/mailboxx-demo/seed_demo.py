@@ -1,10 +1,10 @@
-"""Load the MailBoXX demo mailboxes (demo_data.py) into the local GreenMail test server.
+"""Load the MailBox MatriX demo mailboxes (demo_data.py) into the local GreenMail test server.
 
     python -I seed_demo.py            # seed any demo account that is still empty
     python -I seed_demo.py --reset    # wipe and re-seed all demo accounts
 
 Talks only to 127.0.0.1 (GreenMail: IMAP 3143, authentication disabled). Messages are appended with
-their flags (read/unread, flagged, draft) and dates, into the folder names MailBoXX recognises:
+their flags (read/unread, flagged, draft) and dates, into the folder names MailBox MatriX recognises:
 INBOX, Sent, Drafts, Archive, Junk, Trash.
 """
 import imaplib, os, sys, time
@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import demo_data as D
 
 HOST, PORT = "127.0.0.1", 3143
-MARKER = "X-MailBoXX-Demo"
+MARKER = "X-MailBoxMatriX-Demo"
 FOLDERS = ["Sent", "Drafts", "Archive", "Junk", "Trash"]
 
 NEWSLETTER = """<!doctype html><html><body style="margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#f3f5f8">
@@ -26,14 +26,14 @@ NEWSLETTER = """<!doctype html><html><body style="margin:0;font-family:'Segoe UI
 <h2 style="margin:0 0 12px 0;font-size:20px">{subject}</h2><p style="margin:0 0 16px 0">{body}</p>
 <p style="margin:0"><a href="https://{domain}/" style="background:{color};color:#ffffff;padding:10px 18px;text-decoration:none">Read more</a></p>
 </td></tr>
-<tr><td style="padding:12px 24px;color:#6b7280;font-size:12px">You're receiving this because you subscribed. This is demo mail for MailBoXX.</td></tr>
+<tr><td style="padding:12px 24px;color:#6b7280;font-size:12px">You're receiving this because you subscribed. This is demo mail for MailBox MatriX.</td></tr>
 </table></td></tr></table>
 <img src="https://{domain}/open.gif" width="1" height="1" alt="">
 </body></html>"""
 COLORS = ["#2F6FC4", "#5B3FA6", "#2E7D5B", "#C2572B", "#8E3A6B", "#1F4E8C"]
 
 def tiny_pdf(title):
-    text = f"(MailBoXX demo: {title})".encode("latin-1", "replace")
+    text = f"(MailBox MatriX demo: {title})".encode("latin-1", "replace")
     stream = b"BT /F1 14 Tf 72 720 Td " + text + b" Tj ET"
     objs = [b"<< /Type /Catalog /Pages 2 0 R >>", b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
             b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>",
@@ -50,7 +50,7 @@ def tiny_pdf(title):
 def invite(subject, start):
     s = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime(start))
     e = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime(start + 7200))
-    return ("BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//MailBoXX demo//EN\r\nMETHOD:REQUEST\r\nBEGIN:VEVENT\r\n"
+    return ("BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//MailBox MatriX demo//EN\r\nMETHOD:REQUEST\r\nBEGIN:VEVENT\r\n"
             f"UID:{make_msgid(domain='demo.mailboxx.test')[1:-1]}\r\nDTSTAMP:{s}\r\nDTSTART:{s}\r\nDTEND:{e}\r\n"
             f"SUMMARY:{subject}\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n")
 

@@ -128,7 +128,7 @@ public sealed class ContextImageBrushConverter : IValueConverter
 /// <summary>
 /// Which mail provider an account belongs to, for its sidebar badge: "outlook", "gmail",
 /// "hotmail" or "other". Read from the provider id, the address and the server names only.
-/// The badges are MailBoXX's own coloured letters, not the providers' logos.
+/// The badges are MailBox MatriX's own coloured letters, not the providers' logos.
 /// </summary>
 public sealed class AccountProviderConverter : IValueConverter
 {

@@ -35,7 +35,7 @@ internal static class WpfTestHost
     private static Application? _app;
 
     private static Uri StyleUri(string name) =>
-        new($"pack://application:,,,/MailBoXX;component/Styles/{name}.xaml", UriKind.Absolute);
+        new($"pack://application:,,,/MailBoxMatriX;component/Styles/{name}.xaml", UriKind.Absolute);
 
     /// <summary>
     /// Ensures an <see cref="Application"/> exists with the accessible styles merged in, and returns

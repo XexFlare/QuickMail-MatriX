@@ -102,7 +102,7 @@ public sealed class FolderTreeNode : INotifyPropertyChanged
     public string UnreadDisplay =>
         ShowUnread ? $"({Folder!.UnreadCount})" : string.Empty;
 
-    /// <summary>MailBoXX: the bare count for the sidebar's right-aligned badge ("5"); empty when none.</summary>
+    /// <summary>MailBox MatriX: the bare count for the sidebar's right-aligned badge ("5"); empty when none.</summary>
     public string UnreadCountText =>
         ShowUnread ? Folder!.UnreadCount.ToString("N0", System.Globalization.CultureInfo.CurrentCulture) : string.Empty;
 
@@ -170,7 +170,7 @@ public sealed class FolderTreeNode : INotifyPropertyChanged
         if (badge  != UnreadDisplay) { Raise(nameof(UnreadDisplay)); Raise(nameof(UnreadCountText)); }
     }
 
-    // MailBoXX: the sidebar's main-folder ListBox binds these nodes; a screen reader falls back to
+    // MailBox MatriX: the sidebar's main-folder ListBox binds these nodes; a screen reader falls back to
     // ToString() for a Selector item (the container sets the real name, with the count).
     public override string ToString() => Label;
 

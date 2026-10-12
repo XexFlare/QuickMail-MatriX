@@ -84,7 +84,7 @@ public class MainViewModelStartupTests
     [Fact]
     public async Task NoStartupFolderConfigured_LandsInTheDefaultAccountsInbox()
     {
-        // MailBoXX: Windows Mail opened on an account's Inbox, not on a combined view. With no
+        // MailBox MatriX: Windows Mail opened on an account's Inbox, not on a combined view. With no
         // account marked default, the first account; the sidebar follows it.
         var (vm, _, _) = MakeVm();
 
@@ -98,7 +98,7 @@ public class MainViewModelStartupTests
     [Fact]
     public async Task Mailboxes_ShowsCombinedFolders_WithTotalsAcrossAccounts()
     {
-        // MailBoXX: with Mailboxes (All Mail) open, the sidebar's folders are the combined ones and
+        // MailBox MatriX: with Mailboxes (All Mail) open, the sidebar's folders are the combined ones and
         // each count is the sum over accounts; choosing an account goes back to its own folders.
         var (vm, _, store) = MakeVm();
         store.SeededFolders[WorkId][0].UnreadCount = 4;                    // Work INBOX

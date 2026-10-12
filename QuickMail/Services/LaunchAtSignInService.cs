@@ -30,7 +30,7 @@ public sealed class LaunchAtSignInService : ILaunchAtSignInService
     /// <summary>The argument the Run entry passes, so the app knows Windows started it.</summary>
     public const string StartupArg = "--startup";
 
-    internal const string BaseValueName = AppIdentity.Name;
+    internal const string BaseValueName = AppIdentity.TechnicalName;
 
     private readonly string? _exePath;
     private readonly string _runKeyPath;
@@ -77,7 +77,7 @@ public sealed class LaunchAtSignInService : ILaunchAtSignInService
 
     public void Enable()
     {
-        if (!IsSupported) throw new InvalidOperationException("This copy of MailBoXX cannot start at sign-in.");
+        if (!IsSupported) throw new InvalidOperationException("This copy of MailBox MatriX cannot start at sign-in.");
 
         using (var run = Registry.CurrentUser.CreateSubKey(_runKeyPath))
             run.SetValue(ValueName, Command, RegistryValueKind.String);

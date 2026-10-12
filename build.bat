@@ -11,21 +11,21 @@ if /i "%1"=="clean"   goto clean
 if /i "%1"=="smoke"   goto smoke
 
 :build
-echo Building MailBoXX (%CONFIG%)...
+echo Building MailBox MatriX (%CONFIG%)...
 dotnet build QuickMail\QuickMail.csproj -c %CONFIG%
 goto end
 
 :run
-echo Running MailBoXX (%CONFIG%)...
+echo Running MailBox MatriX (%CONFIG%)...
 dotnet run --project QuickMail\QuickMail.csproj -c %CONFIG%
 goto end
 
 :publish
-echo Publishing MailBoXX — single-file self-contained win-x64...
+echo Publishing MailBox MatriX — single-file self-contained win-x64...
 if exist publish\ rmdir /s /q publish\
 dotnet publish QuickMail\QuickMail.csproj -c Release -o publish\
 echo.
-echo Output: publish\MailBoXX.exe
+echo Output: publish\MailBoxMatriX.exe
 goto end
 
 :publish-arm64
@@ -40,7 +40,7 @@ goto end
 :: on Dependabot's design-time build), so both architectures share bin\ and obj\. After
 :: this target runs, bin\Release holds ARM64 output until the next ordinary build
 :: overwrites it. That is expected — do not "fix" it by re-enabling the RID path suffix.
-echo Publishing MailBoXX — single-file self-contained win-arm64...
+echo Publishing MailBox MatriX — single-file self-contained win-arm64...
 if exist publish-arm64\ rmdir /s /q publish-arm64\
 dotnet publish QuickMail\QuickMail.csproj -c Release -r win-arm64 -o publish-arm64\
 if errorlevel 1 (
@@ -48,12 +48,12 @@ if errorlevel 1 (
     exit /b 1
 )
 echo.
-echo Output: publish-arm64\MailBoXX.exe
+echo Output: publish-arm64\MailBoxMatriX.exe
 echo Note: bin\Release now contains ARM64 output; rebuild to restore x64.
 goto end
 
 :installer
-echo Publishing MailBoXX — single-file self-contained win-x64...
+echo Publishing MailBox MatriX — single-file self-contained win-x64...
 if exist publish\ rmdir /s /q publish\
 dotnet publish QuickMail\QuickMail.csproj -c Release -o publish\
 if errorlevel 1 (
@@ -91,8 +91,8 @@ echo Packing Velopack release v%VERSION%...
 :: has none, so copy it to a gitignored .txt alongside the other installer content.
 :: --framework webview2 restores the old installer's WebView2 install-on-demand.
 copy /y LICENSE installer\velopack\license.txt >nul
-vpk pack --packId MailBoXX --packVersion %VERSION% --packDir publish ^
-  --mainExe MailBoXX.exe --packTitle MailBoXX --packAuthors "MailBoXX contributors" ^
+vpk pack --packId MailBoxMatriX --packVersion %VERSION% --packDir publish ^
+  --mainExe MailBoxMatriX.exe --packTitle "MailBox MatriX" --packAuthors "MailBox MatriX contributors" ^
   --shortcuts StartMenuRoot --outputDir installer\Output\Releases ^
   --framework webview2 ^
   --msi --instLocation PerUser ^
@@ -106,7 +106,7 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 echo.
-echo Output: installer\Output\Releases\MailBoXX-win-Setup.exe (plus update packages)
+echo Output: installer\Output\Releases\MailBoxMatriX-win-Setup.exe (plus update packages)
 goto end
 
 :clean
@@ -117,7 +117,7 @@ if exist publish-arm64\ rmdir /s /q publish-arm64\
 goto end
 
 :smoke
-echo Building MailBoXX (%CONFIG%)...
+echo Building MailBox MatriX (%CONFIG%)...
 dotnet build QuickMail\QuickMail.csproj -c %CONFIG%
 if errorlevel 1 (
     echo SMOKE FAILED: build errors.

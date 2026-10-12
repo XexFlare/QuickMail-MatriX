@@ -36,7 +36,7 @@ internal static class AccountFieldHints
     /// that is what this checkbox decides — the consequence is the point of the control, so it is
     /// spelled out rather than left to a label that must stay short.</summary>
     public const string Pop3LeaveOnServer =
-        "Cleared, mail is removed from the server once MailBoXX has downloaded it, " +
+        "Cleared, mail is removed from the server once MailBox MatriX has downloaded it, " +
         "so this computer holds the only copy.";
 
     public const string Signature =

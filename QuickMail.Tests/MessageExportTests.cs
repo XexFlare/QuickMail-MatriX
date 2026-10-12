@@ -145,7 +145,7 @@ public class MessageExportTests
         Assert.Equal("Inbox/Receipts", rows.Single(r => r.Label == "Folder").Value);
         Assert.Equal("Kelly Ford (kelly@example.com)", rows.Single(r => r.Label == "Account").Value);
         Assert.Equal("receipt.pdf (2 KB)", rows.Single(r => r.Label == "Attachment").Value);
-        Assert.EndsWith(", from MailBoXX", rows.Single(r => r.Label == "Saved").Value);
+        Assert.EndsWith(", from MailBox MatriX", rows.Single(r => r.Label == "Saved").Value);
     }
 
     [Fact]

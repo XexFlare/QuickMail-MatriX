@@ -10,7 +10,7 @@ using IOPath = System.IO.Path;
 namespace MailBoXX.ArtGen;
 
 /// <summary>
-/// Draws MailBoXX's placeholder artwork from code (no third-party images), deterministically.
+/// Draws MailBox MatriX's placeholder artwork from code (no third-party images), deterministically.
 /// Usage: MailBoXX.ArtGen &lt;outputAssetsDir&gt;
 /// </summary>
 public static class Program

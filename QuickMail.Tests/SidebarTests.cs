@@ -9,7 +9,7 @@ using Xunit;
 namespace QuickMail.Tests;
 
 /// <summary>
-/// MailBoXX sidebar (step b): the account's main folders, the provider badges and the folder
+/// MailBox MatriX sidebar (step b): the account's main folders, the provider badges and the folder
 /// names and icons.
 /// </summary>
 public class SidebarTests

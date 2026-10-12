@@ -7,7 +7,7 @@ using Xunit;
 
 namespace QuickMail.Tests;
 
-/// <summary>MailBoXX contextual images: local, deterministic, sender + subject only, fail-safe.</summary>
+/// <summary>MailBox MatriX contextual images: local, deterministic, sender + subject only, fail-safe.</summary>
 public class ContextImageTests
 {
     [Theory]
@@ -69,13 +69,13 @@ public class ContextImageTests
     [Fact]
     public void Resolve_GivesTheBundledPicture_OrNullForNeutral_OrNullWhenTurnedOff()
     {
-        using var service = new ContextImageService(store: null, assemblyName: "MailBoXX");
+        using var service = new ContextImageService(store: null, assemblyName: "MailBoxMatriX");
         var travel = Message("Savanna Travel", "Flights to Nairobi");
         var plain = Message("Sam", "Hi");
 
         var uri = service.ResolveImageUri(travel);
         Assert.NotNull(uri);
-        Assert.StartsWith("pack://application:,,,/MailBoXX;component/Assets/ContextImages/light/travel-", uri);
+        Assert.StartsWith("pack://application:,,,/MailBoxMatriX;component/Assets/ContextImages/light/travel-", uri);
         Assert.Contains("/ContextImages/dark/travel-", service.ResolveImageUri(travel, "dark"));
         Assert.EndsWith(".jpg", uri);
         Assert.Null(service.ResolveImageUri(plain));
@@ -92,7 +92,7 @@ public class ContextImageTests
         {
             var message = Message("Finance Desk", "Invoice 77", "<inv-77@ledger.test>");
             string? first;
-            using (var service = new ContextImageService(new ContextImageStore(dir), "MailBoXX"))
+            using (var service = new ContextImageService(new ContextImageStore(dir), "MailBoxMatriX"))
             {
                 first = service.ResolveImageUri(message);
                 service.FlushPendingSaves();
@@ -105,7 +105,7 @@ public class ContextImageTests
             Assert.Equal(ContextImageService.BundledSource, choice.Source);
             Assert.Equal(ContextImageClassifier.Version, choice.SelectorVersion);
 
-            using var again = new ContextImageService(new ContextImageStore(dir), "MailBoXX");
+            using var again = new ContextImageService(new ContextImageStore(dir), "MailBoxMatriX");
             Assert.Equal(first, again.ResolveImageUri(message));
         }
         finally
@@ -120,7 +120,7 @@ public class ContextImageTests
         var dir = Path.Combine(Path.GetTempPath(), $"MBX-ContextImages-{Guid.NewGuid():N}");
         try
         {
-            using (var service = new ContextImageService(new ContextImageStore(dir), "MailBoXX"))
+            using (var service = new ContextImageService(new ContextImageStore(dir), "MailBoxMatriX"))
             {
                 service.ResolveImageUri(Message("Savanna Travel", "Secret trip plans to Zanzibar", "<t1@x.test>"));
                 service.FlushPendingSaves();

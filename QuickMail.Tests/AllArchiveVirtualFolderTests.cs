@@ -130,7 +130,7 @@ public class AllArchiveVirtualFolderTests
 
         Assert.Equal(
             new[] { "All Mail", "All Inboxes", "All Drafts", "All Sent", "All Archive", "All Trash",
-                    "All Junk",   // MailBoXX: combined Junk, for the Mailboxes folder list
+                    "All Junk",   // MailBox MatriX: combined Junk, for the Mailboxes folder list
                     "All Flagged", "Watched Conversations" },
             labels);
     }

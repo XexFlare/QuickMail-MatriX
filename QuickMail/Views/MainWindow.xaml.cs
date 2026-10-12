@@ -400,8 +400,8 @@ public partial class MainWindow : Window
         {
             // Default is No, mirroring the old installer's unchecked desktop-icon option.
             var choice = MessageBox.Show(this,
-                "Add a desktop shortcut for MailBoXX?\n\nYou can change this anytime in Settings, on the General page.",
-                "MailBoXX",
+                "Add a desktop shortcut for MailBox MatriX?\n\nYou can change this anytime in Settings, on the General page.",
+                "MailBox MatriX",
                 MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
             vm.ApplyDesktopShortcutChoice(choice == MessageBoxResult.Yes);
             // Same unreliable return-to-owner focus as the update dialogs below.
@@ -737,8 +737,8 @@ public partial class MainWindow : Window
         if (!cfg.TrayHintShown)
         {
             _notificationService?.ShowInfo(
-                "MailBoXX is still running",
-                "MailBoXX is in the notification area. Open it from the tray icon or a new-mail " +
+                "MailBox MatriX is still running",
+                "MailBox MatriX is in the notification area. Open it from the tray icon or a new-mail " +
                 "notification, or right-click the tray icon and choose Exit to quit.");
             cfg.TrayHintShown = true;
             _configService.Save(cfg);
@@ -2080,8 +2080,8 @@ public partial class MainWindow : Window
                 || IsDescendantOf(ConversationTree, src)
                 || IsDescendantOf(SenderGroupTree, src)
                 || IsDescendantOf(ToGroupTree, src)
-                || IsDescendantOf(SidebarProfileButton, src)      // MailBoXX: its menu is the profile menu
-                || IsDescendantOf(MainFolderList, src)))          // MailBoXX: folders have no message menu
+                || IsDescendantOf(SidebarProfileButton, src)      // MailBox MatriX: its menu is the profile menu
+                || IsDescendantOf(MainFolderList, src)))          // MailBox MatriX: folders have no message menu
             return;
 
         if (_vm.IsMessagesView && MessageList.Visibility == Visibility.Visible
@@ -2386,7 +2386,7 @@ public partial class MainWindow : Window
 
     private void FocusFolderTree()
     {
-        if (FocusMainFolderListInstead()) return;   // MailBoXX: the short folder list is the folder pane
+        if (FocusMainFolderListInstead()) return;   // MailBox MatriX: the short folder list is the folder pane
         if (FolderList.Items.Count == 0)
         {
             _vm.StatusText = "Folders are still loading.";
@@ -2495,7 +2495,7 @@ public partial class MainWindow : Window
         if (e.Key == Key.Enter && AccountList.SelectedItem is AccountModel account)
         {
             e.Handled = true;
-            // MailBoXX: connect and open the account's Inbox; focus stays on the account.
+            // MailBox MatriX: connect and open the account's Inbox; focus stays on the account.
             await _vm.OpenAccountAsync(account);
         }
     }
@@ -3326,7 +3326,7 @@ public partial class MainWindow : Window
     {
         var row = _accountListClick.Release(MouseActivation.RowFromClick(e.OriginalSource));
         if (row is AccountModel account)
-            await _vm.OpenAccountAsync(account);   // MailBoXX: and open its Inbox
+            await _vm.OpenAccountAsync(account);   // MailBox MatriX: and open its Inbox
     }
 
     // Single click on a message in any of the grouped trees opens it, matching the flat message
@@ -3971,7 +3971,7 @@ public partial class MainWindow : Window
                 // what the relayed key runs — the relay carries the default key, the registry decides.
                 else if (msg == "ctrl-s")
                     Dispatcher.InvokeAsync(() => _registry.FindByGesture(Key.S, ModifierKeys.Control)?.Execute(), DispatcherPriority.Input);
-                else if (msg == "ctrl-u")   // MailBoXX: Mark as Unread while reading
+                else if (msg == "ctrl-u")   // MailBox MatriX: Mark as Unread while reading
                     Dispatcher.InvokeAsync(() => _registry.FindByGesture(Key.U, ModifierKeys.Control)?.Execute(), DispatcherPriority.Input);
                 else if (msg == "ctrl-p")
                     Dispatcher.InvokeAsync(() => _registry.FindByGesture(Key.P, ModifierKeys.Control)?.Execute(), DispatcherPriority.Input);
@@ -4326,7 +4326,7 @@ public partial class MainWindow : Window
         // Only QuickMail's own links, which carry this run's token; one the sender wrote does nothing.
         if (!QuickMailLinks.TryParse(uri, out var action))
         {
-            LogService.Log("Reading pane: ignored a quickmail: link that MailBoXX did not create.");
+            LogService.Log("Reading pane: ignored a quickmail: link that MailBox MatriX did not create.");
             return;
         }
         switch (action)
@@ -5587,7 +5587,7 @@ public partial class MainWindow : Window
             await _vm.MarkMessagesReadAsync(targets);
     }
 
-    // MailBoXX: Ctrl+U, the same targets as Ctrl+Q.
+    // MailBox MatriX: Ctrl+U, the same targets as Ctrl+Q.
     private async Task MarkUnreadCommand()
     {
         if (ReadStateTargets() is { } targets)
