@@ -513,7 +513,7 @@ public class GraphServerRuleServiceTests
         var notEditable = new ServerRuleModel { DisplayName = "Complex", IsFullyEditable = false, UnsupportedFields = ["body contains"] };
 
         Assert.DoesNotContain("not editable", editable.ToString(), StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("not editable in QuickMail", notEditable.ToString(), StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("not editable in MailBoXX", notEditable.ToString(), StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

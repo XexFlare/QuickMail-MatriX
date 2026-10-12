@@ -50,7 +50,7 @@ public partial class AdminConsentWindow : Window
         {
             var dataFolder = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "QuickMail", "WebView2AdminConsent");
+                AppIdentity.DataFolderName, "WebView2AdminConsent");
             var env = await CoreWebView2Environment.CreateAsync(null, dataFolder);
             if (_cts.IsCancellationRequested) return;
             await ConsentBrowser.EnsureCoreWebView2Async(env);

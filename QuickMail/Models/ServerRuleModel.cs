@@ -127,7 +127,7 @@ public sealed partial class ServerRuleModel : ObservableObject
         if (HasError) parts.Add("error");
         // Announced per row so a user arrowing the list hears which rules QuickMail can't fully edit
         // (they use conditions/actions outside the editable subset). Read-only rules already say so.
-        if (!IsFullyEditable && !IsReadOnly) parts.Add("not editable in QuickMail");
+        if (!IsFullyEditable && !IsReadOnly) parts.Add("not editable in MailBoXX");
 
         var summary = OneLineSummary();
         var head = string.Join(", ", parts);
@@ -167,8 +167,8 @@ public sealed partial class ServerRuleModel : ObservableObject
         if (HasError) reasons.Add("This rule is in an error state on the server.");
         if (!IsFullyEditable)
             reasons.Add(UnsupportedFields.Count > 0
-                ? $"This rule uses conditions or actions QuickMail can't edit yet ({string.Join(", ", UnsupportedFields)}). You can enable, disable, or delete it here, or edit it in Outlook."
-                : "This rule uses conditions or actions QuickMail can't edit yet. You can enable, disable, or delete it here, or edit it in Outlook.");
+                ? $"This rule uses conditions or actions MailBoXX can't edit yet ({string.Join(", ", UnsupportedFields)}). You can enable, disable, or delete it here, or edit it in Outlook."
+                : "This rule uses conditions or actions MailBoXX can't edit yet. You can enable, disable, or delete it here, or edit it in Outlook.");
 
         if (reasons.Count > 0)
         {

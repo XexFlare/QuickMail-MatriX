@@ -42,12 +42,13 @@ Under **Authentication**:
   *primary* one when using the system browser — the system browser lands on it and cannot hand the
   auth code back to the desktop app.
 
-The code side pairs with this: `OAuthService` calls `.WithRedirectUri("http://localhost")` and signs
-in with the **embedded WebView2** window (`.WithUseEmbeddedWebView(true)` + `.WithWindowsEmbeddedBrowserSupport()`,
-which needs the `Microsoft.Identity.Client.Desktop` package). Sign-in renders **in-app** and the
-window **closes itself on completion**, returning focus to QuickMail — no separate browser tab and no
-"authentication complete" page. The `http://localhost` redirect is still required and registered as
-above; the embedded view intercepts that navigation internally (no loopback listener is opened).
+The code side pairs with this: `OAuthService` calls `.WithRedirectUri("http://localhost")` and, in
+**MailBoXX**, signs in through the user's **system browser** (`.WithUseEmbeddedWebView(false)`): MSAL
+opens a loopback listener on a random `http://localhost` port, the browser returns the auth code to it,
+and then shows a short "You can close this tab and return to MailBoXX" page. MailBoXX does not use
+QuickMail's embedded WebView2 sign-in window, because that needed `Microsoft.Identity.Client.Desktop`,
+which pulls in `Microsoft.Identity.Client.Broker` and `Microsoft.Identity.Client.NativeInterop`
+(licence terms restrict redistribution). See `docs/AUTHENTICATION.md`.
 
 ---
 

@@ -109,7 +109,7 @@ public class ReportBugViewModelTests
         vm.WhatHappened = "the crash details";
 
         Assert.Contains("the crash details", vm.PreviewText);
-        Assert.DoesNotContain("quickmail.log", vm.PreviewText);
+        Assert.DoesNotContain("mailboxx.log", vm.PreviewText);
     }
 
     // Note: CopyAndOpenCommand with a non-blank summary is intentionally not exercised here —

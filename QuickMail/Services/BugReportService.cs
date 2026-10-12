@@ -23,12 +23,16 @@ namespace QuickMail.Services;
 /// </summary>
 public partial class BugReportService : IBugReportService, IDisposable
 {
-    private const string RepoOwner = "kellylford";
-    private const string RepoName  = "QuickMail";
+    // MailBoXX: the issue tracker comes from AppIdentity (empty until MailBoXX has one); tests
+    // inject their own, as they do the relay coordinates.
+    private readonly string _repoOwner;
+    private readonly string _repoName;
 
     // Releases before the relay cached a real GitHub PAT here. Nothing reads it any more, so
     // on first run of an updated build we delete it rather than leave a live credential
     // sitting in the user's Credential Manager forever.
+    // Kept at QuickMail's name on purpose: deleting that obsolete, unread token is harmless and
+    // removes a stale GitHub credential if an old QuickMail ever left one on this PC.
     private const string LegacyTokenCredentialKey = "QuickMail.BugReportService.AppOwnedToken";
 
     private readonly string _relayUrl;
@@ -49,15 +53,19 @@ public partial class BugReportService : IBugReportService, IDisposable
         ICredentialService credentials,
         HttpMessageHandler handler,
         string? relayUrl = null,
-        string? relayKey = null)
+        string? relayKey = null,
+        string? issuesRepoOwner = null,
+        string? issuesRepoName = null)
     {
         _relayUrl = relayUrl ?? RelayUrl;
         _relayKey = relayKey ?? RelayKey;
+        _repoOwner = issuesRepoOwner ?? AppIdentity.IssuesRepoOwner;
+        _repoName = issuesRepoName ?? AppIdentity.IssuesRepoName;
 
         PurgeLegacyToken(credentials);
 
         _http = new HttpClient(handler) { Timeout = TimeSpan.FromSeconds(15) };
-        _http.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("QuickMail", Helpers.AppVersion.Display));
+        _http.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(AppIdentity.Name, Helpers.AppVersion.Display));
         _http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
 
@@ -70,7 +78,7 @@ public partial class BugReportService : IBugReportService, IDisposable
         {
             using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _cts.Token);
             using var request = new HttpRequestMessage(HttpMethod.Post, _relayUrl);
-            request.Headers.Add("X-QuickMail-Key", _relayKey);
+            request.Headers.Add("X-MailBoXX-Key", _relayKey);
 
             // Labels are applied by the relay, not sent from here: a client that names its own
             // labels lets anyone holding the extracted key apply arbitrary ones.
@@ -135,7 +143,9 @@ public partial class BugReportService : IBugReportService, IDisposable
     {
         var title = Uri.EscapeDataString(report.Summary ?? string.Empty);
         var body  = Uri.EscapeDataString(Truncate(BuildReportText(report), MaxFallbackUrlBodyLength));
-        return $"https://github.com/{RepoOwner}/{RepoName}/issues/new?title={title}&body={body}&labels=bug,user-reported";
+        // MailBoXX: no issue tracker yet -> no URL; the report is still copied to the clipboard.
+        if (_repoOwner.Length == 0 || _repoName.Length == 0) return string.Empty;
+        return $"https://github.com/{_repoOwner}/{_repoName}/issues/new?title={title}&body={body}&labels=bug,user-reported";
     }
 
     private static string Truncate(string text, int maxLength) =>
@@ -162,7 +172,7 @@ public partial class BugReportService : IBugReportService, IDisposable
         }
 
         sb.AppendLine().AppendLine("### Environment");
-        sb.AppendLine($"- QuickMail version: {Helpers.AppVersion.Display}");
+        sb.AppendLine($"- MailBoXX version: {Helpers.AppVersion.Display}");
         sb.AppendLine($"- OS: {Environment.OSVersion.VersionString}");
         sb.AppendLine($"- .NET runtime: {Environment.Version}");
 

@@ -232,7 +232,7 @@ internal sealed class MessageSaveUi : IMessageSaveUi
     {
         var env = _environment() ?? await CoreWebView2Environment.CreateAsync(null,
             _userDataFolder ?? Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "QuickMail", "WebView2"));
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), AppIdentity.DataFolderName, "WebView2"));
 
         var hwnd = new WindowInteropHelper(_owner).EnsureHandle();
         var controller = await env.CreateCoreWebView2ControllerAsync(hwnd);
@@ -268,7 +268,7 @@ internal sealed class MessageSaveUi : IMessageSaveUi
             }
             else
             {
-                tempFile = Path.Combine(Path.GetTempPath(), $"QuickMail-{Guid.NewGuid():N}.html");
+                tempFile = Path.Combine(Path.GetTempPath(), $"{AppIdentity.Name}-{Guid.NewGuid():N}.html");
                 await File.WriteAllTextAsync(tempFile, html, ct);
                 core.Navigate(new Uri(tempFile).AbsoluteUri);
             }

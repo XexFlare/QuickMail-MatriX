@@ -335,7 +335,7 @@ public static class LinkContextMenuSupport
     public static string TextScript(string text) =>
         "(function(){var s=window.__qmLinkStatus;" +
         "if(!s||!s.isConnected||s.__qmOwned!==1)return;" +
-        "s.textContent=" + JsonSerializer.Serialize(text.Length == 0 ? "" : "QuickMail: " + text) +
+        "s.textContent=" + JsonSerializer.Serialize(text.Length == 0 ? "" : "MailBoXX: " + text) +
         ";})();";
 
     /// <summary>

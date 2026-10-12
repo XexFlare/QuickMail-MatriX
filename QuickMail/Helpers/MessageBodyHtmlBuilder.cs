@@ -215,7 +215,7 @@ public static class MessageBodyHtmlBuilder
             : HtmlToText(htmlBody);
 
         var note = !string.IsNullOrWhiteSpace(htmlBody)
-            ? "This message uses complex HTML, so QuickMail is showing a simplified body."
+            ? "This message uses complex HTML, so MailBoXX is showing a simplified body."
             : null;
         return BuildPlainTextHtmlDocument(detail.Subject, text, note, themeCss);
     }

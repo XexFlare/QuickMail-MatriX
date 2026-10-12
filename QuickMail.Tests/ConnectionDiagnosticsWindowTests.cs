@@ -174,7 +174,7 @@ public class ConnectionDiagnosticsViewModelTests : IDisposable
         vm.CopyReportCommand.Execute(null);
 
         Assert.NotNull(copied);
-        Assert.Contains("QuickMail connection diagnostics report", copied);
+        Assert.Contains("MailBoXX connection diagnostics report", copied);
         Assert.Contains("Kelly", copied);
         Assert.Contains("DISCONNECTED", copied);       // the account summary states what is shown
         Assert.Contains("connect-failed", copied);     // and the journal is included

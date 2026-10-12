@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Identity.Client;
-using Microsoft.Identity.Client.Desktop;
 using Microsoft.Identity.Client.Extensions.Msal;
 using QuickMail.Models;
 
@@ -13,7 +12,12 @@ namespace QuickMail.Services;
 
 public class OAuthService : IOAuthService
 {
-    private const string ClientId  = "bcdc84f1-d37c-4581-b14a-a01f7b3a1312";
+    // MailBoXX: upstream QuickMail's Entra registration, kept only so a development build can sign in.
+    // It must be replaced with a MailBoXX registration before any distribution (docs/AUTHENTICATION.md);
+    // set MAILBOXX_MS_CLIENT_ID to test with a MailBoXX registration without rebuilding.
+    private const string UpstreamClientId = "bcdc84f1-d37c-4581-b14a-a01f7b3a1312";
+    private static readonly string ClientId =
+        Environment.GetEnvironmentVariable("MAILBOXX_MS_CLIENT_ID") is { Length: > 0 } id ? id.Trim() : UpstreamClientId;
     private const string Authority = "https://login.microsoftonline.com/common";
 
     // IMAP/SMTP-over-OAuth (Exchange Online / Outlook.com). Uses EXPLICIT scopes, NOT `.default`:
@@ -230,16 +234,13 @@ public class OAuthService : IOAuthService
         _msal = PublicClientApplicationBuilder
             .Create(ClientId)
             .WithAuthority(Authority)
-            // Interactive sign-in renders in the embedded WebView2 window (see WithUseEmbeddedWebView
-            // in SignInInteractiveAsync) — it shows in-app and closes itself on completion, so there
-            // is no separate browser tab or "authentication complete" page. The redirect is still
-            // http://localhost; the embedded view intercepts that navigation internally (no loopback
-            // listener), and it must be registered under the app's "Mobile and desktop applications"
-            // platform. Set explicitly rather than via the framework-dependent WithDefaultRedirectUri.
+            // MailBoXX: interactive sign-in opens the user's default browser; MSAL listens on an
+            // http://localhost loopback port for the redirect, then the browser shows the page from
+            // SignInBrowserOptions. The redirect must be registered under the app's "Mobile and
+            // desktop applications" platform (any port is accepted for localhost). Set explicitly
+            // rather than via the framework-dependent WithDefaultRedirectUri.
             // See docs/ENTRA-APP-REGISTRATION.md.
             .WithRedirectUri("http://localhost")
-            // Enables the embedded WebView2 browser on Windows TFMs (Microsoft.Identity.Client.Desktop).
-            .WithWindowsEmbeddedBrowserSupport()
             .Build();
     }
 
@@ -413,6 +414,22 @@ public class OAuthService : IOAuthService
     // WithExtraScopesToConsent). The returned token is still mail-scoped; the extra grants just land in
     // the token cache so a later silent acquisition for them succeeds without a second prompt. Used to
     // fold contact/calendar consent into the mail sign-in (see SignInInteractiveWithContactsAsync).
+    /// <summary>
+    /// MailBoXX: the page the user's browser shows after the Microsoft sign-in redirect. Plain,
+    /// self-contained HTML — nothing is loaded from anywhere.
+    /// </summary>
+    private static readonly SystemWebViewOptions SignInBrowserOptions = new()
+    {
+        HtmlMessageSuccess =
+            "<!doctype html><html><head><meta charset=\"utf-8\"><title>MailBoXX</title></head>" +
+            "<body style=\"font-family:'Segoe UI',sans-serif;margin:48px\"><h1>Signed in</h1>" +
+            "<p>You can close this tab and return to MailBoXX.</p></body></html>",
+        HtmlMessageError =
+            "<!doctype html><html><head><meta charset=\"utf-8\"><title>MailBoXX</title></head>" +
+            "<body style=\"font-family:'Segoe UI',sans-serif;margin:48px\"><h1>Sign-in did not complete</h1>" +
+            "<p>Close this tab and return to MailBoXX to try again.</p></body></html>",
+    };
+
     private async Task<OAuthResult> SignInInteractiveAsync(AccountModel account, string[] scopes, bool firstConnect, string[]? extraScopesToConsent, CancellationToken ct)
     {
         await EnsureTokenCacheAsync();
@@ -427,9 +444,10 @@ public class OAuthService : IOAuthService
         AcquireTokenInteractiveParameterBuilder Build(string[]? extras)
         {
             var b = _msal.AcquireTokenInteractive(scopes)
-                // Embedded WebView2 window: renders in-app and closes itself on completion, returning
-                // focus to QuickMail — no system-browser tab and no lingering success page.
-                .WithUseEmbeddedWebView(true)
+                // MailBoXX: system browser (no embedded WebView2 sign-in window, so no MSAL Desktop /
+                // Broker / NativeInterop dependency). Tokens are cached exactly as before.
+                .WithUseEmbeddedWebView(false)
+                .WithSystemWebViewOptions(SignInBrowserOptions)
                 .WithPrompt(PromptForSignIn(firstConnect, account.Username, usesDefaultScope));
             if (extras is { Length: > 0 })
                 b = b.WithExtraScopesToConsent(extras);

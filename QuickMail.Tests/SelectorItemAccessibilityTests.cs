@@ -106,6 +106,8 @@ public class SelectorItemAccessibilityTests
         Assert.Equal("Greeting", new MessageTemplate { Title = "Greeting" }.ToString());
         Assert.Equal("Spam rule", new MailRule { Name = "Spam rule" }.ToString());
         Assert.Equal("Work", new AccountModel { AccountName = "Work" }.ToString());
+        // MailBoXX sidebar: the main-folder list (MainFolderList).
+        Assert.Equal("Inbox", new FolderTreeNode { Label = "Inbox" }.ToString());
         // Save format combo in Settings (#728).
         Assert.Equal("Web page (.html)", new MessageSaveFormatOption(MessageSaveFormat.Html, "Web page (.html)").ToString());
 

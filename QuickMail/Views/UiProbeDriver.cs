@@ -205,6 +205,18 @@ internal sealed class UiProbeDriver
                 return await CaptureChildWindowAsync(() => ExecuteCommand("view.rowFields"),
                     w => w is RowFieldsWindow, path);
 
+            // MailBoXX: the menu bar is hidden until Alt; this enters menu mode the way Alt does.
+            case "menu-bar":
+                // Let startup's own focus placement (FocusActiveMessagePanel) land first, or it
+                // takes focus back from the menus and the bar correctly hides again.
+                await IdleAsync();
+                await Task.Delay(800);
+                await IdleAsync();
+                _window.EnterMenuModeForProbe();
+                await IdleAsync();
+                await IdleAsync();
+                return await CaptureSettledAsync(_window, path);
+
             default:
                 LogService.Log($"ui-probe: unknown surface \"{surface}\". Known: inbox, reading-pane, calendar, compose, theme-manager, address-book, accounts, flag-manager, rules, rule-editor, rule-editor-advanced, saved-views, settings-appearance, settings-startup, settings-saving, command-palette, folder-picker, row-fields.");
                 return false;

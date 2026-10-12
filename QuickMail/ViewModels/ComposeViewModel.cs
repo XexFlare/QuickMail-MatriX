@@ -65,7 +65,7 @@ public partial class ComposeViewModel : ObservableObject, IDisposable
                 ComposeMode.Html     => "HTML",
                 _                    => "Plain Text",
             };
-            return $"{lead} - {mode} - QuickMail";
+            return $"{lead} - {mode} - MailBoXX";
         }
     }
     [ObservableProperty] private string _body = string.Empty;
@@ -983,7 +983,7 @@ public partial class ComposeViewModel : ObservableObject, IDisposable
 
         // Per-attachment subfolder so two files with the same name (invoice.pdf, invoice.pdf
         // from different messages or sessions) don't overwrite each other in %TEMP%\QuickMail.
-        var tempDir = Path.Combine(Path.GetTempPath(), "QuickMail", Guid.NewGuid().ToString("N"));
+        var tempDir = Path.Combine(Path.GetTempPath(), "MailBoXX", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(tempDir);
         var tempPath = Path.Combine(tempDir, safeFileName);
         await File.WriteAllBytesAsync(tempPath, attachment.Content);

@@ -60,3 +60,15 @@ QuickMail.Tests/TestResults/
 # Python bytecode from the docs/site scripts in scripts/
 __pycache__/
 *.pyc
+
+# MailBoXX: local publish output (build.bat publish / dotnet publish -o publish)
+/publish/
+/publish-arm64/
+/preview/
+
+# Kept local, not published: personal shortcuts, the product brief and the design mock-up
+# (the mock-up shows other companies' logos).
+*.lnk
+/Product_Requirements.md
+/Design Reference/
+__pycache__/

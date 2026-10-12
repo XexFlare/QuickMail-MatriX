@@ -7,21 +7,21 @@ using System.Text;
 namespace QuickMail.Services;
 
 /// <summary>
-/// Simple append-only file logger. Log is written to %AppData%\QuickMail\quickmail.log.
+/// Simple append-only file logger. Log is written to %AppData%\MailBoXX\mailboxx.log.
 /// Pass /debug on the command line to also enable Debug() calls.
 /// </summary>
 public static class LogService
 {
     private static string _logFile = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-        "QuickMail", "quickmail.log");
+        AppIdentity.DataFolderName, "mailboxx.log");
 
     /// <summary>
     /// Redirects the log file to the given profile directory.
     /// Call this before any services are created when --profileDir is supplied.
     /// </summary>
     public static void Configure(string profileDir) =>
-        _logFile = Path.Combine(profileDir, "quickmail.log");
+        _logFile = Path.Combine(profileDir, "mailboxx.log");
 
     // File.AppendAllText opens-writes-closes; concurrent callers from background sync,
     // prefetch, and the UI thread collided on the file handle and lost lines through

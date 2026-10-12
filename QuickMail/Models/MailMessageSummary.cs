@@ -62,6 +62,14 @@ public partial class MailMessageSummary : ObservableObject
     [ObservableProperty]
     private bool _hasAttachments;
 
+    /// <summary>
+    /// MailBoXX: local file of the contextual image drawn behind this message's row, or null for
+    /// the neutral row. Presentation only — set from the local context-image store, never from
+    /// the server, and never required for reading or syncing mail.
+    /// </summary>
+    [ObservableProperty]
+    private string? _contextImagePath;
+
     public bool IsMailingList { get; set; }
 
     // ── Flag state ────────────────────────────────────────────────────────────
@@ -159,5 +167,22 @@ public partial class MailMessageSummary : ObservableObject
                 return local.ToString("h:mm") + (local.Hour < 12 ? "A" : "P");
             return local.ToString("M/d/yyyy");
         }
+    }
+
+    /// <summary>
+    /// MailBoXX: the row's visible time, as Windows Mail showed it — "8:48 AM" today, "Mon 2:02 PM"
+    /// yesterday, "Fri 10/27" earlier this year, "10/27/2016" before that. Visual only: screen readers
+    /// keep <see cref="DateDisplay"/> (RowSpeech), so what is spoken does not change.
+    /// </summary>
+    public string FriendlyDate => FormatFriendlyDate(Date.ToLocalTime().DateTime, DateTime.Now);
+
+    internal static string FormatFriendlyDate(DateTime local, DateTime now)
+    {
+        var us = System.Globalization.CultureInfo.InvariantCulture;
+        var days = (now.Date - local.Date).TotalDays;
+        if (days <= 0)                return local.ToString("h:mm tt", us);
+        if (days == 1)                return local.ToString("ddd h:mm tt", us);
+        if (local.Year == now.Year)   return local.ToString("ddd M/d", us);
+        return local.ToString("M/d/yyyy", us);
     }
 }

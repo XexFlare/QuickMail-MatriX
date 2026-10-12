@@ -30,7 +30,7 @@ public class RuleService : IRuleService
         // migration. When absent (unit tests that don't exercise migration), no migration runs.
         _accountService = accountService;
         var dir = dataDirectory ?? Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "QuickMail");
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppIdentity.DataFolderName);
         _filePath = Path.Combine(dir, "rules.json");
     }
 

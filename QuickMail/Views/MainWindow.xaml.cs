@@ -280,6 +280,7 @@ public partial class MainWindow : Window
         _connectivity     = connectivity;
         InitializeComponent();
         DataContext = vm;
+        InitializeMailBoXX();
 
         // Focus moving to the message body, or away from it, is recorded in one place, so no pane
         // handler has to remember to clear it. handledEventsToo is needed for the CLEARING half:
@@ -399,8 +400,8 @@ public partial class MainWindow : Window
         {
             // Default is No, mirroring the old installer's unchecked desktop-icon option.
             var choice = MessageBox.Show(this,
-                "Add a desktop shortcut for QuickMail?\n\nYou can change this anytime in Settings, on the General page.",
-                "QuickMail",
+                "Add a desktop shortcut for MailBoXX?\n\nYou can change this anytime in Settings, on the General page.",
+                "MailBoXX",
                 MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
             vm.ApplyDesktopShortcutChoice(choice == MessageBoxResult.Yes);
             // Same unreliable return-to-owner focus as the update dialogs below.
@@ -736,8 +737,8 @@ public partial class MainWindow : Window
         if (!cfg.TrayHintShown)
         {
             _notificationService?.ShowInfo(
-                "QuickMail is still running",
-                "QuickMail is in the notification area. Open it from the tray icon or a new-mail " +
+                "MailBoXX is still running",
+                "MailBoXX is in the notification area. Open it from the tray icon or a new-mail " +
                 "notification, or right-click the tray icon and choose Exit to quit.");
             cfg.TrayHintShown = true;
             _configService.Save(cfg);
@@ -1120,6 +1121,11 @@ public partial class MainWindow : Window
             defaultKey: Key.Q, defaultModifiers: ModifierKeys.Control));
 
         _registry.Register(new CommandDefinition(
+            id: "mail.markUnread", category: "Mail", title: "Mark as Unread",
+            execute: async () => await MarkUnreadCommand(),
+            defaultKey: Key.U, defaultModifiers: ModifierKeys.Control));
+
+        _registry.Register(new CommandDefinition(
             id: "mail.jumpToFirstInGroup", category: "Mail", title: "First Message in Group",
             execute: JumpToFirstMessageInGroup,
             defaultKey: Key.OemComma, defaultModifiers: ModifierKeys.Shift,
@@ -1278,7 +1284,7 @@ public partial class MainWindow : Window
         // ── Pane navigation (Ctrl+Alt+1/2/3 — always work regardless of tab mode) ──
         _registry.Register(new CommandDefinition(
             id: "view.focusAccounts", category: "View", title: "Focus Account List",
-            execute: () => AccountList.Focus(),
+            execute: () => { RevealSidebarPane(1); AccountList.Focus(); },
             defaultKey: Key.D1, defaultModifiers: ModifierKeys.Control | ModifierKeys.Alt));
 
         _registry.Register(new CommandDefinition(
@@ -1673,7 +1679,7 @@ public partial class MainWindow : Window
                 ? Path.Combine(probeOptions.CaptureDir, "webview2-data")
                 : Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    "QuickMail", "WebView2");
+                    AppIdentity.DataFolderName, "WebView2");
             _webViewEnvironment = await CoreWebView2Environment.CreateAsync(null, userDataFolder);
         }
         catch (Exception ex)
@@ -2073,7 +2079,9 @@ public partial class MainWindow : Window
                 || IsDescendantOf(ViewModeButton, src)
                 || IsDescendantOf(ConversationTree, src)
                 || IsDescendantOf(SenderGroupTree, src)
-                || IsDescendantOf(ToGroupTree, src)))
+                || IsDescendantOf(ToGroupTree, src)
+                || IsDescendantOf(SidebarProfileButton, src)      // MailBoXX: its menu is the profile menu
+                || IsDescendantOf(MainFolderList, src)))          // MailBoXX: folders have no message menu
             return;
 
         if (_vm.IsMessagesView && MessageList.Visibility == Visibility.Visible
@@ -2182,7 +2190,7 @@ public partial class MainWindow : Window
 
                 case Key.D1:
                     if (_vm.ShowTabStrip) { _vm.ActivateTabByIndex(1); e.Handled = true; return; }
-                    AccountList.Focus(); e.Handled = true; return;
+                    RevealSidebarPane(1); AccountList.Focus(); e.Handled = true; return;
 
                 case Key.D2:
                     if (_vm.ShowTabStrip) { _vm.ActivateTabByIndex(2); e.Handled = true; return; }
@@ -2216,7 +2224,7 @@ public partial class MainWindow : Window
             // Pane navigation via Ctrl+Alt+1/2/3 — always available regardless of tab mode.
             switch (key)
             {
-                case Key.D1: AccountList.Focus(); e.Handled = true; return;
+                case Key.D1: RevealSidebarPane(1); AccountList.Focus(); e.Handled = true; return;
                 case Key.D2: FocusFolderTree();   e.Handled = true; return;
                 case Key.D3:
                     if (_vm.IsConversationsView) ConversationTree.Focus();
@@ -2378,6 +2386,7 @@ public partial class MainWindow : Window
 
     private void FocusFolderTree()
     {
+        if (FocusMainFolderListInstead()) return;   // MailBoXX: the short folder list is the folder pane
         if (FolderList.Items.Count == 0)
         {
             _vm.StatusText = "Folders are still loading.";
@@ -2420,6 +2429,7 @@ public partial class MainWindow : Window
                 MainViewModel.AllInboxesFolder, MainViewModel.AllMailFolder,
                 MainViewModel.AllDraftsFolder,  MainViewModel.AllSentFolder,
                 MainViewModel.AllArchiveFolder, MainViewModel.AllTrashFolder,
+                MainViewModel.AllJunkFolder,
                 MainViewModel.AllFlaggedFolder, MainViewModel.AllWatchedFolder
             },
             initialFolder: _vm.SelectedFolder,
@@ -2485,7 +2495,8 @@ public partial class MainWindow : Window
         if (e.Key == Key.Enter && AccountList.SelectedItem is AccountModel account)
         {
             e.Handled = true;
-            await _vm.SelectAccountCommand.ExecuteAsync(account);
+            // MailBoXX: connect and open the account's Inbox; focus stays on the account.
+            await _vm.OpenAccountAsync(account);
         }
     }
 
@@ -3293,7 +3304,7 @@ public partial class MainWindow : Window
         // Ctrl and Shift build an Extended selection here; adding a message to one is not opening it.
         if (MouseActivation.ExtendsSelection(Keyboard.Modifiers)) return;
 
-        if (row is MailMessageSummary summary)
+        if (row is MailMessageSummary summary && !CloseIfReclicked(summary))
             await OpenMessageFromListAsync(summary);
     }
 
@@ -3315,7 +3326,7 @@ public partial class MainWindow : Window
     {
         var row = _accountListClick.Release(MouseActivation.RowFromClick(e.OriginalSource));
         if (row is AccountModel account)
-            await _vm.SelectAccountCommand.ExecuteAsync(account);
+            await _vm.OpenAccountAsync(account);   // MailBoXX: and open its Inbox
     }
 
     // Single click on a message in any of the grouped trees opens it, matching the flat message
@@ -3907,6 +3918,7 @@ public partial class MainWindow : Window
                 // Save, Save As and Print (#728). Plain Ctrl only: Ctrl+Shift+S is search, and Ctrl+Shift+P the
                 // palette above. preventDefault also keeps the browser's own Save page / Print from running.
                 +"else if(e.ctrlKey&&!e.shiftKey&&!e.altKey&&(e.key==='s'||e.key==='S')){window.chrome.webview.postMessage('ctrl-s');e.preventDefault();}"
+                +"else if(e.ctrlKey&&!e.shiftKey&&!e.altKey&&(e.key==='u'||e.key==='U')){window.chrome.webview.postMessage('ctrl-u');e.preventDefault();}"
                 +"else if(e.ctrlKey&&!e.shiftKey&&!e.altKey&&(e.key==='p'||e.key==='P')){window.chrome.webview.postMessage('ctrl-p');e.preventDefault();}"
                 +"else if(e.key==='F12'&&!e.ctrlKey&&!e.shiftKey&&!e.altKey){window.chrome.webview.postMessage('f12');e.preventDefault();}"
                 +"});"
@@ -3959,6 +3971,8 @@ public partial class MainWindow : Window
                 // what the relayed key runs — the relay carries the default key, the registry decides.
                 else if (msg == "ctrl-s")
                     Dispatcher.InvokeAsync(() => _registry.FindByGesture(Key.S, ModifierKeys.Control)?.Execute(), DispatcherPriority.Input);
+                else if (msg == "ctrl-u")   // MailBoXX: Mark as Unread while reading
+                    Dispatcher.InvokeAsync(() => _registry.FindByGesture(Key.U, ModifierKeys.Control)?.Execute(), DispatcherPriority.Input);
                 else if (msg == "ctrl-p")
                     Dispatcher.InvokeAsync(() => _registry.FindByGesture(Key.P, ModifierKeys.Control)?.Execute(), DispatcherPriority.Input);
                 else if (msg == "f12")
@@ -4312,7 +4326,7 @@ public partial class MainWindow : Window
         // Only QuickMail's own links, which carry this run's token; one the sender wrote does nothing.
         if (!QuickMailLinks.TryParse(uri, out var action))
         {
-            LogService.Log("Reading pane: ignored a quickmail: link that QuickMail did not create.");
+            LogService.Log("Reading pane: ignored a quickmail: link that MailBoXX did not create.");
             return;
         }
         switch (action)
@@ -4973,7 +4987,8 @@ public partial class MainWindow : Window
     {
         if (MainToolbar.IsKeyboardFocusWithin)  return 0;
         if (AccountList.IsKeyboardFocusWithin)  return 1;
-        if (FolderList.IsKeyboardFocusWithin)   return 2;
+        if (FolderList.IsKeyboardFocusWithin || MainFolderList.IsKeyboardFocusWithin
+            || SidebarMoreFoldersButton.IsKeyboardFocused) return 2;
         if (SearchBox.IsKeyboardFocusWithin)    return 6;
         if (MessageList.IsKeyboardFocusWithin || ConversationTree.IsKeyboardFocusWithin || SenderGroupTree.IsKeyboardFocusWithin || ToGroupTree.IsKeyboardFocusWithin || CalendarList.IsKeyboardFocusWithin || MonthGrid.IsKeyboardFocusWithin || CalendarDetails.IsKeyboardFocusWithin || CalendarSearchBox.IsKeyboardFocusWithin) return 3;
         if (TabStrip.IsKeyboardFocusWithin)     return 7; // between message list and reading pane
@@ -4988,8 +5003,8 @@ public partial class MainWindow : Window
         switch (index)
         {
             case 0: ToolbarFirstButton.Focus(); break;
-            case 1: AccountList.Focus(); break;
-            case 2: FolderList.Focus(); break;
+            case 1: RevealSidebarPane(1); AccountList.Focus(); break;
+            case 2: if (!FocusMainFolderListInstead()) FolderList.Focus(); break;
             case 6: SearchBox.Focus(); break;
             case 3: FocusActiveMessagePanel(); break;
             case 7: TabStrip.Focus(); break;
@@ -5568,6 +5583,19 @@ public partial class MainWindow : Window
 
     private async Task MarkReadCommand()
     {
+        if (ReadStateTargets() is { } targets)
+            await _vm.MarkMessagesReadAsync(targets);
+    }
+
+    // MailBoXX: Ctrl+U, the same targets as Ctrl+Q.
+    private async Task MarkUnreadCommand()
+    {
+        if (ReadStateTargets() is { } targets)
+            await _vm.MarkMessagesUnreadAsync(targets);
+    }
+
+    private IReadOnlyList<MailMessageSummary>? ReadStateTargets()
+    {
         // Priority: group header selected → mark whole group.
         // Then: individual message selected → mark that message.
         // Then: folder tree focused → mark all loaded messages in the current folder/view.
@@ -5584,8 +5612,7 @@ public partial class MainWindow : Window
         else if (FolderList.IsKeyboardFocusWithin && _vm.SelectedFolder != null)
             targets = _vm.LoadedMessages;
 
-        if (targets != null)
-            await _vm.MarkMessagesReadAsync(targets);
+        return targets;
     }
 
     // ── Message-level focus helpers for grouped views ────────────────────────

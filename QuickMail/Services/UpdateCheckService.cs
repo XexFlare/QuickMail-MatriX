@@ -14,9 +14,13 @@ public class UpdateCheckService : IUpdateCheckService, IDisposable
 {
     // Single source of truth for the project location — VelopackRuntime and MainViewModel
     // build their URLs from these rather than repeating the literal.
-    public const string RepoUrl = "https://github.com/kellylford/QuickMail";
-    public const string ReleasesPageUrl = $"{RepoUrl}/releases";
-    private const string ApiUrl = "https://api.github.com/repos/kellylford/QuickMail/releases/latest";
+    // MailBoXX: the release repository comes from AppIdentity. While it is empty no update request
+    // is made at all (CheckForUpdateAsync), so MailBoXX can never be offered QuickMail's releases.
+    public const string RepoUrl = AppIdentity.UpdateRepoUrl;
+    public const string ReleasesPageUrl = RepoUrl == "" ? "" : $"{RepoUrl}/releases";
+    private static readonly string ApiUrl = RepoUrl.StartsWith("https://github.com/", StringComparison.Ordinal)
+        ? "https://api.github.com/repos/" + RepoUrl["https://github.com/".Length..].TrimEnd('/') + "/releases/latest"
+        : "";
 
     /// <summary>The release-notes page for a specific version — the "what's new" link.</summary>
     public static string ReleaseTagUrl(string version) => $"{ReleasesPageUrl}/tag/v{version}";
@@ -52,13 +56,19 @@ public class UpdateCheckService : IUpdateCheckService, IDisposable
         _feedOverride = updateFeedOverride;
         _http = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
         _http.DefaultRequestHeaders.UserAgent.Add(
-            new ProductInfoHeaderValue("QuickMail", _currentVersion));
+            new ProductInfoHeaderValue(AppIdentity.Name, _currentVersion));
     }
 
     public bool SelfUpdatePending => _pendingUpdate is not null;
 
     public async Task<Models.UpdateInfo?> CheckForUpdateAsync(CancellationToken cancellationToken = default)
     {
+        if (RepoUrl.Length == 0 && _feedOverride is null)
+        {
+            LogService.Debug("UpdateCheckService: no MailBoXX release feed configured; update check skipped.");
+            return null;
+        }
+
         // Velopack path only applies when running from a Velopack install
         // (%LocalAppData%\QuickMail\current\). The portable exe and dev builds fall through
         // to the GitHub API check below, which can only notify — not silently update.
@@ -175,7 +185,7 @@ public class UpdateCheckService : IUpdateCheckService, IDisposable
                 {
                     await mgr.DownloadUpdatesAsync(update, cancelToken: _cts.Token).ConfigureAwait(false);
                     _downloadCompleted = true;
-                    LogService.Log($"Update {version} downloaded; it will be applied when QuickMail exits.");
+                    LogService.Log($"Update {version} downloaded; it will be applied when MailBoXX exits.");
                 }
                 catch (Exception ex)
                 {

@@ -51,11 +51,11 @@ public class ThemeServiceTests : IDisposable
     {
         using var svc = NewService(osLight: true);
         svc.Initialize(Config("system"));
-        Assert.Equal("parchment", svc.ResolvedTheme.Id);
+        Assert.Equal(ThemeService.SystemLightThemeId, svc.ResolvedTheme.Id);
 
         using var dark = NewService(osLight: false);
         dark.Initialize(Config("system"));
-        Assert.Equal("dark", dark.ResolvedTheme.Id);
+        Assert.Equal(ThemeService.SystemDarkThemeId, dark.ResolvedTheme.Id);
     }
 
     [StaFact]
@@ -63,7 +63,7 @@ public class ThemeServiceTests : IDisposable
     {
         using var svc = NewService(osLight: true);
         svc.Initialize(Config("no-such-theme"));
-        Assert.Equal("parchment", svc.ResolvedTheme.Id);
+        Assert.Equal(ThemeService.SystemLightThemeId, svc.ResolvedTheme.Id);
     }
 
     [StaFact]
@@ -123,11 +123,11 @@ public class ThemeServiceTests : IDisposable
     {
         using var light = NewService(osLight: true);
         light.Initialize(Config("system"));
-        Assert.Equal("System, showing Parchment", light.ConfiguredThemeName);
+        Assert.Equal("System, showing MailBoXX Light", light.ConfiguredThemeName);
 
         using var dark = NewService(osLight: false);
         dark.Initialize(Config("system"));
-        Assert.Equal("System, showing Parchment Dark", dark.ConfiguredThemeName);
+        Assert.Equal("System, showing MailBoXX Dark", dark.ConfiguredThemeName);
     }
 
     [StaFact]

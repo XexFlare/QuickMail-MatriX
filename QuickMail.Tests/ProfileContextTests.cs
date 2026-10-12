@@ -13,7 +13,7 @@ public class ProfileContextTests
         var profile  = ProfileContext.Default();
         var expected = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "QuickMail");
+            "MailBoXX");
         Assert.Equal(expected, profile.ProfileDir);
     }
 

@@ -23,7 +23,7 @@ public static class AccountSignInMessages
         var lead = $"You signed in as {actual}, but this account is {entered} — so it was left as {entered}.";
 
         var middle = isMicrosoftSignIn
-            ? "\n\nIf an administrator just approved QuickMail for your organization here, that approval is saved.\n\n"
+            ? "\n\nIf an administrator just approved MailBoXX for your organization here, that approval is saved.\n\n"
             : "\n\n";
 
         return $"{lead}{middle}Sign in again as {entered} to finish?";

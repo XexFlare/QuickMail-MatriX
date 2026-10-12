@@ -53,6 +53,14 @@ public interface IMailService : IDisposable
     Task MarkReadAsync(Guid accountId, string folderName, string messageId, CancellationToken ct = default);
     Task MarkReadBatchAsync(Guid accountId, string folderName, IList<string> messageIds, CancellationToken ct = default);
 
+    /// <summary>
+    /// MailBoXX: clears the server read state (\Seen) on messages. Every real backend implements
+    /// it; the default only spares test doubles that never mark mail unread, and fails loudly
+    /// rather than pretending to succeed.
+    /// </summary>
+    Task MarkUnreadBatchAsync(Guid accountId, string folderName, IList<string> messageIds, CancellationToken ct = default)
+        => throw new NotSupportedException($"{GetType().Name} cannot mark messages unread.");
+
     /// <summary>Sets or clears the server \Flagged flag on a single message.</summary>
     Task SetMessageFlaggedAsync(Guid accountId, string folderName, string messageId, bool flagged, CancellationToken ct = default);
     Task MoveToTrashAsync(Guid accountId, string folderName, string messageId, CancellationToken ct = default);

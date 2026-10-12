@@ -201,7 +201,7 @@ public static class MessageExport
                 string.Join(", ", detail.Attachments.Select(a =>
                     $"{(string.IsNullOrWhiteSpace(a.FileName) ? "unnamed attachment" : a.FileName)} ({a.FileSizeDisplay})")));
 
-        Add("Saved", $"{FormatDate(context.SavedAt)}, from QuickMail");
+        Add("Saved", $"{FormatDate(context.SavedAt)}, from MailBoXX");
         return rows;
     }
 

@@ -230,7 +230,8 @@ public class MainViewModelOfflineStatusTests
         await f.Vm.InitialLoadAsync();
 
         Assert.Equal("Offline", f.Vm.ConnectionStatusText);
-        Assert.Equal("2 messages (cached — offline)", f.Vm.StatusText);
+        // MailBoXX opens on the account's Inbox rather than All Mail, so the status names it.
+        Assert.Equal("2 messages in INBOX (cached — offline)", f.Vm.StatusText);
         Assert.Contains(("Offline. Showing cached messages.", AnnouncementCategory.Status), f.Status.Announced);
         Assert.Equal(1, f.Status.Announced.Count(a => a.Text.StartsWith("Offline.", StringComparison.Ordinal)));
     }

@@ -29,6 +29,13 @@ public class ThemeService : IThemeService
     /// <summary>The virtual theme id that follows the OS: light↔dark and HC passthrough.</summary>
     public const string SystemThemeId = "system";
 
+    /// <summary>MailBoXX: the built-ins the System theme follows for OS light and dark mode.</summary>
+    public const string SystemLightThemeId = "mailboxx-light";
+    public const string SystemDarkThemeId = "mailboxx-dark";
+
+    /// <summary>Suffix of the Color resource published alongside every color-token brush.</summary>
+    public const string ColorSuffix = ".Color";
+
     private const string ThemedControlsUri = "pack://application:,,,/Styles/ThemedControls.xaml";
 
     private readonly ThemeStore _store;
@@ -327,7 +334,7 @@ public class ThemeService : IThemeService
     {
         var id = string.IsNullOrWhiteSpace(themeId) ? SystemThemeId : themeId.Trim();
         if (string.Equals(id, SystemThemeId, StringComparison.OrdinalIgnoreCase))
-            id = OsLightModeProbe() ? "parchment" : "dark";
+            id = OsLightModeProbe() ? SystemLightThemeId : SystemDarkThemeId;
 
         var theme = _store.LoadBuiltIns()
                         .Concat(_store.LoadUserThemes())
@@ -336,7 +343,7 @@ public class ThemeService : IThemeService
         {
             // Unknown id — fall back to system resolution, never throw.
             LogService.Log($"Theme id \"{id}\" not found; falling back to system.");
-            theme = OsLightModeProbe() ? BuiltInById("parchment") : BuiltInById("dark");
+            theme = OsLightModeProbe() ? BuiltInById(SystemLightThemeId) : BuiltInById(SystemDarkThemeId);
         }
 
         return theme.ResolveAgainst(BaseTheme(theme.Base));
@@ -398,6 +405,41 @@ public class ThemeService : IThemeService
         colors["successBackground"]   = window;
         colors["info"]                = windowText;
         colors["infoBackground"]      = window;
+
+        // MailBoXX surfaces: opaque system colors only (imagery is hidden via
+        // ImageryOpacity). Selection is carried by the marker bar and focus
+        // outline, so the row wash stays transparent and text keeps WindowText.
+        const string none = "#00000000";
+        colors["sidebarBackground"]    = window;
+        colors["sidebarTint"]          = window;
+        colors["sidebarText"]          = windowText;
+        colors["sidebarTextSecondary"] = windowText;
+        colors["sidebarSelection"]     = none;
+        colors["sidebarHover"]         = none;
+        colors["sidebarFocus"]         = windowText;
+        colors["rowUnreadBackground"]  = window;
+        colors["rowReadBackground"]    = window;
+        colors["rowHoverWash"]         = none;
+        colors["rowSelectedWash"]      = none;
+        colors["rowSelectedMarker"]    = highlight;
+        colors["envelopeUnread"]       = windowText;
+        colors["envelopeUnreadGlyph"]  = window;
+        colors["envelopeRead"]         = windowText;
+        colors["avatarBackground"]     = windowText;
+        colors["avatarText"]           = window;
+        colors["avatarAlt1"]           = windowText;
+        colors["avatarAlt2"]           = windowText;
+        colors["avatarAlt3"]           = windowText;
+        colors["avatarAlt4"]           = windowText;
+        colors["avatarAlt5"]           = windowText;
+        colors["readingSurface"]       = window;
+        colors["listSurface"]          = window;
+        colors["mainAreaBackground"]   = window;
+        colors["providerOutlook"]      = windowText;
+        colors["providerGmail"]        = windowText;
+        colors["providerHotmail"]      = windowText;
+        colors["providerOther"]        = windowText;
+        colors["providerGlyph"]        = window;
         return theme;
     }
 
@@ -509,6 +551,9 @@ public class ThemeService : IThemeService
             var brush = new SolidColorBrush(Color.FromArgb(a, r, g, b));
             brush.Freeze();
             dict[resourceKey] = brush;
+            // MailBoXX: the same token as a Color ("Theme.X.Color"), so XAML can build scoped
+            // brushes and gradients that still follow the active theme.
+            dict[resourceKey + ColorSuffix] = Color.FromArgb(a, r, g, b);
         }
 
         var fontName = _fontFamilyOverride.Length > 0 ? _fontFamilyOverride : resolved.Typography.FontFamily;
@@ -529,6 +574,11 @@ public class ThemeService : IThemeService
         // identical in both modes, by design. Compact reproduces the message
         // list's original shipped rendering (its template hardcoded 2,1).
         dict[ThemeKeys.ListRowPadding] = _compactList ? new Thickness(2, 1, 2, 1) : new Thickness(4, 3, 4, 3);
+
+        // MailBoXX: decorative imagery (scenic background, row images) is drawn only
+        // outside High Contrast.
+        dict[ThemeKeys.ImageryOpacity] = _isHighContrast ? 0.0 : 1.0;
+        dict[ThemeKeys.ImagerySet] = string.Equals(resolved.Base, "dark", StringComparison.OrdinalIgnoreCase) ? "dark" : "light";
 
         return dict;
     }

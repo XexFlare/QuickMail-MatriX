@@ -166,6 +166,9 @@ public class MailServiceRouter : IMailService, IConnectionProbe
     public Task MarkReadBatchAsync(Guid accountId, string folderName, IList<string> messageIds, CancellationToken ct = default)
         => For(accountId).MarkReadBatchAsync(accountId, folderName, messageIds, ct);
 
+    public Task MarkUnreadBatchAsync(Guid accountId, string folderName, IList<string> messageIds, CancellationToken ct = default)
+        => For(accountId).MarkUnreadBatchAsync(accountId, folderName, messageIds, ct);
+
     public Task SetMessageFlaggedAsync(Guid accountId, string folderName, string messageId, bool flagged, CancellationToken ct = default)
         => For(accountId).SetMessageFlaggedAsync(accountId, folderName, messageId, flagged, ct);
 

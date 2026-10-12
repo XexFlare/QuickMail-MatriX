@@ -19,7 +19,7 @@ namespace QuickMail.Tests;
 
 public class LaunchAtSignInHelperTests
 {
-    private const string Exe = @"C:\Users\u\AppData\Local\QuickMail\current\QuickMail.exe";
+    private const string Exe = @"C:\Users\u\AppData\Local\MailBoXX\current\QuickMail.exe";
 
     [Fact]
     public void DefaultProfile_CommandQuotesTheExe_AndPassesStartup()
@@ -53,7 +53,7 @@ public class LaunchAtSignInHelperTests
     [Fact]
     public void ValueName_DefaultProfile_IsPlainQuickMail()
     {
-        Assert.Equal("QuickMail", LaunchAtSignInService.BuildValueName(null));
+        Assert.Equal("MailBoXX", LaunchAtSignInService.BuildValueName(null));
     }
 
     [Fact]
@@ -62,7 +62,7 @@ public class LaunchAtSignInHelperTests
         var a = LaunchAtSignInService.BuildValueName(@"C:\Data\ProfileA");
         Assert.Equal(a, LaunchAtSignInService.BuildValueName(@"c:\data\profilea\"));
         Assert.NotEqual(a, LaunchAtSignInService.BuildValueName(@"C:\Data\ProfileB"));
-        Assert.NotEqual("QuickMail", a);
+        Assert.NotEqual("MailBoXX", a);
         Assert.True(LaunchAtSignInService.IsOurValueName(a));
     }
 
@@ -70,18 +70,18 @@ public class LaunchAtSignInHelperTests
     public void ExplicitProfileDir_NamingTheDefaultProfile_IsTheDefaultProfile()
     {
         var defaultDir = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "QuickMail");
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MailBoXX");
         var svc = new LaunchAtSignInService(Exe, defaultDir + @"\", isSupported: true);
 
-        Assert.Equal("QuickMail", svc.ValueName);
+        Assert.Equal("MailBoXX", svc.ValueName);
         Assert.Equal($"\"{Exe}\" --startup", svc.Command);
         Assert.Equal(@"C:\Data\Other", LaunchAtSignInService.NormalizeProfileDir(@"C:\Data\Other"));
     }
 
     [Theory]
-    [InlineData("QuickMail", true)]
-    [InlineData("quickmail", true)]
-    [InlineData("QuickMail (0123ABCD)", true)]
+    [InlineData("MailBoXX", true)]
+    [InlineData("mailboxx", true)]
+    [InlineData("MailBoXX (0123ABCD)", true)]
     [InlineData("QuickMailer", false)]
     [InlineData("OneDrive", false)]
     public void IsOurValueName(string name, bool expected)
@@ -125,7 +125,7 @@ public class LaunchAtSignInHelperTests
 /// <summary>Registry behavior against a throwaway key under HKCU, deleted afterwards.</summary>
 public sealed class LaunchAtSignInRegistryTests : IDisposable
 {
-    private const string Exe = @"C:\Users\u\AppData\Local\QuickMail\current\QuickMail.exe";
+    private const string Exe = @"C:\Users\u\AppData\Local\MailBoXX\current\QuickMail.exe";
     private const string OtherExe = @"C:\Portable\QuickMail.exe";
 
     private readonly string _root = $@"Software\QuickMail.Tests\LaunchAtSignIn-{Guid.NewGuid():N}";
@@ -184,7 +184,7 @@ public sealed class LaunchAtSignInRegistryTests : IDisposable
         var svc = Make();
         svc.Enable();
 
-        Assert.Equal($"\"{Exe}\" --startup", RunValue("QuickMail"));
+        Assert.Equal($"\"{Exe}\" --startup", RunValue("MailBoXX"));
         Assert.Equal(LaunchAtSignInState.On, svc.GetState());
     }
 
@@ -193,10 +193,10 @@ public sealed class LaunchAtSignInRegistryTests : IDisposable
     {
         var svc = Make();
         svc.Enable();
-        SetApproved("QuickMail", 0x03);
+        SetApproved("MailBoXX", 0x03);
 
         Assert.Equal(LaunchAtSignInState.DisabledInWindows, svc.GetState());
-        Assert.NotNull(RunValue("QuickMail"));
+        Assert.NotNull(RunValue("MailBoXX"));
     }
 
     [Fact]
@@ -204,7 +204,7 @@ public sealed class LaunchAtSignInRegistryTests : IDisposable
     {
         var svc = Make();
         svc.Enable();
-        SetApproved("QuickMail", 0x02);
+        SetApproved("MailBoXX", 0x02);
 
         Assert.Equal(LaunchAtSignInState.On, svc.GetState());
     }
@@ -214,11 +214,11 @@ public sealed class LaunchAtSignInRegistryTests : IDisposable
     {
         var svc = Make();
         svc.Enable();
-        SetApproved("QuickMail", 0x03);
+        SetApproved("MailBoXX", 0x03);
 
         svc.Enable();
 
-        Assert.Null(ApprovedValue("QuickMail"));
+        Assert.Null(ApprovedValue("MailBoXX"));
         Assert.Equal(LaunchAtSignInState.On, svc.GetState());
     }
 
@@ -227,12 +227,12 @@ public sealed class LaunchAtSignInRegistryTests : IDisposable
     {
         var svc = Make();
         svc.Enable();
-        SetApproved("QuickMail", 0x03);
+        SetApproved("MailBoXX", 0x03);
 
         svc.Disable();
 
-        Assert.Null(RunValue("QuickMail"));
-        Assert.Null(ApprovedValue("QuickMail"));
+        Assert.Null(RunValue("MailBoXX"));
+        Assert.Null(ApprovedValue("MailBoXX"));
         Assert.Equal(LaunchAtSignInState.Off, svc.GetState());
     }
 
@@ -245,7 +245,7 @@ public sealed class LaunchAtSignInRegistryTests : IDisposable
     [Fact]
     public void EntryForAnotherCopy_IsNotThisCopysEntry()
     {
-        SetRun("QuickMail", $"\"{OtherExe}\" --startup");
+        SetRun("MailBoXX", $"\"{OtherExe}\" --startup");
         Assert.Equal(LaunchAtSignInState.Off, Make().GetState());
     }
 
@@ -257,7 +257,7 @@ public sealed class LaunchAtSignInRegistryTests : IDisposable
         main.Enable();
         test.Enable();
 
-        Assert.Equal($"\"{Exe}\" --startup", RunValue("QuickMail"));
+        Assert.Equal($"\"{Exe}\" --startup", RunValue("MailBoXX"));
         Assert.Equal($"\"{Exe}\" --startup --profileDir \"C:\\Data\\TestProfile\"", RunValue(test.ValueName));
 
         test.Disable();
@@ -270,7 +270,7 @@ public sealed class LaunchAtSignInRegistryTests : IDisposable
         var svc = Make(supported: false);
         Assert.False(svc.IsSupported);
         Assert.Throws<InvalidOperationException>(svc.Enable);
-        Assert.Null(RunValue("QuickMail"));
+        Assert.Null(RunValue("MailBoXX"));
     }
 
     [Fact]
@@ -286,15 +286,15 @@ public sealed class LaunchAtSignInRegistryTests : IDisposable
         var test = Make(profileDir: @"C:\Data\TestProfile");
         test.Enable();
         SetApproved(test.ValueName, 0x03);
-        SetRun("QuickMail (FFFFFFFF)", $"\"{OtherExe}\" --startup");   // another copy's
+        SetRun("MailBoXX (FFFFFFFF)", $"\"{OtherExe}\" --startup");   // another copy's
         SetRun("SomeOtherApp", $"\"{Exe}\"");                           // not a QuickMail name
 
         LaunchAtSignInService.RemoveAllFor(Exe, RunPath, ApprovedPath);
 
-        Assert.Null(RunValue("QuickMail"));
+        Assert.Null(RunValue("MailBoXX"));
         Assert.Null(RunValue(test.ValueName));
         Assert.Null(ApprovedValue(test.ValueName));
-        Assert.NotNull(RunValue("QuickMail (FFFFFFFF)"));
+        Assert.NotNull(RunValue("MailBoXX (FFFFFFFF)"));
         Assert.NotNull(RunValue("SomeOtherApp"));
     }
 
@@ -313,12 +313,12 @@ public sealed class LaunchAtSignInRegistryTests : IDisposable
         var test = Make(profileDir: @"C:\Data\TestProfile");
         test.Enable();
         SetApproved(test.ValueName, 0x03);
-        SetRun("QuickMail (FFFFFFFF)", $"\"{OtherExe}\" --startup");   // another copy's: not removed
+        SetRun("MailBoXX (FFFFFFFF)", $"\"{OtherExe}\" --startup");   // another copy's: not removed
 
         var removed = LaunchAtSignInService.RemoveAllFor(Exe, RunPath, ApprovedPath)
                                            .OrderBy(e => e.Name, StringComparer.Ordinal).ToList();
 
-        Assert.Equal(new[] { "QuickMail", test.ValueName }, removed.Select(e => e.Name));
+        Assert.Equal(new[] { "MailBoXX", test.ValueName }, removed.Select(e => e.Name));
         Assert.Equal($"\"{Exe}\" --startup", removed[0].Command);
         Assert.Null(removed[0].Approval);
         Assert.Equal(test.Command, removed[1].Command);
@@ -347,7 +347,7 @@ public sealed class LaunchAtSignInRegistryTests : IDisposable
     public void Restore_PointsTheEntryAtTheCopyJustInstalled()
     {
         // An upgrade that lands in another folder must not restore a dead path.
-        const string newExe = @"D:\Apps\QuickMail\current\QuickMail.exe";
+        const string newExe = @"D:\Apps\MailBoXX\current\QuickMail.exe";
         Make(profileDir: @"C:\Data\TestProfile").Enable();
         var removed = LaunchAtSignInService.RemoveAllFor(Exe, RunPath, ApprovedPath);
 
@@ -365,13 +365,13 @@ public sealed class LaunchAtSignInRegistryTests : IDisposable
         // command into the Run key under QuickMail's name.
         var planted = new[]
         {
-            new StartupEntry("QuickMail", "\"C:\\Windows\\System32\\cmd.exe\" /c calc", null),
-            new StartupEntry("QuickMail (12345678)", $"\"{Exe}\" --startup --profileDir \"C:\\D\" & calc", null),
+            new StartupEntry("MailBoXX", "\"C:\\Windows\\System32\\cmd.exe\" /c calc", null),
+            new StartupEntry("MailBoXX (12345678)", $"\"{Exe}\" --startup --profileDir \"C:\\D\" & calc", null),
         };
 
         Assert.Equal(0, LaunchAtSignInService.Restore(planted, Exe, RunPath, ApprovedPath));
-        Assert.Null(RunValue("QuickMail"));
-        Assert.Null(RunValue("QuickMail (12345678)"));
+        Assert.Null(RunValue("MailBoXX"));
+        Assert.Null(RunValue("MailBoXX (12345678)"));
     }
 
     [Fact]
@@ -379,10 +379,10 @@ public sealed class LaunchAtSignInRegistryTests : IDisposable
     {
         Make().Enable();
         var removed = LaunchAtSignInService.RemoveAllFor(Exe, RunPath, ApprovedPath);
-        SetRun("QuickMail", $"\"{OtherExe}\" --startup");   // set since, by something newer
+        SetRun("MailBoXX", $"\"{OtherExe}\" --startup");   // set since, by something newer
 
         Assert.Equal(0, LaunchAtSignInService.Restore(removed, Exe, RunPath, ApprovedPath));
-        Assert.Equal($"\"{OtherExe}\" --startup", RunValue("QuickMail"));
+        Assert.Equal($"\"{OtherExe}\" --startup", RunValue("MailBoXX"));
     }
 
     [Fact]
@@ -422,7 +422,7 @@ public sealed class StartupEntryHandoffTests : IDisposable
 {
     private readonly string _path = Path.Combine(Path.GetTempPath(), $"quickmail-handoff-test-{Guid.NewGuid():N}.json");
     private static readonly DateTimeOffset Now = new(2026, 10, 5, 12, 0, 0, TimeSpan.Zero);
-    private static readonly StartupEntry Entry = new("QuickMail", "\"C:\\q\\QuickMail.exe\" --startup", new byte[] { 3, 0, 0, 0 });
+    private static readonly StartupEntry Entry = new("MailBoXX", "\"C:\\q\\QuickMail.exe\" --startup", new byte[] { 3, 0, 0, 0 });
 
     public void Dispose() => File.Delete(_path);
 

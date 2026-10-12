@@ -54,7 +54,7 @@ public class ComposeWindowTitleTests
     {
         var vm = MakeVm(kind, "Quarterly review");
 
-        Assert.Equal("Quarterly review - Plain Text - QuickMail", vm.WindowTitle);
+        Assert.Equal("Quarterly review - Plain Text - MailBoXX", vm.WindowTitle);
     }
 
     [Fact]
@@ -62,7 +62,7 @@ public class ComposeWindowTitleTests
     {
         var vm = MakeVm(ComposeKind.NewMessage, "   spaced out   ");
 
-        Assert.Equal("spaced out - Plain Text - QuickMail", vm.WindowTitle);
+        Assert.Equal("spaced out - Plain Text - MailBoXX", vm.WindowTitle);
     }
 
     // ── Kind label leads when the subject is blank ───────────────────────────────
@@ -73,7 +73,7 @@ public class ComposeWindowTitleTests
     {
         var vm = MakeVm(kind);
 
-        Assert.Equal($"{expectedLabel} - Plain Text - QuickMail", vm.WindowTitle);
+        Assert.Equal($"{expectedLabel} - Plain Text - MailBoXX", vm.WindowTitle);
     }
 
     [Theory]
@@ -84,7 +84,7 @@ public class ComposeWindowTitleTests
     {
         var vm = MakeVm(ComposeKind.Reply, subject);
 
-        Assert.Equal("Reply - Plain Text - QuickMail", vm.WindowTitle);
+        Assert.Equal("Reply - Plain Text - MailBoXX", vm.WindowTitle);
     }
 
     [Fact]
@@ -93,7 +93,7 @@ public class ComposeWindowTitleTests
         var vm = MakeVm(); // never seeded
 
         Assert.Equal(ComposeKind.NewMessage, vm.ComposeKind);
-        Assert.Equal("New Message - Plain Text - QuickMail", vm.WindowTitle);
+        Assert.Equal("New Message - Plain Text - MailBoXX", vm.WindowTitle);
     }
 
     // ── Mode segment ─────────────────────────────────────────────────────────────
@@ -107,7 +107,7 @@ public class ComposeWindowTitleTests
         var vm = MakeVm(ComposeKind.NewMessage, "Subject");
         vm.CurrentMode = mode;
 
-        Assert.Equal($"Subject - {expected} - QuickMail", vm.WindowTitle);
+        Assert.Equal($"Subject - {expected} - MailBoXX", vm.WindowTitle);
     }
 
     // ── Change notification ──────────────────────────────────────────────────────
@@ -127,7 +127,7 @@ public class ComposeWindowTitleTests
         vm.Subject = "New subject";
 
         Assert.True(raised);
-        Assert.Equal("New subject - Plain Text - QuickMail", vm.WindowTitle);
+        Assert.Equal("New subject - Plain Text - MailBoXX", vm.WindowTitle);
     }
 
     [Fact]
@@ -158,6 +158,6 @@ public class ComposeWindowTitleTests
         vm.Seed(new ComposeModel { Kind = ComposeKind.Forward });
 
         Assert.True(raised);
-        Assert.Equal("Forward - Plain Text - QuickMail", vm.WindowTitle);
+        Assert.Equal("Forward - Plain Text - MailBoXX", vm.WindowTitle);
     }
 }

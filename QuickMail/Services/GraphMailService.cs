@@ -401,6 +401,13 @@ public class GraphMailService : IMailService, IConnectionProbe
             await _client.PatchAsync(account, $"/me/messages/{id}", new { isRead = true }, GraphHeaders.ImmutableId, ct);
     }
 
+    public async Task MarkUnreadBatchAsync(Guid accountId, string folderName, IList<string> messageIds, CancellationToken ct = default)
+    {
+        var account = Account(accountId);
+        foreach (var id in messageIds)
+            await _client.PatchAsync(account, $"/me/messages/{id}", new { isRead = false }, GraphHeaders.ImmutableId, ct);
+    }
+
     public Task MoveToTrashAsync(Guid accountId, string folderName, string messageId, CancellationToken ct = default)
         => MoveMessagesAsync(accountId, folderName, new[] { messageId }, DeletedItemsFolderId, ct);
 

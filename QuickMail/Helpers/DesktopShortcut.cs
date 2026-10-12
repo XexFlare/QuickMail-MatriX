@@ -12,7 +12,7 @@ namespace QuickMail.Helpers;
 public static class DesktopShortcut
 {
     private static string ShortcutPath =>
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "QuickMail.lnk");
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), AppIdentity.Name + ".lnk");
 
     public static bool Exists() => File.Exists(ShortcutPath);
 
@@ -32,7 +32,7 @@ public static class DesktopShortcut
             dynamic link = shell.CreateShortcut(ShortcutPath);
             link.TargetPath = target;
             link.WorkingDirectory = Path.GetDirectoryName(target);
-            link.Description = "QuickMail";
+            link.Description = AppIdentity.Name;
             link.Save();
             return true;
         }

@@ -27,7 +27,7 @@ public sealed class GraphServerRuleService : IServerRuleService
     private const string RulesPath = "/me/mailFolders/inbox/messageRules";
 
     private const string ConsentMessage =
-        "QuickMail can't manage server rules because your organization hasn't granted it permission. " +
+        "MailBoXX can't manage server rules because your organization hasn't granted it permission. " +
         "Ask your administrator to grant it, then sign in again.";
 
     private readonly IAccountService _accounts;
@@ -88,7 +88,7 @@ public sealed class GraphServerRuleService : IServerRuleService
         // Outlook. Refuse rather than corrupt the mailbox (spec §16).
         if (!rule.IsFullyEditable)
             throw new InvalidOperationException(
-                $"Rule '{rule.DisplayName}' uses conditions or actions QuickMail can't represent " +
+                $"Rule '{rule.DisplayName}' uses conditions or actions MailBoXX can't represent " +
                 "yet, so it cannot be saved from here without losing them. Edit it in Outlook.");
 
         var account = Account(accountId);

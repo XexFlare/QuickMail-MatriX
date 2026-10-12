@@ -267,6 +267,12 @@ public class Pop3MailService : IMailService
         await _store.UpdateIsReadBatchAsync(messageIds.Select(id => (accountId, folderName, id)), isRead: true);
     }
 
+    public async Task MarkUnreadBatchAsync(Guid accountId, string folderName, IList<string> messageIds, CancellationToken ct = default)
+    {
+        if (_onlineMode) return;
+        await _store.UpdateIsReadBatchAsync(messageIds.Select(id => (accountId, folderName, id)), isRead: false);
+    }
+
     public async Task SetMessageFlaggedAsync(Guid accountId, string folderName, string messageId, bool flagged, CancellationToken ct = default)
     {
         if (_onlineMode) return;
@@ -806,7 +812,7 @@ public class Pop3MailService : IMailService
         }
 
         const string notKept =
-            "QuickMail did not keep the original of this message when it was downloaded, and it is no longer on the server.";
+            "MailBoXX did not keep the original of this message when it was downloaded, and it is no longer on the server.";
 
         // A message written here (a sent copy, a draft) never came from the server to be fetched again.
         if (messageId.StartsWith(LocalIdPrefix, StringComparison.Ordinal))
@@ -997,7 +1003,7 @@ public class Pop3MailService : IMailService
             HtmlBody          = msg.HtmlBody ?? string.Empty,
             Attachments       = attachments,
             InlineImages      = InlineImagesOf(msg),
-            DraftComposeMode  = ImapMailService.ParseComposeMode(msg.Headers["X-QuickMail-Compose-Mode"]),
+            DraftComposeMode  = ImapMailService.ParseComposeMode(msg.Headers["X-MailBoXX-Compose-Mode"]),
         };
 
         ImapMailService.PopulateCalendar(detail, ImapMailService.FindCalendarText(msg));
@@ -1103,7 +1109,7 @@ public class Pop3MailService : IMailService
     /// </summary>
     private const string OnlineModeExplanation =
         "POP3 accounts store their mail locally, and --online mode runs without the local store. " +
-        "Restart QuickMail without --online to use this account.";
+        "Restart MailBoXX without --online to use this account.";
 
     private static bool IsInbox(string folderName) =>
         string.Equals(folderName, InboxFolder, StringComparison.OrdinalIgnoreCase);

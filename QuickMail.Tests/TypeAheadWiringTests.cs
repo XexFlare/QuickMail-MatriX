@@ -64,6 +64,7 @@ public class TypeAheadWiringTests
         new("Views/AddressBookWindow.xaml",    "GroupMembersList", "TypeAheadText",           typeof(ContactModel)),
         new("Views/AccountManagerDialog.xaml", "AccountListBox",   "AccountLabelWithDefault", typeof(AccountModel)),
         new("Views/MainWindow.xaml",           "AccountList",      "AccountLabel",            typeof(AccountModel)),
+        new("Views/MainWindow.xaml",           "MainFolderList",   "Label",                   typeof(FolderTreeNode)),
         new("Views/FolderPickerWindow.xaml",   "FolderListBox",    "FolderPath",              typeof(FolderPickerWindow.FolderPickerItem)),
         new("Views/WatchedConversationsWindow.xaml", "WatchList",  "Label",                   typeof(WatchRow)),
     ];

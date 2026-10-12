@@ -19,7 +19,7 @@ namespace QuickMail.Services;
 
 public class ImapMailService : IMailService, IChangeNotifier, IConnectionProbe
 {
-    private static readonly string[] ComposeModeHeaders = ["X-QuickMail-Compose-Mode"];
+    private static readonly string[] ComposeModeHeaders = ["X-MailBoXX-Compose-Mode"];
 
     private const int DefaultMaxConnectionsPerAccount = 6;
     private const int AbsoluteMaxConnectionsPerAccount = 15;
@@ -534,7 +534,7 @@ public class ImapMailService : IMailService, IChangeNotifier, IConnectionProbe
                 HtmlBody      = htmlText,
                 Attachments   = attachments,
                 InlineImages  = ExtractInlineImages(s.Body),
-                DraftComposeMode = ParseComposeMode(s.Headers?["X-QuickMail-Compose-Mode"]),
+                DraftComposeMode = ParseComposeMode(s.Headers?["X-MailBoXX-Compose-Mode"]),
             };
 
             PopulateCalendar(detail, rawCalendarIcs);
@@ -591,6 +591,17 @@ public class ImapMailService : IMailService, IChangeNotifier, IConnectionProbe
         var folder = await client.GetFolderAsync(folderName, ct);
         await folder.OpenAsync(FolderAccess.ReadWrite, ct);
         try   { await folder.AddFlagsAsync(messageIds.Select(ToUid).ToList(), MessageFlags.Seen, true, ct); }
+        finally { await folder.CloseAsync(false, ct); }
+    }
+
+    public async Task MarkUnreadBatchAsync(Guid accountId, string folderName, IList<string> messageIds, CancellationToken ct = default)
+    {
+        if (messageIds.Count == 0) return;
+        using var lease = await RentClientAsync(accountId, ImapLeasePriority.Foreground, ct);
+        var client = lease.Client;
+        var folder = await client.GetFolderAsync(folderName, ct);
+        await folder.OpenAsync(FolderAccess.ReadWrite, ct);
+        try   { await folder.RemoveFlagsAsync(messageIds.Select(ToUid).ToList(), MessageFlags.Seen, true, ct); }
         finally { await folder.CloseAsync(false, ct); }
     }
 

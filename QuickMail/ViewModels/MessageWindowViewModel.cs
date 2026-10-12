@@ -65,7 +65,7 @@ public sealed partial class MessageWindowViewModel : ObservableObject
         {
             var subject = MessageDetail?.Subject ?? SelectedMessage?.Subject;
             if (string.IsNullOrWhiteSpace(subject))
-                return "QuickMail";
+                return "MailBoXX";
             var trimmed = subject.Trim();
             return trimmed.Length > 80 ? trimmed[..80] + "…" : trimmed;
         }

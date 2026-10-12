@@ -216,7 +216,7 @@ public partial class SettingsViewModel : ObservableObject
                 actual != value
                     ? "Screenshot capture could not be turned on. Check the log for details."
                     : actual
-                        ? "Screenshot capture on. QuickMail is saving screen images to disk this session."
+                        ? "Screenshot capture on. MailBoXX is saving screen images to disk this session."
                         : "Screenshot capture off.");
         }
     }
@@ -810,7 +810,7 @@ public partial class SettingsViewModel : ObservableObject
         LaunchAtSignIn = state == LaunchAtSignInState.On;
         _launchAtSignInAsLoaded = LaunchAtSignIn;
         LaunchAtSignInHelp = state == LaunchAtSignInState.DisabledInWindows
-            ? "Turned off in Windows startup apps settings, so Windows will not start QuickMail. Checking this turns it back on."
+            ? "Turned off in Windows startup apps settings, so Windows will not start MailBoXX. Checking this turns it back on."
             : "";
     }
 

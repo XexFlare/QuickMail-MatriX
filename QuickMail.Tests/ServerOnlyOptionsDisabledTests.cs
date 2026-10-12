@@ -82,7 +82,7 @@ public class ServerOnlyOptionsDisabledTests
         vm.AccountSupportsServerRules = true;
 
         Assert.False(vm.CanUseServerOnlyOptions);
-        Assert.Contains("runs in QuickMail", vm.ServerOnlyOptionsDisabledReason, StringComparison.Ordinal);
+        Assert.Contains("runs in MailBoXX", vm.ServerOnlyOptionsDisabledReason, StringComparison.Ordinal);
     }
 
     [Fact]

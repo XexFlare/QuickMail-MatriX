@@ -183,7 +183,7 @@ public class ReconnectAccountTests
         await vm.ReconnectAccountCommand.ExecuteAsync(orphan);
 
         Assert.Empty(mail.Connected);
-        Assert.Equal("Could not reconnect Support: the account it belongs to is no longer in QuickMail.", vm.StatusText);
+        Assert.Equal("Could not reconnect Support: the account it belongs to is no longer in MailBoXX.", vm.StatusText);
     }
 
     [Fact]

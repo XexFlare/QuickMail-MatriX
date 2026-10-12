@@ -81,42 +81,42 @@ internal static class UninstallDataPrompt
             # .NET, not Join-Path/Test-Path: on a drive that no longer exists (a removed USB drive,
             # an unmapped share) Join-Path fails and Test-Path then throws, which would end the
             # script without asking. File.Exists answers false for anything it cannot reach.
-            try { return [System.IO.File]::Exists([System.IO.Path]::Combine([string]$loc, 'current', 'QuickMail.exe')) }
+            try { return [System.IO.File]::Exists([System.IO.Path]::Combine([string]$loc, 'current', 'MailBoXX.exe')) }
             catch { return $false }
         }
         Write-Log 'prompt script started'
         try {
             $deadline = (Get-Date).AddSeconds($RemovalWaitSeconds)
             while ((Test-Path -LiteralPath $Exe) -and (Get-Date) -lt $deadline) { Start-Sleep -Milliseconds 500 }
-            if (Test-Path -LiteralPath $Exe) { Write-Log 'QuickMail is still installed; not asking'; exit }
+            if (Test-Path -LiteralPath $Exe) { Write-Log 'MailBoXX is still installed; not asking'; exit }
 
             $deadline = (Get-Date).AddSeconds($MaxWaitSeconds)
             $quiet = 0
             while ($quiet -lt $QuietSeconds -and (Get-Date) -lt $deadline) {
-                if (Test-Path -LiteralPath $Exe) { Write-Log 'QuickMail was installed again (an upgrade); not asking'; exit }
+                if (Test-Path -LiteralPath $Exe) { Write-Log 'MailBoXX was installed again (an upgrade); not asking'; exit }
                 if (Test-InstallerBusy) { $quiet = 0 } else { $quiet++ }
                 Start-Sleep -Seconds 1
             }
-            if (Test-Path -LiteralPath $Exe) { Write-Log 'QuickMail was installed again (an upgrade); not asking'; exit }
-            # Velopack's own Add/Remove Programs entries: MSI:QuickMail for an MSI install,
-            # QuickMail for a Setup.exe one. Either naming a live install (installed again in
+            if (Test-Path -LiteralPath $Exe) { Write-Log 'MailBoXX was installed again (an upgrade); not asking'; exit }
+            # Velopack's own Add/Remove Programs entries: MSI:MailBoXX for an MSI install,
+            # MailBoXX for a Setup.exe one. Either naming a live install (installed again in
             # another folder, or a second copy) means a copy that still uses this data.
-            foreach ($row in 'MSI:QuickMail', 'QuickMail') {
+            foreach ($row in 'MSI:MailBoXX', 'MailBoXX') {
                 if (Test-LiveInstallRow $row) {
-                    Write-Log "QuickMail is still installed ($row); not asking"; exit
+                    Write-Log "MailBoXX is still installed ($row); not asking"; exit
                 }
             }
             if (-not (Test-Path -LiteralPath $DataDir)) { Write-Log 'no data folder; not asking'; exit }
             if ($DryRun) { Write-Log 'would ask'; exit }
 
             Add-Type -AssemblyName System.Windows.Forms
-            $msg = "QuickMail has been uninstalled.`n`n" +
-                   "Do you also want to remove your QuickMail data? This permanently deletes all accounts, settings, contacts, rules, templates, saved views, and cached mail stored under:`n$DataDir`n`n" +
-                   "It also removes QuickMail's saved passwords and sign-ins from Windows Credential Manager.`n`n" +
+            $msg = "MailBoXX has been uninstalled.`n`n" +
+                   "Do you also want to remove your MailBoXX data? This permanently deletes all accounts, settings, contacts, rules, templates, saved views, and cached mail stored under:`n$DataDir`n`n" +
+                   "It also removes MailBoXX's saved passwords and sign-ins from Windows Credential Manager.`n`n" +
                    "Choose No to keep everything, so a future install picks up exactly where you left off."
             $owner = New-Object System.Windows.Forms.Form -Property @{ TopMost = $true }
             Write-Log 'asking'
-            $r = [System.Windows.Forms.MessageBox]::Show($owner, $msg, 'QuickMail Uninstall',
+            $r = [System.Windows.Forms.MessageBox]::Show($owner, $msg, 'MailBoXX Uninstall',
                 [System.Windows.Forms.MessageBoxButtons]::YesNo,
                 [System.Windows.Forms.MessageBoxIcon]::Question,
                 [System.Windows.Forms.MessageBoxDefaultButton]::Button2)
@@ -124,7 +124,7 @@ internal static class UninstallDataPrompt
             if ($r -eq [System.Windows.Forms.DialogResult]::Yes) {
                 Remove-Item -LiteralPath $DataDir -Recurse -Force -ErrorAction SilentlyContinue
                 (cmdkey /list) | ForEach-Object {
-                    if ($_ -match 'target=(QuickMail\S*)') { cmdkey /delete:$($Matches[1]) | Out-Null }
+                    if ($_ -match 'target=(MailBoXX\S*)') { cmdkey /delete:$($Matches[1]) | Out-Null }
                 }
                 Write-Log 'data removal completed'
             }

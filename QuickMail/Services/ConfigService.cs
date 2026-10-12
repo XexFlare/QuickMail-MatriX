@@ -273,6 +273,7 @@ public class ConfigService : IConfigService
                         config.AppearanceListDensity = string.Equals(value, "compact", StringComparison.OrdinalIgnoreCase) ? "compact" : "comfortable";
                         break;
                     case "appearanceforcemessagetheme": config.AppearanceForceMessageTheme = ParseBool(value); break;
+                    case "contextimages": config.ContextImages = ParseBool(value); break;
                     case "customannouncements":  config.CustomAnnouncements = ParseBool(value); break;
                     case "announcehints":        config.AnnounceHints        = ParseBool(value); break;
                     case "announcestatus":       config.AnnounceStatus       = ParseBool(value); break;
@@ -405,8 +406,8 @@ public class ConfigService : IConfigService
     {
         var sb = new StringBuilder();
 
-        sb.AppendLine("# QuickMail Configuration File");
-        sb.AppendLine("# Edit this file with any text editor while QuickMail is closed.");
+        sb.AppendLine("# MailBoXX Configuration File");
+        sb.AppendLine("# Edit this file with any text editor while MailBoXX is closed.");
         sb.AppendLine("# Settings take effect on next launch.");
         sb.AppendLine();
 
@@ -532,8 +533,13 @@ public class ConfigService : IConfigService
         sb.AppendLine("# Values: on, off.");
         sb.AppendLine();
 
+        sb.AppendLine($"ContextImages = {(config.ContextImages ? "on" : "off")}");
+        sb.AppendLine("# Draw a picture behind each message row, chosen on this computer from the sender");
+        sb.AppendLine("# and subject only. Nothing is sent anywhere. Values: on, off.");
+        sb.AppendLine();
+
         sb.AppendLine($"CustomAnnouncements = {(config.CustomAnnouncements ? "on" : "off")}");
-        sb.AppendLine("# Master switch for all custom screen reader announcements from QuickMail.");
+        sb.AppendLine("# Master switch for all custom screen reader announcements from MailBoXX.");
         sb.AppendLine("# When off, only native control announcements (focus, selection) are spoken.");
         sb.AppendLine("# Values: on, off.");
         sb.AppendLine();
@@ -630,12 +636,12 @@ public class ConfigService : IConfigService
         sb.AppendLine();
 
         sb.AppendLine($"LastSaveAsFolder = {config.LastSaveAsFolder}");
-        sb.AppendLine("# Where Save As last saved to. Maintained by QuickMail.");
+        sb.AppendLine("# Where Save As last saved to. Maintained by MailBoXX.");
         sb.AppendLine();
 
         sb.AppendLine($"NotifyOnNewMail = {(config.NotifyOnNewMail ? "on" : "off")}");
         sb.AppendLine("# Show a Windows notification when new mail arrives in an inbox.");
-        sb.AppendLine("# Notifications appear while QuickMail is running. Values: on, off.");
+        sb.AppendLine("# Notifications appear while MailBoXX is running. Values: on, off.");
         sb.AppendLine();
 
         sb.AppendLine($"NotifyOnWatchedConversation = {(config.NotifyOnWatchedConversation ? "on" : "off")}");
@@ -645,13 +651,13 @@ public class ConfigService : IConfigService
         sb.AppendLine();
 
         sb.AppendLine($"CloseToTray = {(config.CloseToTray ? "on" : "off")}");
-        sb.AppendLine("# When you close the main window, keep QuickMail running in the notification");
+        sb.AppendLine("# When you close the main window, keep MailBoXX running in the notification");
         sb.AppendLine("# area (system tray) instead of exiting, so new-mail notifications keep arriving.");
         sb.AppendLine("# Restore it from the tray icon or a notification. Values: on, off.");
         sb.AppendLine();
 
         sb.AppendLine($"StartMinimizedAtSignIn = {(config.StartMinimizedAtSignIn ? "on" : "off")}");
-        sb.AppendLine("# When Windows starts QuickMail as you sign in, start without opening the window:");
+        sb.AppendLine("# When Windows starts MailBoXX as you sign in, start without opening the window:");
         sb.AppendLine("# in the notification area if CloseToTray is on, otherwise minimized on the");
         sb.AppendLine("# taskbar. Whether it starts at sign-in is set in Settings > Startup, and lives");
         sb.AppendLine("# in Windows' startup apps list rather than in this file. Values: on, off.");
@@ -670,8 +676,8 @@ public class ConfigService : IConfigService
         sb.AppendLine();
 
         sb.AppendLine($"EnableLogging = {(config.EnableLogging ? "on" : "off")}");
-        sb.AppendLine("# Write log entries to quickmail.log. When off, no log file is written.");
-        sb.AppendLine("# If QuickMail was launched with /debug, this setting is ignored and logging always runs.");
+        sb.AppendLine("# Write log entries to mailboxx.log. When off, no log file is written.");
+        sb.AppendLine("# If MailBoXX was launched with /debug, this setting is ignored and logging always runs.");
         sb.AppendLine("# Values: on, off.");
         sb.AppendLine();
 
@@ -697,7 +703,7 @@ public class ConfigService : IConfigService
         sb.AppendLine($"AutoUpdate = {(config.AutoUpdate ? "on" : "off")}");
         sb.AppendLine("# Download and install updates automatically (installed copies).");
         sb.AppendLine("# When off, the Help menu still reports available updates but nothing is");
-        sb.AppendLine("# downloaded or installed. Takes effect the next time QuickMail starts.");
+        sb.AppendLine("# downloaded or installed. Takes effect the next time MailBoXX starts.");
         sb.AppendLine("# Values: on, off.");
         sb.AppendLine();
 
@@ -771,7 +777,7 @@ public class ConfigService : IConfigService
         // below. Written unconditionally (even when empty) so the file documents the settings and
         // shows a user where to look; empty StartupFolder means All Mail.
         sb.AppendLine($"StartupFolder = {config.StartupFolder}");
-        sb.AppendLine("# The folder QuickMail opens in. Empty means All Mail.");
+        sb.AppendLine("# The folder MailBoXX opens in. Empty means All Mail.");
         sb.AppendLine("# Set it from the folder tree's context menu (\"Set as Startup Folder\") or");
         sb.AppendLine("# under File > Settings > Startup. A virtual folder is stored by name, e.g.");
         sb.AppendLine("# AllInboxes; a real folder is stored as its server name plus the account");

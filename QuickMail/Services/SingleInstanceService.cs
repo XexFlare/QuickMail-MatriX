@@ -36,7 +36,7 @@ public sealed class SingleInstanceService : IDisposable
     public static SingleInstanceService? TryAcquire(string[] args, bool signalExisting = true)
     {
         var key = ProfileKey(args);
-        var mutex = new Mutex(initiallyOwned: true, $@"Local\QuickMail-{key}", out var createdNew);
+        var mutex = new Mutex(initiallyOwned: true, $@"Local\{AppIdentity.Name}-{key}", out var createdNew);
         if (!createdNew)
         {
             mutex.Dispose();
@@ -87,7 +87,7 @@ public sealed class SingleInstanceService : IDisposable
         }
     }
 
-    private static string ActivateEventName(string key) => $@"Local\QuickMail-{key}-activate";
+    private static string ActivateEventName(string key) => $@"Local\{AppIdentity.Name}-{key}-activate";
 
     /// <summary>
     /// Derives a fixed-length identity for the profile directory chosen by the command line,
@@ -101,7 +101,7 @@ public sealed class SingleInstanceService : IDisposable
         if (raw is null)
         {
             dir = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "QuickMail");
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppIdentity.DataFolderName);
         }
         else
         {

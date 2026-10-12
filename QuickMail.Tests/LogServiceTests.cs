@@ -42,7 +42,7 @@ public sealed class LogServiceTests : IDisposable
         try { Directory.Delete(_tempDir, recursive: true); } catch { }
     }
 
-    private string LogFile => Path.Combine(_tempDir, "quickmail.log");
+    private string LogFile => Path.Combine(_tempDir, "mailboxx.log");
 
     /// <summary>
     /// A marker unique to this test instance. LogService's target directory is static, so while

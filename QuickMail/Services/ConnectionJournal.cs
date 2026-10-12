@@ -124,7 +124,7 @@ public static class ConnectionJournal
                 {
                     _enabled = true;
                     Record(ConnectionEventKind.Status, "-", "-", "diagnostics-enabled",
-                        $"QuickMail {AppVersion()} pid={Environment.ProcessId}");
+                        $"MailBoXX {AppVersion()} pid={Environment.ProcessId}");
                 }
                 else
                 {
@@ -313,7 +313,7 @@ public static class ConnectionJournal
         var events = Snapshot();
         var sb = new StringBuilder();
 
-        sb.AppendLine("QuickMail connection diagnostics report");
+        sb.AppendLine("MailBoXX connection diagnostics report");
         sb.AppendLine($"Generated:  {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
         sb.AppendLine($"Version:    {AppVersion()}");
         sb.AppendLine($"OS:         {Environment.OSVersion}");

@@ -16,7 +16,7 @@ namespace QuickMail.Services;
 public sealed class ServerRuleConsentRequiredException : Exception
 {
     public ServerRuleConsentRequiredException()
-        : base("QuickMail doesn't have permission to manage server rules for this account.") { }
+        : base("MailBoXX doesn't have permission to manage server rules for this account.") { }
 
     public ServerRuleConsentRequiredException(string message) : base(message) { }
 

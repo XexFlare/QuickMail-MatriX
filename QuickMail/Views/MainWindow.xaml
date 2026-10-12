@@ -9,12 +9,20 @@
         xmlns:prim="clr-namespace:System.Windows.Controls.Primitives;assembly=PresentationFramework"
         mc:Ignorable="d"
         Title="{Binding WindowTitle}"
-        Height="650" Width="1000"
-        MinHeight="400" MinWidth="700"
+        Height="800" Width="1280"
+        MinHeight="520" MinWidth="980"
         Background="{DynamicResource Theme.WindowBackground}"
         Foreground="{DynamicResource Theme.TextPrimary}"
         FontFamily="{DynamicResource Theme.FontFamily}"
-        FontSize="{DynamicResource Theme.FontSizeBase}">
+        FontSize="{DynamicResource Theme.FontSizeBase}"
+        StateChanged="MbxWindow_StateChanged">
+
+    <!-- MailBoXX: borderless frame. The app draws its own caption buttons over the scenic main
+         area (MainWindow.MailBoXX.cs); resizing and Aero Snap stay with Windows. -->
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0" ResizeBorderThickness="6" GlassFrameThickness="0"
+                      CornerRadius="0" UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
 
     <Window.Resources>
         <local:BoolToFontWeightConverter x:Key="BoolToWeightConverter"/>
@@ -22,6 +30,200 @@
         <local:BoolToGridLengthConverter        x:Key="BoolToGridLengthConverter"/>
         <local:StringToVisibilityConverter      x:Key="StringToVisibilityConverter"/>
         <local:StringToBrushConverter           x:Key="StringToBrushConverter"/>
+
+        <!-- ── MailBoXX shell resources ── Every color and size is a Theme.* token
+             (ThemeRegressionGuardTests); these styles are self-contained so they also work under
+             High Contrast, where QuickMail withdraws ThemedControls. -->
+        <local:InitialConverter x:Key="InitialConverter"/>
+        <local:ContextImageBrushConverter x:Key="ContextImageBrushConverter"/>
+        <local:AccountProviderConverter x:Key="AccountProviderConverter"/>
+        <local:FolderGlyphConverter x:Key="FolderGlyphConverter"/>
+        <local:MainFolderLabelConverter x:Key="MainFolderLabelConverter"/>
+        <local:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
+        <local:AvatarColorIndexConverter x:Key="AvatarColorIndexConverter"/>
+        <!-- Replaced at runtime when the user picks their own picture (Settings). -->
+        <BitmapImage x:Key="Mbx.ScenicImageSource"
+                     UriSource="pack://application:,,,/MailBoXX;component/Assets/Scenic/serengeti-kopjes.jpg"/>
+
+        <Style x:Key="Mbx.CaptionButton" TargetType="Button">
+            <Setter Property="Width" Value="46"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+            <Setter Property="FontSize" Value="{DynamicResource Theme.FontSizeSmall}"/>
+            <Setter Property="Foreground" Value="{DynamicResource Theme.TextPrimary}"/>
+            <Setter Property="Background" Value="{DynamicResource Theme.ReadingSurface}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <!-- Glyphs sit straight on the picture (no patch behind them); a soft halo in the
+                         surface colour keeps them readable on any part of the photo. -->
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Border x:Name="back" Background="{TemplateBinding Background}" Opacity="0"/>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <ContentPresenter.Effect>
+                                    <DropShadowEffect ShadowDepth="0" BlurRadius="8" Opacity="0.9"
+                                                      Color="{DynamicResource Theme.SurfaceBackground.Color}"/>
+                                </ContentPresenter.Effect>
+                            </ContentPresenter>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="back" Property="Opacity" Value="1"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="Mbx.CaptionCloseButton" TargetType="Button" BasedOn="{StaticResource Mbx.CaptionButton}">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource Theme.Error}"/>
+                    <Setter Property="Foreground" Value="{DynamicResource Theme.TextOnAccent}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="Mbx.SidebarButton" TargetType="Button">
+            <Setter Property="Foreground" Value="{DynamicResource Theme.SidebarText}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Padding" Value="14,9"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="FocusVisualStyle" Value="{DynamicResource FocusVisual}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource Theme.SidebarHover}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource Theme.SidebarSelection}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.6"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="Mbx.IconButton" TargetType="Button">
+            <Setter Property="MinWidth" Value="40"/>
+            <Setter Property="MinHeight" Value="36"/>
+            <Setter Property="FontSize" Value="{DynamicResource Theme.FontSizeLarge}"/>
+            <Setter Property="Foreground" Value="{DynamicResource Theme.TextPrimary}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="FocusVisualStyle" Value="{DynamicResource FocusVisual}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource Theme.AccentSubtle}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource Theme.SelectionInactive}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="{DynamicResource Theme.TextDisabled}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="Mbx.TextDropDownButton" TargetType="Button" BasedOn="{StaticResource Mbx.IconButton}">
+            <Setter Property="FontSize" Value="{DynamicResource Theme.FontSizeBase}"/>
+            <Setter Property="Padding" Value="8,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <ContentPresenter VerticalAlignment="Center"/>
+                                <local:AriaHiddenTextBlock Text="&#xE70D;" FontFamily="Segoe MDL2 Assets"
+                                                           FontSize="{DynamicResource Theme.FontSizeSmall}"
+                                                           Margin="8,2,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{DynamicResource Theme.AccentSubtle}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Windows 10 Mail-style text tab: accent text and underline when selected. -->
+        <Style x:Key="Mbx.PlaceholderTab" TargetType="RadioButton">
+            <Setter Property="Foreground" Value="{DynamicResource Theme.TextPrimary}"/>
+            <Setter Property="FontSize" Value="{DynamicResource Theme.FontSizeLarge}"/>
+            <Setter Property="Margin" Value="0,0,24,0"/>
+            <Setter Property="FocusVisualStyle" Value="{DynamicResource FocusVisual}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <StackPanel Background="Transparent">
+                            <ContentPresenter Margin="0,4,0,6"/>
+                            <Rectangle x:Name="underline" Height="3" Fill="{DynamicResource Theme.Accent}"
+                                       Visibility="Hidden"/>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="underline" Property="Visibility" Value="Visible"/>
+                                <Setter Property="Foreground" Value="{DynamicResource Theme.Accent}"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="{DynamicResource Theme.Accent}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Square search field. -->
+        <Style x:Key="Mbx.SearchBox" TargetType="TextBox">
+            <Setter Property="Foreground" Value="{DynamicResource Theme.TextPrimary}"/>
+            <Setter Property="Background" Value="{DynamicResource Theme.InputBackground}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource Theme.InputBorder}"/>
+            <Setter Property="CaretBrush" Value="{DynamicResource Theme.TextPrimary}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8,7,34,7"/>
+            <Setter Property="FontSize" Value="{DynamicResource Theme.FontSizeLarge}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}"
+                                          Focusable="False" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource Theme.Accent}"/>
+                                <Setter TargetName="bd" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
         <!-- View Mode menu entries (#663).
              The menu is bound to MainViewModel.ViewModeOptions, which holds only the four
@@ -256,6 +458,14 @@
                       AutomationProperties.Name="Move to Archive"
                       Click="MessageContextMenu_Archive_Click"/>
             <Separator/>
+            <MenuItem Header="Mark as R_ead"
+                      InputGestureText="Ctrl+Q"
+                      AutomationProperties.Name="Mark as Read"
+                      Click="MessageContextMenu_MarkRead_Click"/>
+            <MenuItem Header="Mark as _Unread"
+                      InputGestureText="Ctrl+U"
+                      AutomationProperties.Name="Mark as Unread"
+                      Click="MessageContextMenu_MarkUnread_Click"/>
             <MenuItem Header="Flag_s"
                       Tag="FlagsSubmenu"
                       AutomationProperties.Name="Flags"/>
@@ -378,17 +588,45 @@
         <!-- Action command shortcuts are routed through the CommandRegistry in OnWindowKeyDown.     -->
     </Window.InputBindings>
 
-    <Grid>
+
+    <!-- MailBoXX layout: sidebar | message list | splitter | scenic main area.
+         Row 0 is the Alt-revealed menu bar (zero height until the menus have keyboard focus),
+         row 2 the status strip under the list. MbxWindowFrame pads the maximized window.
+
+         Glass layering, back to front: ONE picture behind the whole window (MbxBackdrop; themes
+         will swap it); the sidebar is blue glass over a blurred, aligned copy of it (Theme.SidebarTint);
+         the list header is opaque; the list body (Theme.ListSurface) and the reading surface
+         (Theme.ReadingSurface) are ~90% opaque, so the picture shows faintly through them. -->
+    <Border x:Name="MbxWindowFrame">
+    <Grid x:Name="MbxRoot">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="SidebarColumn" Width="17*" MinWidth="220"/>
+            <ColumnDefinition x:Name="MessageListColumn" Width="39*" MinWidth="320"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="44*" MinWidth="380"/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>  <!-- Menu bar -->
-            <RowDefinition Height="Auto"/>  <!-- Toolbar -->
+            <RowDefinition Height="Auto"/>  <!-- Alt-revealed menu bar -->
             <RowDefinition Height="*"/>     <!-- Content -->
-            <RowDefinition Height="Auto"/>  <!-- Status bar -->
+            <RowDefinition Height="Auto"/>  <!-- Status strip (list column) -->
         </Grid.RowDefinitions>
 
-        <!-- ── Menu bar — Row 0 ── -->
+        <!-- The picture behind the whole app: one continuous image (UniformToFill, never tiled).
+             Drawn as a brush so its crop is exactly the window; the sidebar repeats the same brush
+             at the same size and origin, so its blurred copy lines up. Off under High Contrast. -->
+        <Border x:Name="MbxBackdrop" Grid.RowSpan="3" Grid.ColumnSpan="4"
+                Background="{DynamicResource Theme.MainAreaBackground}" IsHitTestVisible="False">
+            <Border x:Name="ScenicImage" Opacity="{DynamicResource Theme.ImageryOpacity}">
+                <Border.Background>
+                    <ImageBrush ImageSource="{DynamicResource Mbx.ScenicImageSource}"
+                                Stretch="UniformToFill" AlignmentX="Center" AlignmentY="Center"/>
+                </Border.Background>
+            </Border>
+        </Border>
+
         <Menu x:Name="MainMenuBar"
-              Grid.Row="0"
+              Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Panel.ZIndex="20"
+              Height="0" ClipToBounds="True"
               IsTabStop="False"
               KeyboardNavigation.TabNavigation="None"
               AutomationProperties.Name="Main menu">
@@ -776,6 +1014,12 @@
                 <MenuItem Header="Manage _Themes…"
                           Click="MenuManageThemes_Click"
                           AutomationProperties.Name="Manage Themes"/>
+                <!-- MailBoXX: contextual pictures behind message rows (chosen locally). -->
+                <MenuItem x:Name="ContextImagesMenuItem"
+                          Header="Pictures _Behind Messages"
+                          IsCheckable="True"
+                          Click="MenuContextImages_Click"
+                          AutomationProperties.Name="Pictures Behind Messages"/>
                 <Separator/>
                 <MenuItem Header="Go to _Folder…"
                           Click="MenuFolderPicker_Click"/>
@@ -844,169 +1088,175 @@
                           AutomationProperties.Name="Grant Admin Consent for Your Organization"
                           Click="MenuAdminConsent_Click"/>
                 <Separator/>
-                <MenuItem Header="_About QuickMail"
-                          AutomationProperties.Name="About QuickMail"
+                <MenuItem Header="_About MailBoXX"
+                          AutomationProperties.Name="About MailBoXX"
                           Click="MenuAbout_Click"/>
             </MenuItem>
 
         </Menu>
 
-        <!-- ── Toolbar — Ctrl+0 only; excluded from Tab sequence ── -->
-        <ToolBar x:Name="MainToolbar"
-                 Grid.Row="1"
-                 AutomationProperties.Name="Main toolbar"
-                 KeyboardNavigation.TabNavigation="None"
-                 KeyboardNavigation.DirectionalNavigation="Cycle"
-                 PreviewKeyDown="Toolbar_PreviewKeyDown">
-            <Button x:Name="ToolbarFirstButton"
-                    Style="{DynamicResource ToolbarButton}"
-                    Command="{Binding NewMessageCommand}"
-                    AutomationProperties.Name="New Message"
-                    AutomationProperties.AcceleratorKey="Ctrl+N"
-                    ToolTip="New Message (Ctrl+N)"
-                    Content="New"/>
-            <Separator/>
-            <Button Style="{DynamicResource ToolbarButton}"
-                    Command="{Binding ReplyCommand}"
-                    AutomationProperties.Name="Reply"
-                    AutomationProperties.AcceleratorKey="Ctrl+R"
-                    ToolTip="Reply (Ctrl+R)"
-                    Content="Reply"/>
-            <Button Style="{DynamicResource ToolbarButton}"
-                    Command="{Binding ReplyAllCommand}"
-                    AutomationProperties.Name="Reply All"
-                    AutomationProperties.AcceleratorKey="Ctrl+Shift+R"
-                    ToolTip="Reply All (Ctrl+Shift+R)"
-                    Content="Reply All"/>
-            <Button Style="{DynamicResource ToolbarButton}"
-                    Command="{Binding ForwardCommand}"
-                    AutomationProperties.Name="Forward"
-                    AutomationProperties.AcceleratorKey="Ctrl+Shift+F"
-                    ToolTip="Forward (Ctrl+Shift+F)"
-                    Content="Forward"/>
-            <Separator/>
-            <Button Style="{DynamicResource ToolbarButton}"
-                    Command="{Binding DeleteMessageCommand}"
-                    AutomationProperties.Name="Delete message"
-                    AutomationProperties.AcceleratorKey="Delete"
-                    ToolTip="Delete (Del)"
-                    Content="Delete"/>
-            <Separator/>
-            <Button Style="{DynamicResource ToolbarButton}"
-                    Command="{Binding RefreshCommand}"
-                    AutomationProperties.Name="Refresh"
-                    AutomationProperties.AcceleratorKey="F5"
-                    ToolTip="Refresh (F5)"
-                    Content="Refresh"/>
-            <Button x:Name="SyncRangeButton"
-                    Style="{DynamicResource ToolbarButton}"
-                    Content="{Binding SyncRangeLabel}"
-                    AutomationProperties.Name="Sync range"
-                    ToolTip="Choose how many days of mail to sync"
-                    Click="SyncRangeButton_Click">
-                <Button.ContextMenu>
-                    <ContextMenu AutomationProperties.Name="Sync range"
-                                 DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
-                        <MenuItem Header="Last _7 Days"
-                                  IsCheckable="True"
-                                  IsChecked="{Binding IsSyncDays7, Mode=OneWay}"
-                                  Command="{Binding SetSyncDaysCommand}"
-                                  CommandParameter="7"/>
-                        <MenuItem Header="Last _30 Days"
-                                  IsCheckable="True"
-                                  IsChecked="{Binding IsSyncDays30, Mode=OneWay}"
-                                  Command="{Binding SetSyncDaysCommand}"
-                                  CommandParameter="30"/>
-                        <MenuItem Header="Last _6 Months (180 Days)"
-                                  IsCheckable="True"
-                                  IsChecked="{Binding IsSyncDays180, Mode=OneWay}"
-                                  Command="{Binding SetSyncDaysCommand}"
-                                  CommandParameter="180"/>
-                        <MenuItem Header="Last _1 Year (365 Days)"
-                                  IsCheckable="True"
-                                  IsChecked="{Binding IsSyncDays365, Mode=OneWay}"
-                                  Command="{Binding SetSyncDaysCommand}"
-                                  CommandParameter="365"/>
-                        <Separator/>
-                        <MenuItem Header="_All Mail"
-                                  IsCheckable="True"
-                                  IsChecked="{Binding IsSyncDaysAll, Mode=OneWay}"
-                                  Command="{Binding SetSyncDaysCommand}"
-                                  CommandParameter="0"/>
-                    </ContextMenu>
-                </Button.ContextMenu>
-            </Button>
-            <Separator/>
-            <Button x:Name="ViewModeButton"
-                    Style="{DynamicResource ToolbarButton}"
-                    Content="{Binding ViewModeLabel}"
-                    AutomationProperties.Name="View mode"
-                    ToolTip="Select message view mode (Ctrl+Shift+V)"
-                    Click="ViewModeButton_Click">
-                <Button.ContextMenu>
-                    <!-- Same collection the View menu binds, so the toolbar offers exactly the
-                         modes that apply and announces the right count (#663). -->
-                    <ContextMenu x:Name="ViewModeMenu"
-                                 AutomationProperties.Name="View mode"
-                                 DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}"
-                                 ItemsSource="{Binding ViewModeOptions}"
-                                 ItemContainerStyle="{StaticResource ViewModeMenuItemStyle}"/>
-                </Button.ContextMenu>
-            </Button>
-            <Separator/>
-            <Button Style="{DynamicResource ToolbarButton}"
-                    Command="{Binding EmptyTrashCommand}"
-                    AutomationProperties.Name="Empty Trash"
-                    AutomationProperties.AcceleratorKey="Ctrl+Shift+E"
-                    ToolTip="Empty Trash (Ctrl+Shift+E)"
-                    Content="Empty Trash"/>
-            <Separator/>
-            <Button Style="{DynamicResource ToolbarButton}"
-                    Command="{Binding ManageAccountsCommand}"
-                    AutomationProperties.Name="Manage email accounts"
-                    ToolTip="Manage email accounts"
-                    Content="Accounts"/>
-            <Separator/>
-            <Button Style="{DynamicResource ToolbarButton}"
-                    Command="{Binding ViewUserGuideCommand}"
-                    AutomationProperties.Name="View User Guide"
-                    AutomationProperties.AcceleratorKey="F1"
-                    ToolTip="View User Guide (F1)"
-                    Content="User Guide"/>
-        </ToolBar>
+        <!-- ── Sidebar: full height, blue. Accounts on top, folders below. ──
+             The account list and folder tree are QuickMail's own controls, unchanged: the
+             Theme.* brushes they use are re-pointed at the Sidebar* tokens for this scope only,
+             through the published ".Color" resources, so they follow every theme switch. -->
+        <Grid x:Name="Sidebar" Grid.Row="0" Grid.RowSpan="3" Grid.Column="0"
+              TextElement.Foreground="{DynamicResource Theme.SidebarText}">
+            <Grid.Resources>
+                <SolidColorBrush x:Key="Theme.SurfaceBackground"   Color="Transparent"/>
+                <SolidColorBrush x:Key="Theme.ChromeBackground"    Color="Transparent"/>
+                <SolidColorBrush x:Key="Theme.Border"              Color="Transparent"/>
+                <SolidColorBrush x:Key="Theme.TextPrimary"         Color="{DynamicResource Theme.SidebarText.Color}"/>
+                <SolidColorBrush x:Key="Theme.TextSecondary"       Color="{DynamicResource Theme.SidebarTextSecondary.Color}"/>
+                <SolidColorBrush x:Key="Theme.TextDisabled"        Color="{DynamicResource Theme.SidebarTextSecondary.Color}"/>
+                <SolidColorBrush x:Key="Theme.SelectionBackground" Color="{DynamicResource Theme.SidebarSelection.Color}"/>
+                <SolidColorBrush x:Key="Theme.SelectionInactive"   Color="{DynamicResource Theme.SidebarSelection.Color}"/>
+                <SolidColorBrush x:Key="Theme.SelectionText"       Color="{DynamicResource Theme.SidebarText.Color}"/>
+                <SolidColorBrush x:Key="Theme.AccentSubtle"        Color="{DynamicResource Theme.SidebarHover.Color}"/>
+            </Grid.Resources>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>                 <!-- title, hamburger, New mail -->
+                <RowDefinition Height="Auto"/>                 <!-- Accounts header -->
+                <RowDefinition Height="Auto" MaxHeight="260"/> <!-- account list -->
+                <RowDefinition Height="Auto"/>                 <!-- Folders header -->
+                <RowDefinition Height="*"/>                    <!-- main folders + More, or the full tree -->
+                <RowDefinition Height="Auto"/>                 <!-- profile -->
+            </Grid.RowDefinitions>
 
-        <!-- ── Three-pane layout (Outlook-style): Accounts+Folders left | Messages right ── -->
-        <!--  F6 pane ring: AccountList(1) → FolderList(2) → MessageList(3) → Toolbar → StatusBar → wrap -->
-        <!--  Arrow keys navigate within the focused pane (TabNavigation=Once on each)      -->
-        <!--  Enter triggers action; focus never changes unless user does it                 -->
-        <!--  Ctrl+0 = toolbar | Ctrl+1/2/3 = jump directly to any pane                    -->
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200" MinWidth="120"/>
-                <ColumnDefinition Width="5"/>
-                <ColumnDefinition Width="*" MinWidth="300"/>
-            </Grid.ColumnDefinitions>
+            <!-- Glass: the window's picture, blurred, under the blue tint (Windows 10 Mail's acrylic).
+                 The copy is the full window's size at the window's origin (the sidebar starts there),
+                 clipped to the sidebar, so it lines up with the picture beside it.
+                 Imagery is off under High Contrast, leaving the opaque sidebar colour. -->
+            <Rectangle Grid.RowSpan="6" Fill="{DynamicResource Theme.SidebarBackground}"/>
+            <Canvas Grid.RowSpan="6" ClipToBounds="True" IsHitTestVisible="False">
+                <Border x:Name="SidebarGlassPicture"
+                        Width="{Binding ActualWidth, ElementName=MbxRoot}"
+                        Height="{Binding ActualHeight, ElementName=MbxRoot}"
+                        Opacity="{DynamicResource Theme.ImageryOpacity}">
+                    <Border.Background>
+                        <ImageBrush ImageSource="{DynamicResource Mbx.ScenicImageSource}"
+                                    Stretch="UniformToFill" AlignmentX="Center" AlignmentY="Center"/>
+                    </Border.Background>
+                    <Border.Effect>
+                        <BlurEffect Radius="27" KernelType="Gaussian" RenderingBias="Performance"/>
+                    </Border.Effect>
+                </Border>
+            </Canvas>
+            <Rectangle Grid.RowSpan="6" Fill="{DynamicResource Theme.SidebarTint}"/>
 
-            <!-- Left pane: Accounts on top, Folders below -->
-            <Grid Grid.Column="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"  MinHeight="60"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="2*" MinHeight="80"/>
-                </Grid.RowDefinitions>
+            <!-- App title (also a window drag area), the hamburger, and New mail. -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,4">
+                <Border Background="Transparent" Padding="14,12,14,8"
+                        MouseLeftButtonDown="CaptionDragArea_MouseLeftButtonDown">
+                    <StackPanel Orientation="Horizontal">
+                        <local:AriaHiddenTextBlock Text="&#xE715;" FontFamily="Segoe MDL2 Assets"
+                                                   FontSize="{DynamicResource Theme.FontSizeHeader}"
+                                                   VerticalAlignment="Center"/>
+                        <TextBlock x:Name="SidebarTitle" Text="MailBoXX" FontSize="{DynamicResource Theme.FontSizeHeader}"
+                                   FontWeight="SemiBold" Margin="10,0,0,0" VerticalAlignment="Center"
+                                   Focusable="False"
+                                   Visibility="{Binding IsSidebarCompact, Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
+                    </StackPanel>
+                </Border>
+                <Button x:Name="SidebarHamburgerButton"
+                        Style="{StaticResource Mbx.SidebarButton}"
+                        Command="{Binding ToggleSidebarCompactCommand}"
+                        AutomationProperties.Name="Navigation pane"
+                        ToolTip="Collapse or expand the navigation pane">
+                    <local:AriaHiddenTextBlock Text="&#xE700;" FontFamily="Segoe MDL2 Assets"
+                                               FontSize="{DynamicResource Theme.FontSizeLarge}"
+                                               VerticalAlignment="Center"/>
+                </Button>
+                <Button x:Name="SidebarNewMailButton"
+                        Style="{StaticResource Mbx.SidebarButton}"
+                        Command="{Binding NewMessageCommand}"
+                        AutomationProperties.Name="New mail"
+                        AutomationProperties.AcceleratorKey="Ctrl+N"
+                        ToolTip="New mail (Ctrl+N)">
+                    <StackPanel Orientation="Horizontal">
+                        <local:AriaHiddenTextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets"
+                                                   FontSize="{DynamicResource Theme.FontSizeLarge}"
+                                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="New mail" FontSize="{DynamicResource Theme.FontSizeLarge}"
+                                   Margin="14,0,0,0" VerticalAlignment="Center"
+                                   Visibility="{Binding IsSidebarCompact, Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
+                    </StackPanel>
+                </Button>
 
-                <TextBlock Grid.Row="0" Text="Accounts" FontWeight="SemiBold" Padding="6,4"
-                           Focusable="False"
-                           Background="{DynamicResource Theme.ChromeBackground}"/>
+                <!-- Mailboxes: every account's mail in one list (the combined All Mail view), and the
+                     folder list switches to combined folders with totals. Shown as selected while a
+                     combined view is open; the accounts below open one account's Inbox each. -->
+                <Button x:Name="SidebarAllMailButton" Margin="0,14,0,0"
+                        Command="{Binding OpenAllMailCommand}"
+                        AutomationProperties.Name="Mailboxes"
+                        ToolTip="Mail from every account">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource Mbx.SidebarButton}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsCombinedFolderView}" Value="True">
+                                    <Setter Property="Background" Value="{DynamicResource Theme.SidebarSelection}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <StackPanel Orientation="Horizontal">
+                        <local:AriaHiddenTextBlock Text="&#xE8A9;" FontFamily="Segoe MDL2 Assets"
+                                                   FontSize="{DynamicResource Theme.FontSizeLarge}"
+                                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="Mailboxes" FontSize="{DynamicResource Theme.FontSizeLarge}"
+                                   Margin="14,0,0,0" VerticalAlignment="Center"
+                                   Visibility="{Binding IsSidebarCompact, Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
 
-                <ListBox Grid.Row="1"
+            <!-- Accounts header: icon, label, and a chevron that folds the account list away. -->
+            <DockPanel Grid.Row="1" Margin="14,14,6,2"
+                       Visibility="{Binding IsSidebarCompact, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                <Button x:Name="AccountsChevronButton" DockPanel.Dock="Right" Padding="10,6"
+                        Command="{Binding ToggleAccountListCommand}"
+                        ToolTip="Show or hide the accounts">
+                    <local:AriaHiddenTextBlock FontFamily="Segoe MDL2 Assets" VerticalAlignment="Center">
+                        <local:AriaHiddenTextBlock.Style>
+                            <Style TargetType="local:AriaHiddenTextBlock">
+                                <Setter Property="Text" Value="&#xE70E;"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsAccountListExpanded}" Value="False">
+                                        <Setter Property="Text" Value="&#xE70D;"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </local:AriaHiddenTextBlock.Style>
+                    </local:AriaHiddenTextBlock>
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource Mbx.SidebarButton}">
+                            <Setter Property="AutomationProperties.Name" Value="Collapse accounts"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsAccountListExpanded}" Value="False">
+                                    <Setter Property="AutomationProperties.Name" Value="Expand accounts"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <local:AriaHiddenTextBlock Text="&#xE77B;" FontFamily="Segoe MDL2 Assets"
+                                               FontSize="{DynamicResource Theme.FontSizeLarge}" VerticalAlignment="Center"/>
+                    <TextBlock Text="Accounts" FontSize="{DynamicResource Theme.FontSizeLarge}"
+                               Margin="14,0,0,0" VerticalAlignment="Center" Focusable="False"/>
+                </StackPanel>
+            </DockPanel>
+
+                <!-- One line per account: provider badge, name, unread count on the right. The full
+                     status (connected, unread) stays in the accessible name and the tooltip. -->
+                <ListBox Grid.Row="2"
                          x:Name="AccountList"
                          AutomationProperties.Name="Email accounts"
                          ItemsSource="{Binding Accounts}"
                          SelectedItem="{Binding SelectedAccount, Mode=TwoWay}"
                          TextSearch.TextPath="AccountLabel"
-                         BorderThickness="0,0,1,0"
+                         BorderThickness="0"
+                         Background="Transparent"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                          TabIndex="1"
                          KeyboardNavigation.TabNavigation="Once"
                          GotKeyboardFocus="List_GotKeyboardFocus"
@@ -1014,32 +1264,71 @@
                          PreviewMouseLeftButtonDown="AccountList_PreviewMouseLeftButtonDown"
                          PreviewMouseRightButtonDown="AccountList_PreviewMouseRightButtonDown"
                          MouseLeftButtonUp="AccountList_MouseLeftButtonUp">
+                    <ListBox.Style>
+                        <Style TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsAccountListExpanded}" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsSidebarCompact}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListBox.Style>
 
-                    <!-- Two-line item: account name + live status (connected/disconnected + inbox counts).
-                         AutomationProperties.Name on the container announces the full detail to screen
-                         readers on focus, without requiring the user to hover over the tooltip. -->
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
                             <Setter Property="AutomationProperties.Name" Value="{Binding AccessibleName}"/>
-                            <Setter Property="Padding"                   Value="4,4,4,4"/>
+                            <Setter Property="Padding"                   Value="16,9,18,9"/>
+                            <Setter Property="ToolTip"                   Value="{Binding StatusLabel}"/>
                         </Style>
                     </ListBox.ItemContainerStyle>
 
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <!-- AriaHiddenTextBlock suppresses both child elements from the UIA tree.
-                                 The full accessible name is on the ListBoxItem container via
-                                 AutomationProperties.Name → AccessibleName, so screen readers
-                                 read it once only. -->
-                            <StackPanel>
-                                <local:AriaHiddenTextBlock Text="{Binding AccountLabel}"/>
-                                <!-- Opacity, not Theme.TextSecondary: inherits the container foreground,
-                                     so the line stays readable over the strong selection fill. -->
-                                <local:AriaHiddenTextBlock Text="{Binding StatusLabel}"
-                                                           Opacity="0.75"
-                                                           FontSize="{DynamicResource Theme.FontSizeSmall}"
-                                                           Margin="0,1,0,0"/>
-                            </StackPanel>
+                            <!-- Visual only: the container carries the accessible name (AccessibleName). -->
+                            <DockPanel>
+                                <local:AriaHiddenTextBlock DockPanel.Dock="Right" Text="{Binding TotalUnread}"
+                                                           VerticalAlignment="Center" Margin="8,0,0,0"
+                                                           FontSize="{DynamicResource Theme.FontSizeLarge}">
+                                    <local:AriaHiddenTextBlock.Style>
+                                        <Style TargetType="local:AriaHiddenTextBlock">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding TotalUnread}" Value="0">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </local:AriaHiddenTextBlock.Style>
+                                </local:AriaHiddenTextBlock>
+                                <!-- Provider badge: MailBoXX's own coloured letter, not a logo. -->
+                                <Border Width="22" Height="22" CornerRadius="3" VerticalAlignment="Center">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="{DynamicResource Theme.ProviderOther}"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Converter={StaticResource AccountProviderConverter}}" Value="outlook">
+                                                    <Setter Property="Background" Value="{DynamicResource Theme.ProviderOutlook}"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Converter={StaticResource AccountProviderConverter}}" Value="gmail">
+                                                    <Setter Property="Background" Value="{DynamicResource Theme.ProviderGmail}"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Converter={StaticResource AccountProviderConverter}}" Value="hotmail">
+                                                    <Setter Property="Background" Value="{DynamicResource Theme.ProviderHotmail}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <local:AriaHiddenTextBlock Text="{Binding AccountLabel, Converter={StaticResource InitialConverter}}"
+                                                               Foreground="{DynamicResource Theme.ProviderGlyph}"
+                                                               FontWeight="SemiBold"
+                                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <local:AriaHiddenTextBlock Text="{Binding AccountLabel}" Margin="14,0,0,0"
+                                                           FontSize="{DynamicResource Theme.FontSizeLarge}"
+                                                           VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                            </DockPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
 
@@ -1084,13 +1373,104 @@
                     </ListBox.ContextMenu>
                 </ListBox>
 
-                <TextBlock Grid.Row="2" Text="Folders" FontWeight="SemiBold" Padding="6,4"
-                           Focusable="False"
-                           Background="{DynamicResource Theme.ChromeBackground}"/>
+            <!-- Folders header; the extra space above it separates the accounts from the folders. -->
+            <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="14,28,14,4"
+                        Visibility="{Binding IsSidebarCompact, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                <local:AriaHiddenTextBlock Text="&#xE8B7;" FontFamily="Segoe MDL2 Assets"
+                                           FontSize="{DynamicResource Theme.FontSizeLarge}" VerticalAlignment="Center"/>
+                <TextBlock Text="Folders" FontSize="{DynamicResource Theme.FontSizeLarge}"
+                           Margin="14,0,0,0" VerticalAlignment="Center" Focusable="False"/>
+            </StackPanel>
 
-                <!-- True TreeView so screen readers announce level, expanded/collapsed state correctly. -->
-                <TreeView Grid.Row="3"
-                          x:Name="FolderList"
+            <!-- Folders: the selected account's main folders (Windows Mail), or with "More" the full
+                 QuickMail folder tree with every folder, the combined views, the calendar and saved
+                 views. Activating a main folder opens it exactly as the tree does. -->
+            <DockPanel Grid.Row="4"
+                       Visibility="{Binding IsSidebarCompact, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+
+                <ListBox x:Name="MainFolderList" DockPanel.Dock="Top"
+                         AutomationProperties.Name="Main folders"
+                         ItemsSource="{Binding MainFolders}"
+                         TextSearch.TextPath="Label"
+                         BorderThickness="0"
+                         Background="Transparent"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         KeyboardNavigation.TabNavigation="Once"
+                         PreviewKeyDown="MainFolderList_PreviewKeyDown"
+                         MouseLeftButtonUp="MainFolderList_MouseLeftButtonUp"
+                         Visibility="{Binding ShowAllFolders, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                            <Setter Property="Padding" Value="16,10,18,10"/>
+                            <Setter Property="AutomationProperties.Name">
+                                <Setter.Value>
+                                    <MultiBinding Converter="{StaticResource MainFolderLabelConverter}">
+                                        <Binding/>
+                                        <Binding Path="ItemStatusLabel"/>
+                                    </MultiBinding>
+                                </Setter.Value>
+                            </Setter>
+                            <!-- No folder menu here: its actions resolve their folder from a tree item.
+                                 Folder actions are in the full tree ("More") and the Folder menu. -->
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <!-- Visual only: the container carries the name and the unread count. -->
+                            <DockPanel>
+                                <local:AriaHiddenTextBlock DockPanel.Dock="Right" Text="{Binding UnreadCountText}"
+                                                           FontSize="{DynamicResource Theme.FontSizeLarge}"
+                                                           VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                <local:AriaHiddenTextBlock Text="{Binding Converter={StaticResource FolderGlyphConverter}}"
+                                                           FontFamily="Segoe MDL2 Assets"
+                                                           FontSize="{DynamicResource Theme.FontSizeLarge}"
+                                                           VerticalAlignment="Center"/>
+                                <local:AriaHiddenTextBlock Text="{Binding Converter={StaticResource MainFolderLabelConverter}}"
+                                                           FontSize="{DynamicResource Theme.FontSizeLarge}"
+                                                           Margin="14,0,0,0" VerticalAlignment="Center"
+                                                           TextTrimming="CharacterEllipsis"/>
+                            </DockPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <Button x:Name="SidebarMoreFoldersButton" DockPanel.Dock="Top"
+                        Command="{Binding ToggleAllFoldersCommand}">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource Mbx.SidebarButton}">
+                            <Setter Property="AutomationProperties.Name" Value="More folders"/>
+                            <Setter Property="ToolTip" Value="Show every folder"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ShowAllFolders}" Value="True">
+                                    <Setter Property="AutomationProperties.Name" Value="Main folders"/>
+                                    <Setter Property="ToolTip" Value="Show the main folders only"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <StackPanel Orientation="Horizontal">
+                        <local:AriaHiddenTextBlock Text="&#xE712;" FontFamily="Segoe MDL2 Assets"
+                                                   FontSize="{DynamicResource Theme.FontSizeLarge}" VerticalAlignment="Center"/>
+                        <local:AriaHiddenTextBlock FontSize="{DynamicResource Theme.FontSizeLarge}"
+                                                   Margin="14,0,0,0" VerticalAlignment="Center">
+                            <local:AriaHiddenTextBlock.Style>
+                                <Style TargetType="local:AriaHiddenTextBlock">
+                                    <Setter Property="Text" Value="More"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ShowAllFolders}" Value="True">
+                                            <Setter Property="Text" Value="Main folders"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </local:AriaHiddenTextBlock.Style>
+                        </local:AriaHiddenTextBlock>
+                    </StackPanel>
+                </Button>
+
+            <!-- True TreeView so screen readers announce level, expanded/collapsed state correctly. -->
+                <TreeView x:Name="FolderList"
+                          Background="Transparent"
+                          Visibility="{Binding ShowAllFolders, Converter={StaticResource BoolToVisibilityConverter}}"
                           AutomationProperties.Name="Folder list"
                           ItemsSource="{Binding FolderTree}"
                           BorderThickness="0,0,1,0"
@@ -1111,6 +1491,19 @@
                                  properties prevents JAWS from announcing the count twice
                                  (once per automation peer). -->
                             <StackPanel Orientation="Horizontal">
+                                <local:AriaHiddenTextBlock Text="{Binding Converter={StaticResource FolderGlyphConverter}}"
+                                                           FontFamily="Segoe MDL2 Assets" VerticalAlignment="Center"
+                                                           Margin="0,0,10,0">
+                                    <local:AriaHiddenTextBlock.Style>
+                                        <Style TargetType="local:AriaHiddenTextBlock">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsHeader}" Value="True">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </local:AriaHiddenTextBlock.Style>
+                                </local:AriaHiddenTextBlock>
                                 <local:AriaHiddenTextBlock TextTrimming="CharacterEllipsis">
                                     <local:AriaHiddenTextBlock.Style>
                                         <Style TargetType="local:AriaHiddenTextBlock">
@@ -1164,6 +1557,7 @@
                     <TreeView.ItemContainerStyle>
                         <Style TargetType="TreeViewItem" BasedOn="{StaticResource {x:Type TreeViewItem}}">
                             <Setter Property="IsExpanded"                  Value="{Binding IsExpanded, Mode=TwoWay}"/>
+                            <Setter Property="Padding"                     Value="4,5"/>
                             <Setter Property="AutomationProperties.Name"   Value="{Binding AutomationName}"/>
                             <Setter Property="AutomationProperties.ItemStatus" Value="{Binding ItemStatusLabel}"/>
                             <!-- Tag exposes the window DataContext (MainViewModel) to the ContextMenu -->
@@ -1178,199 +1572,182 @@
                         </Style>
                     </TreeView.ItemContainerStyle>
                 </TreeView>
-            </Grid>
+            </DockPanel>
 
-            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"
-                          IsTabStop="False"
-                          AutomationProperties.Name="Resize left and right panes"/>
-
-            <!-- Right pane: messages + body (body docked to bottom, hidden until Enter on a message) -->
-            <Grid Grid.Column="2">
-            <DockPanel>
-
-                <!-- Tab strip — visible only when message tabs are open -->
-                <Border DockPanel.Dock="Top"
-                        x:Name="TabStripBorder"
-                        BorderThickness="0,0,0,1"
-                        BorderBrush="{DynamicResource Theme.Border}"
-                        Background="{DynamicResource Theme.ChromeBackground}"
-                        Visibility="{Binding ShowTabStrip, Converter={StaticResource BoolToVisibilityConverter}}">
-                    <ListBox x:Name="TabStrip"
-                             ItemsSource="{Binding OpenTabs}"
-                             SelectedItem="{Binding ActiveTab, Mode=TwoWay}"
-                             SelectionMode="Single"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                             ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                             KeyboardNavigation.TabNavigation="Once"
-                             AutomationProperties.Name="Open message tabs"
-                             SelectionChanged="TabStrip_SelectionChanged"
-                             PreviewKeyDown="TabStrip_PreviewKeyDown"
-                             PreviewMouseDown="TabStrip_PreviewMouseDown"
-                             GotKeyboardFocus="TabStrip_GotKeyboardFocus"
-                             LostKeyboardFocus="TabStrip_LostKeyboardFocus">
-                        <ListBox.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal"/>
-                            </ItemsPanelTemplate>
-                        </ListBox.ItemsPanel>
-                        <ListBox.ItemContainerStyle>
-                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                                <Setter Property="Padding" Value="8,5"/>
-                                <Setter Property="Margin" Value="0,0,1,0"/>
-                                <Setter Property="AutomationProperties.Name" Value="{Binding Title}"/>
-                                <Setter Property="ToolTip" Value="{Binding Title}"/>
-                            </Style>
-                        </ListBox.ItemContainerStyle>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Title}"
-                                               MaxWidth="160"
-                                               TextTrimming="CharacterEllipsis"
-                                               VerticalAlignment="Center"/>
-                                    <Button Content="✕"
-                                            Width="16" Height="16"
-                                            Padding="0"
-                                            Margin="6,0,0,0"
-                                            FontSize="9"
-                                            Click="TabCloseButton_Click"
-                                            Tag="{Binding}"
-                                            IsTabStop="False"
-                                            AutomationProperties.Name="Close this tab"
-                                            ToolTip="Close tab"
-                                            Visibility="{Binding CanClose, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </Border>
-
-                <!-- Content region: the message-list area (row 0) and the reading/body pane (row 1).
-                     In Reading Pane mode the list fills and the body docks below as a resizable-height
-                     sliver. When a message is opened in a *tab* (Tab mode), IsMessageListAreaVisible
-                     becomes false: the list row collapses to 0 and the body row takes all the space, so
-                     the tab shows just the message rather than a copy of the list with a body sliver. -->
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="{Binding IsMessageListAreaVisible, Converter={StaticResource BoolToGridLengthConverter}, ConverterParameter='*|0'}"/>
-                        <RowDefinition Height="{Binding IsMessageListAreaVisible, Converter={StaticResource BoolToGridLengthConverter}, ConverterParameter='Auto|*'}"/>
-                    </Grid.RowDefinitions>
-
-                <!-- Body pane — hidden until IsMessageOpen; Escape returns to MessageList -->
-                <Border Grid.Row="1"
-                        BorderThickness="0,1,0,0"
-                        BorderBrush="{DynamicResource Theme.Border}"
-                        MinHeight="200"
-                        Visibility="{Binding IsMessageOpen, Converter={StaticResource BoolToVisibilityConverter}}">
-                    <DockPanel>
-                        <StackPanel DockPanel.Dock="Top" Margin="8,6,8,0">
-                            <TextBox x:Name="SubjectField"
-                                     Text="{Binding MessageDetail.Subject, FallbackValue='', Mode=OneWay}"
-                                     IsReadOnly="True" IsReadOnlyCaretVisible="True"
-                                     BorderThickness="0" Background="Transparent"
-                                     FontSize="{DynamicResource Theme.FontSizeBase}" FontWeight="SemiBold" TextWrapping="Wrap"
-                                     AutomationProperties.Name="Subject"/>
-                            <TextBox x:Name="FromField"
-                                     Text="{Binding MessageDetail.From, FallbackValue='', Mode=OneWay}"
-                                     IsReadOnly="True" IsReadOnlyCaretVisible="True"
-                                     BorderThickness="0" Background="Transparent"
-                                     Margin="0,2,0,0"
-                                     AutomationProperties.Name="From"/>
-                            <TextBox x:Name="ToField"
-                                     Text="{Binding MessageDetail.To, FallbackValue='', Mode=OneWay}"
-                                     IsReadOnly="True" IsReadOnlyCaretVisible="True"
-                                     BorderThickness="0" Background="Transparent"
-                                     AutomationProperties.Name="To"/>
-                            <TextBox x:Name="CcField"
-                                     Text="{Binding MessageDetail.Cc, FallbackValue='', Mode=OneWay}"
-                                     IsReadOnly="True" IsReadOnlyCaretVisible="True"
-                                     BorderThickness="0" Background="Transparent"
-                                     AutomationProperties.Name="Cc">
-                                <TextBox.Style>
-                                    <Style TargetType="TextBox">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding MessageDetail.Cc}" Value="">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding MessageDetail.Cc}" Value="{x:Null}">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBox.Style>
-                            </TextBox>
-                            <TextBox x:Name="DateField"
-                                     Text="{Binding MessageDetail.Date, StringFormat='{}{0:f}', FallbackValue='', Mode=OneWay}"
-                                     IsReadOnly="True" IsReadOnlyCaretVisible="True"
-                                     BorderThickness="0" Background="Transparent"
-                                     AutomationProperties.Name="Date"/>
-
-                            <!-- Attachments (visible when selected message has attachments) -->
-                            <ListBox x:Name="ReadingPaneAttachmentList"
-                                     ItemsSource="{Binding MessageDetail.Attachments}"
-                                     SelectionMode="Single"
-                                     BorderThickness="0"
-                                     Margin="0,4,0,0"
-                                     Visibility="{Binding SelectedMessage.HasAttachments,
-                                                  Converter={StaticResource BoolToVisibilityConverter},
-                                                  FallbackValue=Collapsed}"
-                                     KeyboardNavigation.TabNavigation="Once"
-                                     KeyboardNavigation.DirectionalNavigation="Contained"
-                                     AutomationProperties.Name="Attachments"
-                                     PreviewKeyDown="ReadingPaneAttachmentList_PreviewKeyDown"
-                                     GotKeyboardFocus="ReadingPaneAttachmentList_GotKeyboardFocus"
-                                     MouseDoubleClick="ReadingPaneAttachmentList_MouseDoubleClick">
-                                <ListBox.ItemContainerStyle>
-                                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                                        <Setter Property="AutomationProperties.Name" Value="{Binding AccessibleName}"/>
-                                    </Style>
-                                </ListBox.ItemContainerStyle>
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding FileName}" ToolTip="{Binding FileSizeDisplay}"/>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                                <ListBox.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="_Save…"
-                                                  Command="{Binding PlacementTarget.DataContext.SaveAttachmentCommand,
-                                                            RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                                  CommandParameter="{Binding PlacementTarget.SelectedItem,
-                                                            RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                        <MenuItem Header="Save _All…"
-                                                  Command="{Binding PlacementTarget.DataContext.SaveAllAttachmentsCommand,
-                                                            RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                        <MenuItem Header="_Open"
-                                                  Command="{Binding PlacementTarget.DataContext.OpenAttachmentCommand,
-                                                            RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                                  CommandParameter="{Binding PlacementTarget.SelectedItem,
-                                                            RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                    </ContextMenu>
-                                </ListBox.ContextMenu>
-                            </ListBox>
-
-                            <Separator Margin="0,4,0,0"/>
+            <!-- Profile, bottom left: picture, name and a menu (accounts, settings); the gear opens Settings. -->
+            <Border Grid.Row="5" BorderBrush="{DynamicResource Theme.SidebarHover}" BorderThickness="0,1,0,0"
+                    Padding="8,8">
+                <DockPanel LastChildFill="True">
+                    <Button DockPanel.Dock="Right" Style="{StaticResource Mbx.SidebarButton}"
+                            Click="MenuSettings_Click"
+                            AutomationProperties.Name="Settings"
+                            ToolTip="Settings" Padding="10">
+                        <local:AriaHiddenTextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets"
+                                                   FontSize="{DynamicResource Theme.FontSizeLarge}"/>
+                    </Button>
+                    <Button x:Name="SidebarProfileButton"
+                            Style="{StaticResource Mbx.SidebarButton}" Padding="6"
+                            Click="SidebarProfileButton_Click"
+                            AutomationProperties.Name="{Binding Accounts[0].SenderDisplayName, FallbackValue='Profile'}"
+                            ToolTip="Accounts and settings"
+                            Visibility="{Binding IsSidebarCompact, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                        <Button.ContextMenu>
+                            <ContextMenu AutomationProperties.Name="Profile">
+                                <MenuItem Header="_Manage Accounts…"
+                                          AutomationProperties.Name="Manage Accounts"
+                                          Command="{Binding PlacementTarget.DataContext.ManageAccountsCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                <MenuItem Header="_Settings…"
+                                          AutomationProperties.Name="Settings"
+                                          Click="MenuSettings_Click"/>
+                            </ContextMenu>
+                        </Button.ContextMenu>
+                        <StackPanel Orientation="Horizontal">
+                            <Grid Width="36" Height="36" VerticalAlignment="Center">
+                                <Ellipse Fill="{DynamicResource Theme.SidebarText}"/>
+                                <local:AriaHiddenTextBlock
+                                    Text="{Binding Accounts[0].SenderDisplayName, Converter={StaticResource InitialConverter}, FallbackValue=''}"
+                                    Foreground="{DynamicResource Theme.SidebarBackground}"
+                                    FontSize="{DynamicResource Theme.FontSizeLarge}" FontWeight="SemiBold"
+                                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                            <local:AriaHiddenTextBlock Text="{Binding Accounts[0].SenderDisplayName, FallbackValue=''}"
+                                                       FontSize="{DynamicResource Theme.FontSizeLarge}"
+                                                       Margin="12,0,0,0" VerticalAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis"/>
+                            <local:AriaHiddenTextBlock Text="&#xE70D;" FontFamily="Segoe MDL2 Assets"
+                                                       Margin="10,2,0,0" VerticalAlignment="Center"/>
                         </StackPanel>
-                        <!-- WebView2: real browser, proper arrow-key caret nav, screen-reader virtual cursor -->
-                        <wv2:WebView2 x:Name="MessageBody"
-                                      AutomationProperties.Name="Message body"
-                                      KeyboardNavigation.IsTabStop="True"
-                                      GotKeyboardFocus="MessageBody_GotKeyboardFocus"
-                                      MinHeight="80"/>
-                    </DockPanel>
-                </Border>
+                    </Button>
+                    <Border/>
+                </DockPanel>
+            </Border>
+        </Grid>
 
-                <!-- Message list — fills row 0; collapses entirely when a message tab fills the pane -->
-                <DockPanel Grid.Row="0"
-                           Visibility="{Binding IsMessageListAreaVisible, Converter={StaticResource BoolToVisibilityConverter}}">
-                    <TextBlock DockPanel.Dock="Top"
-                               Text="{Binding SelectedFolder.DisplayName, FallbackValue='No folder selected'}"
-                               FontWeight="SemiBold" Padding="6,4"
-                               Focusable="False"
-                               Background="{DynamicResource Theme.ChromeBackground}"
-                               AutomationProperties.Name="Current folder"/>
+
+        <!-- ── Message list column ── -->
+        <DockPanel Grid.Row="1" Grid.Column="1"
+                   Background="{DynamicResource Theme.ListSurface}">
+
+            <!-- List header: search, sync and view mode; then the placeholder tabs and sync range.
+                 Fully opaque; everything below it is the ~90% list surface. -->
+            <Border DockPanel.Dock="Top" Background="{DynamicResource Theme.SurfaceBackground}"
+                    Padding="16,12,8,0">
+            <StackPanel>
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Margin="8,0,0,0">
+                        <Button x:Name="ListHeaderSyncButton"
+                                Style="{StaticResource Mbx.IconButton}"
+                                Command="{Binding RefreshCommand}"
+                                Content="&#xE72C;" FontFamily="Segoe MDL2 Assets"
+                                AutomationProperties.Name="Sync"
+                                AutomationProperties.AcceleratorKey="F5"
+                                ToolTip="Sync (F5)"/>
+            <Button x:Name="ViewModeButton"
+                    Style="{StaticResource Mbx.IconButton}"
+                    Content="&#xE8FD;" FontFamily="Segoe MDL2 Assets"
+                    AutomationProperties.Name="View mode"
+                    ToolTip="Select message view mode (Ctrl+Shift+V)"
+                    Click="ViewModeButton_Click">
+                <Button.ContextMenu>
+                    <!-- Same collection the View menu binds, so the toolbar offers exactly the
+                         modes that apply and announces the right count (#663). -->
+                    <ContextMenu x:Name="ViewModeMenu"
+                                 AutomationProperties.Name="View mode"
+                                 DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}"
+                                 ItemsSource="{Binding ViewModeOptions}"
+                                 ItemContainerStyle="{StaticResource ViewModeMenuItemStyle}"/>
+                </Button.ContextMenu>
+            </Button>
+                    </StackPanel>
+                    <!-- Search: always visible. Focusing it starts a search, exactly as Ctrl+Shift+S
+                         does; Escape clears it (SearchBox_PreviewKeyDown). -->
+                    <Grid>
+                        <TextBox x:Name="SearchBox"
+                                 Style="{StaticResource Mbx.SearchBox}"
+                                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                                 AutomationProperties.Name="Search mail"
+                                 ToolTip="Search the messages in this folder. Escape to clear."
+                                 GotKeyboardFocus="SearchBox_GotKeyboardFocus"
+                                 PreviewKeyDown="SearchBox_PreviewKeyDown"/>
+                        <local:AriaHiddenTextBlock Text="Search mail" IsHitTestVisible="False"
+                                                   Margin="11,0,36,0" VerticalAlignment="Center"
+                                                   Foreground="{DynamicResource Theme.TextSecondary}">
+                            <local:AriaHiddenTextBlock.Style>
+                                <Style TargetType="local:AriaHiddenTextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Text, ElementName=SearchBox}" Value="">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </local:AriaHiddenTextBlock.Style>
+                        </local:AriaHiddenTextBlock>
+                        <local:AriaHiddenTextBlock Text="&#xE721;" FontFamily="Segoe MDL2 Assets"
+                                                   IsHitTestVisible="False"
+                                                   HorizontalAlignment="Right" VerticalAlignment="Center"
+                                                   Margin="0,0,11,0"
+                                                   Foreground="{DynamicResource Theme.TextSecondary}"/>
+                    </Grid>
+                </DockPanel>
+
+                <!-- Placeholder tabs where Windows 10 Mail had Focused / Other. Selectable and
+                     keyboard-accessible (arrow keys within the group); they do not filter yet. -->
+                <DockPanel Margin="0,10,0,0">
+            <Button x:Name="SyncRangeButton" DockPanel.Dock="Right"
+                    Style="{StaticResource Mbx.TextDropDownButton}"
+                    Content="{Binding SyncRangeLabel}"
+                    AutomationProperties.Name="Sync range"
+                    ToolTip="Choose how many days of mail to sync"
+                    Click="SyncRangeButton_Click">
+                <Button.ContextMenu>
+                    <ContextMenu AutomationProperties.Name="Sync range"
+                                 DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                        <MenuItem Header="Last _7 Days"
+                                  IsCheckable="True"
+                                  IsChecked="{Binding IsSyncDays7, Mode=OneWay}"
+                                  Command="{Binding SetSyncDaysCommand}"
+                                  CommandParameter="7"/>
+                        <MenuItem Header="Last _30 Days"
+                                  IsCheckable="True"
+                                  IsChecked="{Binding IsSyncDays30, Mode=OneWay}"
+                                  Command="{Binding SetSyncDaysCommand}"
+                                  CommandParameter="30"/>
+                        <MenuItem Header="Last _6 Months (180 Days)"
+                                  IsCheckable="True"
+                                  IsChecked="{Binding IsSyncDays180, Mode=OneWay}"
+                                  Command="{Binding SetSyncDaysCommand}"
+                                  CommandParameter="180"/>
+                        <MenuItem Header="Last _1 Year (365 Days)"
+                                  IsCheckable="True"
+                                  IsChecked="{Binding IsSyncDays365, Mode=OneWay}"
+                                  Command="{Binding SetSyncDaysCommand}"
+                                  CommandParameter="365"/>
+                        <Separator/>
+                        <MenuItem Header="_All Mail"
+                                  IsCheckable="True"
+                                  IsChecked="{Binding IsSyncDaysAll, Mode=OneWay}"
+                                  Command="{Binding SetSyncDaysCommand}"
+                                  CommandParameter="0"/>
+                    </ContextMenu>
+                </Button.ContextMenu>
+            </Button>
+                    <StackPanel x:Name="PlaceholderTabs" Orientation="Horizontal"
+                                AutomationProperties.Name="Message list tabs"
+                                KeyboardNavigation.TabNavigation="Once"
+                                KeyboardNavigation.DirectionalNavigation="Cycle">
+                        <RadioButton Style="{StaticResource Mbx.PlaceholderTab}" GroupName="MbxPlaceholderTabs"
+                                     Content="Tab 1" IsChecked="True"/>
+                        <RadioButton Style="{StaticResource Mbx.PlaceholderTab}" GroupName="MbxPlaceholderTabs"
+                                     Content="Tab 2"/>
+                        <RadioButton Style="{StaticResource Mbx.PlaceholderTab}" GroupName="MbxPlaceholderTabs"
+                                     Content="Tab 3"/>
+                    </StackPanel>
+                </DockPanel>
+            </StackPanel>
+            </Border>
+            <Border DockPanel.Dock="Top" Height="1" Margin="0,0,0,0" Background="{DynamicResource Theme.BorderSubtle}"/>
+
 
                     <!-- Contact-mail results bar (#370) — visible only while the message list is
                          showing "mail from / to a contact". Mirrors the search bar below: the
@@ -1465,11 +1842,6 @@
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
-                            <TextBox x:Name="SearchBox"
-                                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                                     AutomationProperties.Name="Search messages"
-                                     ToolTip="Search the messages in this folder. Escape to clear."
-                                     PreviewKeyDown="SearchBox_PreviewKeyDown"/>
                         </DockPanel>
                     </Border>
 
@@ -1665,6 +2037,9 @@
                               SelectedItem="{Binding SelectedMessage, Mode=TwoWay}"
                               SelectionMode="Extended"
                               BorderThickness="0"
+                              Background="Transparent"
+                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                              HorizontalContentAlignment="Stretch"
                               TabIndex="3"
                               KeyboardNavigation.TabNavigation="Once"
                               KeyboardNavigation.DirectionalNavigation="Contained"
@@ -1683,91 +2058,12 @@
                                 </Style.Triggers>
                             </Style>
                         </ListView.Style>
-                        <!-- Column headers are mouse-clickable but not keyboard tab stops:
-                             Focusable=False comes from the app-wide GridViewColumnHeader styles
-                             (AccessibleStyles + ThemedControls), so the themed header template
-                             is not shadowed by a local style here. -->
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn Width="65">
-                                    <GridViewColumn.Header>
-                                        <TextBlock Text="Status"
-                                                   AutomationProperties.IsColumnHeader="True"/>
-                                    </GridViewColumn.Header>
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding StatusDisplay}"
-                                                       FontSize="{DynamicResource Theme.FontSizeSmall}"
-                                                       TextAlignment="Center"
-                                                       TextTrimming="CharacterEllipsis"/>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Width="180">
-                                    <GridViewColumn.Header>
-                                        <GridViewColumnHeader Content="From"
-                                                              AutomationProperties.IsColumnHeader="True"/>
-                                    </GridViewColumn.Header>
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding From}"
-                                                       FontWeight="{Binding IsRead, Converter={StaticResource BoolToWeightConverter}}"
-                                                       TextTrimming="CharacterEllipsis"/>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Width="Auto">
-                                    <GridViewColumn.Header>
-                                        <GridViewColumnHeader Content="Subject"
-                                                              AutomationProperties.IsColumnHeader="True"/>
-                                    </GridViewColumn.Header>
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Subject}"
-                                                       FontWeight="{Binding IsRead, Converter={StaticResource BoolToWeightConverter}}"
-                                                       TextTrimming="CharacterEllipsis"
-                                                       ToolTip="{Binding Subject}"/>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Width="80">
-                                    <GridViewColumn.Header>
-                                        <GridViewColumnHeader Content="Date"
-                                                              AutomationProperties.IsColumnHeader="True"/>
-                                    </GridViewColumn.Header>
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding DateDisplay}" TextAlignment="Right"/>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Width="24">
-                                    <GridViewColumn.Header>
-                                        <TextBlock Text="&#x1F4CE;" FontSize="{DynamicResource Theme.FontSizeSmall}"
-                                                   ToolTip="Has attachments"
-                                                   AutomationProperties.IsColumnHeader="True"/>
-                                    </GridViewColumn.Header>
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="&#x1F4CE;" FontSize="{DynamicResource Theme.FontSizeSmall}" TextAlignment="Center">
-                                                <TextBlock.Style>
-                                                    <Style TargetType="TextBlock">
-                                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding HasAttachments}" Value="True">
-                                                                <Setter Property="Visibility" Value="Visible"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </TextBlock.Style>
-                                            </TextBlock>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                            </GridView>
-                        </ListView.View>
+                        <!-- MailBoXX: no columns; each row is the stacked layout in the container template below. -->
                         <ListView.ItemContainerStyle>
                             <Style TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListViewItem}}">
+                                <!-- Flag colour strip: takes space only on a flagged message, so the
+                                     selection marker sits flush at the left edge otherwise and just
+                                     inside the flag colour when there is one. -->
                                 <Setter Property="BorderThickness" Value="4,0,0,0"/>
                                 <Setter Property="BorderBrush">
                                     <Setter.Value>
@@ -1788,59 +2084,169 @@
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="ListViewItem">
+                                            <!-- MailBoXX row. Layers, back to front: read/unread tint; the
+                                                 contextual image (right-anchored, faded in from the text side by
+                                                 the opacity mask, drawn as a brush so the text decides the row
+                                                 height); hover/selection wash with the selected-row marker; the
+                                                 content. The outer border keeps QuickMail's flag-colour bar.
+                                                 Unread is never colour alone: bold text and a closed envelope. -->
                                             <Border BorderBrush="{TemplateBinding BorderBrush}"
                                                     BorderThickness="{TemplateBinding BorderThickness}"
                                                     SnapsToDevicePixels="True">
-                                                <!-- 1px bottom border: row divider so adjacent rows
-                                                     stay distinguishable in dense lists. Padding is
-                                                     the density token (comfortable/compact, #421) —
-                                                     padding only, never the accessibility surface. -->
-                                                <Border x:Name="rowBg" Background="Transparent"
-                                                        Padding="{DynamicResource Theme.ListRowPadding}"
-                                                        BorderBrush="{DynamicResource Theme.BorderSubtle}"
-                                                        BorderThickness="0,0,0,1">
-                                                    <DockPanel>
-                                                        <Rectangle x:Name="unreadBar" DockPanel.Dock="Left"
-                                                                   Width="3" Margin="0,1,3,1"
-                                                                   Fill="{DynamicResource Theme.Accent}"
-                                                                   Visibility="Collapsed"/>
-                                                        <GridViewRowPresenter Content="{TemplateBinding Content}"
-                                                                              Columns="{TemplateBinding GridView.ColumnCollection}"/>
-                                                    </DockPanel>
-                                                </Border>
+                                                <Grid x:Name="rowRoot" MinHeight="76" ClipToBounds="True">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="40*"/>
+                                                        <ColumnDefinition Width="60*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Border x:Name="tint" Grid.ColumnSpan="2"
+                                                            Background="{DynamicResource Theme.RowReadBackground}"
+                                                            BorderBrush="{DynamicResource Theme.BorderSubtle}"
+                                                            BorderThickness="0,0,0,1"/>
+                                                    <Border x:Name="rowImage" Grid.Column="1" Margin="0,0,0,1"
+                                                            Background="{Binding Converter={StaticResource ContextImageBrushConverter}}"
+                                                            Opacity="{DynamicResource Theme.ImageryOpacity}">
+                                                        <Border.OpacityMask>
+                                                            <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                                                                <GradientStop Color="#00000000" Offset="0"/>
+                                                                <GradientStop Color="#B0000000" Offset="0.3"/>
+                                                                <GradientStop Color="#FF000000" Offset="0.55"/>
+                                                            </LinearGradientBrush>
+                                                        </Border.OpacityMask>
+                                                    </Border>
+                                                    <Border x:Name="wash" Grid.ColumnSpan="2" Background="Transparent"
+                                                            BorderBrush="Transparent" BorderThickness="3,0,0,0"/>
+                                                    <Grid Grid.ColumnSpan="2" Margin="14,9,14,9">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Grid Width="40" Height="40" VerticalAlignment="Top" Margin="0,2,14,0">
+                                                            <!-- One of six colours per sender, so senders are told apart at a glance. -->
+                                                            <Ellipse>
+                                                                <Ellipse.Style>
+                                                                    <Style TargetType="Ellipse">
+                                                                        <Setter Property="Fill" Value="{DynamicResource Theme.AvatarBackground}"/>
+                                                                        <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding From, Converter={StaticResource AvatarColorIndexConverter}}" Value="1">
+                                                                            <Setter Property="Fill" Value="{DynamicResource Theme.AvatarAlt1}"/>
+                                                                        </DataTrigger>
+                                                                        <DataTrigger Binding="{Binding From, Converter={StaticResource AvatarColorIndexConverter}}" Value="2">
+                                                                            <Setter Property="Fill" Value="{DynamicResource Theme.AvatarAlt2}"/>
+                                                                        </DataTrigger>
+                                                                        <DataTrigger Binding="{Binding From, Converter={StaticResource AvatarColorIndexConverter}}" Value="3">
+                                                                            <Setter Property="Fill" Value="{DynamicResource Theme.AvatarAlt3}"/>
+                                                                        </DataTrigger>
+                                                                        <DataTrigger Binding="{Binding From, Converter={StaticResource AvatarColorIndexConverter}}" Value="4">
+                                                                            <Setter Property="Fill" Value="{DynamicResource Theme.AvatarAlt4}"/>
+                                                                        </DataTrigger>
+                                                                        <DataTrigger Binding="{Binding From, Converter={StaticResource AvatarColorIndexConverter}}" Value="5">
+                                                                            <Setter Property="Fill" Value="{DynamicResource Theme.AvatarAlt5}"/>
+                                                                        </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </Ellipse.Style>
+                                                            </Ellipse>
+                                                            <local:AriaHiddenTextBlock
+                                                                Text="{Binding From, Converter={StaticResource InitialConverter}}"
+                                                                Foreground="{DynamicResource Theme.AvatarText}"
+                                                                FontSize="{DynamicResource Theme.FontSizeLarge}" FontWeight="SemiBold"
+                                                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </Grid>
+                                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                            <TextBlock Text="{Binding From}" FontSize="{DynamicResource Theme.FontSizeLarge}"
+                                                                       Foreground="{DynamicResource Theme.TextPrimary}"
+                                                                       FontWeight="{Binding IsRead, Converter={StaticResource BoolToWeightConverter}}"
+                                                                       TextTrimming="CharacterEllipsis"/>
+                                                            <!-- Only the sender is bold on unread mail (Windows Mail); the
+                                                                 closed envelope and the tint are the other unread cues. -->
+                                                            <TextBlock Text="{Binding Subject}"
+                                                                       Foreground="{DynamicResource Theme.TextPrimary}"
+                                                                       TextTrimming="CharacterEllipsis" ToolTip="{Binding Subject}"/>
+                                                            <TextBlock Text="{Binding Preview}"
+                                                                       Foreground="{DynamicResource Theme.TextSecondary}"
+                                                                       TextTrimming="CharacterEllipsis"/>
+                                                        </StackPanel>
+                                                        <Grid Grid.Column="2" Margin="12,0,0,0">
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="Auto"/>
+                                                                <RowDefinition Height="*"/>
+                                                            </Grid.RowDefinitions>
+                                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                                                <local:AriaHiddenTextBlock x:Name="attachmentMark" Text="&#xE723;"
+                                                                                           FontFamily="Segoe MDL2 Assets"
+                                                                                           Foreground="{DynamicResource Theme.TextPrimary}"
+                                                                                           VerticalAlignment="Center" Margin="0,0,6,0"
+                                                                                           Visibility="Collapsed"/>
+                                                                <!-- Visual only; RowSpeech still speaks DateDisplay. -->
+                                                                <TextBlock Text="{Binding FriendlyDate}"
+                                                                           Foreground="{DynamicResource Theme.TextPrimary}"/>
+                                                            </StackPanel>
+                                                            <!-- The envelope is also a button: clicking it toggles read /
+                                                                 unread without opening the message (Windows Mail). Mouse
+                                                                 affordance only: Ctrl+Q / Ctrl+U and the context menu are the
+                                                                 keyboard paths, so it is not a tab stop inside the row. -->
+                                                            <Button x:Name="envButton" Grid.Row="1"
+                                                                    HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                                                                    Margin="0,4,0,0" Padding="6,4,0,0"
+                                                                    Focusable="False" IsTabStop="False" Cursor="Hand"
+                                                                    Tag="{Binding}" Click="RowEnvelope_Click"
+                                                                    AutomationProperties.Name="Mark as unread"
+                                                                    ToolTip="Mark as unread">
+                                                                <Button.Template>
+                                                                    <ControlTemplate TargetType="Button">
+                                                                        <Border Background="Transparent" Padding="{TemplateBinding Padding}">
+                                                                            <ContentPresenter/>
+                                                                        </Border>
+                                                                    </ControlTemplate>
+                                                                </Button.Template>
+                                                                <Grid>
+                                                                    <!-- Unread: closed, filled envelope. -->
+                                                                    <Canvas x:Name="envClosed" Width="24" Height="18"
+                                                                            VerticalAlignment="Bottom" Visibility="Collapsed">
+                                                                        <Rectangle Width="24" Height="18" Fill="{DynamicResource Theme.EnvelopeUnread}"/>
+                                                                        <Path Data="M1.5,1.5 L12,10 L22.5,1.5"
+                                                                              Stroke="{DynamicResource Theme.EnvelopeUnreadGlyph}" StrokeThickness="1.6"/>
+                                                                    </Canvas>
+                                                                    <!-- Read: open envelope, outline only, transparent fill. -->
+                                                                    <Path x:Name="envOpen" Width="24" Height="22"
+                                                                          VerticalAlignment="Bottom"
+                                                                          Stretch="Uniform" StrokeThickness="1.4" Fill="Transparent"
+                                                                          Stroke="{DynamicResource Theme.EnvelopeRead}"
+                                                                          Data="M1,9 L12,1 L23,9 L23,23 L1,23 Z M1,9 L12,16 L23,9 M1,23 L9,15 M23,23 L15,15"/>
+                                                                </Grid>
+                                                            </Button>
+                                                        </Grid>
+                                                    </Grid>
+                                                </Grid>
                                             </Border>
                                             <ControlTemplate.Triggers>
                                                 <DataTrigger Binding="{Binding IsRead}" Value="False">
-                                                    <Setter TargetName="unreadBar" Property="Visibility" Value="Visible"/>
+                                                    <Setter TargetName="tint" Property="Background" Value="{DynamicResource Theme.RowUnreadBackground}"/>
+                                                    <Setter TargetName="envClosed" Property="Visibility" Value="Visible"/>
+                                                    <Setter TargetName="envOpen" Property="Visibility" Value="Collapsed"/>
+                                                    <Setter TargetName="envButton" Property="AutomationProperties.Name" Value="Mark as read"/>
+                                                    <Setter TargetName="envButton" Property="ToolTip" Value="Mark as read"/>
                                                 </DataTrigger>
-                                                <!-- Selection fill is accent-strength, so an accent unread
-                                                     bar would vanish on the selected row — recolor it. -->
-                                                <MultiDataTrigger>
-                                                    <MultiDataTrigger.Conditions>
-                                                        <Condition Binding="{Binding IsRead}" Value="False"/>
-                                                        <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="True"/>
-                                                    </MultiDataTrigger.Conditions>
-                                                    <Setter TargetName="unreadBar" Property="Fill" Value="{DynamicResource Theme.SelectionText}"/>
-                                                </MultiDataTrigger>
+                                                <DataTrigger Binding="{Binding HasAttachments}" Value="True">
+                                                    <Setter TargetName="attachmentMark" Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
                                                 <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter TargetName="rowBg" Property="Background" Value="{DynamicResource Theme.AccentSubtle}"/>
+                                                    <Setter TargetName="wash" Property="Background" Value="{DynamicResource Theme.RowHoverWash}"/>
                                                 </Trigger>
                                                 <Trigger Property="IsSelected" Value="True">
-                                                    <Setter TargetName="rowBg" Property="Background" Value="{DynamicResource Theme.SelectionBackground}"/>
-                                                    <Setter Property="Foreground" Value="{DynamicResource Theme.SelectionText}"/>
+                                                    <Setter TargetName="wash" Property="Background" Value="{DynamicResource Theme.RowSelectedWash}"/>
+                                                    <Setter TargetName="wash" Property="BorderBrush" Value="{DynamicResource Theme.RowSelectedMarker}"/>
                                                 </Trigger>
-                                                <MultiTrigger>
-                                                    <MultiTrigger.Conditions>
-                                                        <Condition Property="IsSelected" Value="True"/>
-                                                        <Condition Property="Selector.IsSelectionActive" Value="False"/>
-                                                    </MultiTrigger.Conditions>
-                                                    <Setter TargetName="rowBg" Property="Background" Value="{DynamicResource Theme.SelectionInactive}"/>
-                                                    <Setter Property="Foreground" Value="{DynamicResource Theme.TextPrimary}"/>
-                                                </MultiTrigger>
                                             </ControlTemplate.Triggers>
                                         </ControlTemplate>
                                     </Setter.Value>
                                 </Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsFlagged}" Value="False">
+                                        <Setter Property="BorderThickness" Value="0"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
                             </Style>
                         </ListView.ItemContainerStyle>
                     </ListView>
@@ -2235,12 +2641,279 @@
 
                     </Grid>
                 </DockPanel>
-                </Grid>
 
+
+        <!-- Invisible (the list edge against the picture is the divider) but still draggable;
+             the resize cursor shows where it is. -->
+        <GridSplitter Grid.Row="1" Grid.RowSpan="2" Grid.Column="2" Width="4" HorizontalAlignment="Stretch"
+                      Background="Transparent"
+                      IsTabStop="False"
+                      AutomationProperties.Name="Resize message list and reading area"/>
+
+        <!-- ── Scenic main area ──
+             Transparent: the window-wide picture (MbxBackdrop) shows here unobstructed. An opened
+             message sits on the translucent reading surface over it, with the message command bar
+             and any open message tabs above. Caption buttons float at the top right. -->
+        <Grid x:Name="MainArea" Grid.Row="0" Grid.RowSpan="3" Grid.Column="3" ClipToBounds="True">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>    <!-- caption / drag strip -->
+                <RowDefinition Height="Auto"/>  <!-- message command bar -->
+                <RowDefinition Height="Auto"/>  <!-- open message tabs -->
+                <RowDefinition Height="*"/>     <!-- reading surface -->
+            </Grid.RowDefinitions>
+
+            <!-- The reading surface: an open message fills the whole right pane, edge to edge and
+                 from the top (as Windows 10 Mail did), with the caption buttons over it. -->
+            <Border x:Name="ReadingSurfaceBackdrop" Grid.RowSpan="4" IsHitTestVisible="False"
+                    Background="{DynamicResource Theme.ReadingSurface}"
+                    Visibility="{Binding IsMessageOpen, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+            <!-- Caption strip: drag to move, double-click to maximize. -->
+            <Border x:Name="CaptionDragArea" Grid.Row="0" Background="Transparent"
+                    MouseLeftButtonDown="CaptionDragArea_MouseLeftButtonDown"/>
+            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right"
+                        VerticalAlignment="Top" Panel.ZIndex="30">
+                <Button x:Name="CaptionMinimizeButton" Style="{StaticResource Mbx.CaptionButton}"
+                        Content="&#xE921;" Click="CaptionMinimize_Click"
+                        AutomationProperties.Name="Minimize" ToolTip="Minimize"/>
+                <Button x:Name="CaptionMaximizeButton" Style="{StaticResource Mbx.CaptionButton}"
+                        Content="&#xE922;" Click="CaptionMaximize_Click"
+                        AutomationProperties.Name="Maximize" ToolTip="Maximize"/>
+                <Button x:Name="CaptionCloseButton" Style="{StaticResource Mbx.CaptionCloseButton}"
+                        Content="&#xE8BB;" Click="CaptionClose_Click"
+                        AutomationProperties.Name="Close" ToolTip="Close (Alt+F4)"/>
+            </StackPanel>
+
+            <!-- Message command bar (QuickMail's toolbar, trimmed to message actions). -->
+            <Border Grid.Row="1" Margin="16,0,16,0"
+                    BorderThickness="0,0,0,1" BorderBrush="{DynamicResource Theme.BorderSubtle}"
+                    Visibility="{Binding IsMessageOpen, Converter={StaticResource BoolToVisibilityConverter}}">
+            <!-- Close sits outside the toolbar so it never falls into the toolbar's overflow. -->
+            <DockPanel>
+            <Button x:Name="ToolbarCloseMessageButton" DockPanel.Dock="Right"
+                    Style="{StaticResource Mbx.IconButton}"
+                    Content="&#xE8BB;" FontFamily="Segoe MDL2 Assets"
+                    Click="ToolbarCloseMessage_Click"
+                    AutomationProperties.Name="Close message"
+                    AutomationProperties.AcceleratorKey="Escape"
+                    ToolTip="Close message (Esc)"/>
+        <ToolBar x:Name="MainToolbar"
+                 Background="Transparent" BorderThickness="0" Padding="8,4"
+                 
+                 AutomationProperties.Name="Main toolbar"
+                 KeyboardNavigation.TabNavigation="None"
+                 KeyboardNavigation.DirectionalNavigation="Cycle"
+                 PreviewKeyDown="Toolbar_PreviewKeyDown">
+            <Button x:Name="ToolbarFirstButton"
+                    Style="{DynamicResource ToolbarButton}"
+                    Command="{Binding ReplyCommand}"
+                    AutomationProperties.Name="Reply"
+                    AutomationProperties.AcceleratorKey="Ctrl+R"
+                    ToolTip="Reply (Ctrl+R)"
+                    Content="Reply"/>
+            <Button Style="{DynamicResource ToolbarButton}"
+                    Command="{Binding ReplyAllCommand}"
+                    AutomationProperties.Name="Reply All"
+                    AutomationProperties.AcceleratorKey="Ctrl+Shift+R"
+                    ToolTip="Reply All (Ctrl+Shift+R)"
+                    Content="Reply All"/>
+            <Button Style="{DynamicResource ToolbarButton}"
+                    Command="{Binding ForwardCommand}"
+                    AutomationProperties.Name="Forward"
+                    AutomationProperties.AcceleratorKey="Ctrl+Shift+F"
+                    ToolTip="Forward (Ctrl+Shift+F)"
+                    Content="Forward"/>
+            <Separator/>
+            <Button Style="{DynamicResource ToolbarButton}"
+                    Command="{Binding ArchiveMessageCommand}"
+                    AutomationProperties.Name="Archive"
+                    AutomationProperties.AcceleratorKey="Ctrl+Shift+M"
+                    ToolTip="Archive (Ctrl+Shift+M)"
+                    Content="Archive"/>
+            <Button Style="{DynamicResource ToolbarButton}"
+                    Command="{Binding DeleteMessageCommand}"
+                    AutomationProperties.Name="Delete message"
+                    AutomationProperties.AcceleratorKey="Delete"
+                    ToolTip="Delete (Del)"
+                    Content="Delete"/>
+            <Button x:Name="ToolbarMarkUnreadButton"
+                    Style="{DynamicResource ToolbarButton}"
+                    Click="ToolbarMarkUnread_Click"
+                    AutomationProperties.Name="Mark as Unread"
+                    AutomationProperties.AcceleratorKey="Ctrl+U"
+                    ToolTip="Mark as unread (Ctrl+U)"
+                    Content="Mark Unread"/>
+        </ToolBar>
             </DockPanel>
+            </Border>
 
-            </Grid>
+                <Border Grid.Row="2"
+                        x:Name="TabStripBorder"
+                        Margin="16,0,16,0"
+                        BorderThickness="0,0,0,1"
+                        BorderBrush="{DynamicResource Theme.BorderSubtle}"
+                        Visibility="{Binding ShowTabStrip, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <ListBox x:Name="TabStrip"
+                             ItemsSource="{Binding OpenTabs}"
+                             SelectedItem="{Binding ActiveTab, Mode=TwoWay}"
+                             SelectionMode="Single"
+                             BorderThickness="0"
+                             Background="Transparent"
+                             ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                             ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                             KeyboardNavigation.TabNavigation="Once"
+                             AutomationProperties.Name="Open message tabs"
+                             SelectionChanged="TabStrip_SelectionChanged"
+                             PreviewKeyDown="TabStrip_PreviewKeyDown"
+                             PreviewMouseDown="TabStrip_PreviewMouseDown"
+                             GotKeyboardFocus="TabStrip_GotKeyboardFocus"
+                             LostKeyboardFocus="TabStrip_LostKeyboardFocus">
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                                <Setter Property="Padding" Value="8,5"/>
+                                <Setter Property="Margin" Value="0,0,1,0"/>
+                                <Setter Property="AutomationProperties.Name" Value="{Binding Title}"/>
+                                <Setter Property="ToolTip" Value="{Binding Title}"/>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Title}"
+                                               MaxWidth="160"
+                                               TextTrimming="CharacterEllipsis"
+                                               VerticalAlignment="Center"/>
+                                    <Button Content="✕"
+                                            Width="16" Height="16"
+                                            Padding="0"
+                                            Margin="6,0,0,0"
+                                            FontSize="9"
+                                            Click="TabCloseButton_Click"
+                                            Tag="{Binding}"
+                                            IsTabStop="False"
+                                            AutomationProperties.Name="Close this tab"
+                                            ToolTip="Close tab"
+                                            Visibility="{Binding CanClose, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Border>
+
+            <!-- Body pane — hidden until IsMessageOpen; Escape returns to MessageList. Sits on the
+                 ~90% opaque reading surface (ReadingSurfaceBackdrop); the HTML body itself is opaque
+                 (WebView2 is a native window and cannot blend with WPF content) and fills the pane. -->
+                <Border Grid.Row="3" x:Name="ReadingSurface"
+                        MinHeight="200"
+                        Visibility="{Binding IsMessageOpen, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Top" Margin="32,14,32,0">
+                            <TextBox x:Name="SubjectField"
+                                     Text="{Binding MessageDetail.Subject, FallbackValue='', Mode=OneWay}"
+                                     IsReadOnly="True" IsReadOnlyCaretVisible="True"
+                                     BorderThickness="0" Background="Transparent"
+                                     FontSize="{DynamicResource Theme.FontSizeHeader}" FontWeight="SemiBold" TextWrapping="Wrap"
+                                     AutomationProperties.Name="Subject"/>
+                            <TextBox x:Name="FromField"
+                                     Text="{Binding MessageDetail.From, FallbackValue='', Mode=OneWay}"
+                                     IsReadOnly="True" IsReadOnlyCaretVisible="True"
+                                     BorderThickness="0" Background="Transparent"
+                                     Margin="0,8,0,0"
+                                     FontSize="{DynamicResource Theme.FontSizeLarge}"
+                                     AutomationProperties.Name="From"/>
+                            <TextBox x:Name="ToField"
+                                     Text="{Binding MessageDetail.To, FallbackValue='', Mode=OneWay}"
+                                     IsReadOnly="True" IsReadOnlyCaretVisible="True"
+                                     BorderThickness="0" Background="Transparent"
+                                     Foreground="{DynamicResource Theme.TextSecondary}"
+                                     AutomationProperties.Name="To"/>
+                            <TextBox x:Name="CcField"
+                                     Text="{Binding MessageDetail.Cc, FallbackValue='', Mode=OneWay}"
+                                     IsReadOnly="True" IsReadOnlyCaretVisible="True"
+                                     BorderThickness="0" Background="Transparent"
+                                     Foreground="{DynamicResource Theme.TextSecondary}"
+                                     AutomationProperties.Name="Cc">
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding MessageDetail.Cc}" Value="">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding MessageDetail.Cc}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+                            <TextBox x:Name="DateField"
+                                     Text="{Binding MessageDetail.Date, StringFormat='{}{0:f}', FallbackValue='', Mode=OneWay}"
+                                     IsReadOnly="True" IsReadOnlyCaretVisible="True"
+                                     BorderThickness="0" Background="Transparent"
+                                     Foreground="{DynamicResource Theme.TextSecondary}"
+                                     AutomationProperties.Name="Date"/>
+
+                            <!-- Attachments (visible when selected message has attachments) -->
+                            <ListBox x:Name="ReadingPaneAttachmentList"
+                                     ItemsSource="{Binding MessageDetail.Attachments}"
+                                     SelectionMode="Single"
+                                     BorderThickness="0"
+                                     Margin="0,4,0,0"
+                                     Visibility="{Binding SelectedMessage.HasAttachments,
+                                                  Converter={StaticResource BoolToVisibilityConverter},
+                                                  FallbackValue=Collapsed}"
+                                     KeyboardNavigation.TabNavigation="Once"
+                                     KeyboardNavigation.DirectionalNavigation="Contained"
+                                     AutomationProperties.Name="Attachments"
+                                     PreviewKeyDown="ReadingPaneAttachmentList_PreviewKeyDown"
+                                     GotKeyboardFocus="ReadingPaneAttachmentList_GotKeyboardFocus"
+                                     MouseDoubleClick="ReadingPaneAttachmentList_MouseDoubleClick">
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                                        <Setter Property="AutomationProperties.Name" Value="{Binding AccessibleName}"/>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding FileName}" ToolTip="{Binding FileSizeDisplay}"/>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                                <ListBox.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="_Save…"
+                                                  Command="{Binding PlacementTarget.DataContext.SaveAttachmentCommand,
+                                                            RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                  CommandParameter="{Binding PlacementTarget.SelectedItem,
+                                                            RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        <MenuItem Header="Save _All…"
+                                                  Command="{Binding PlacementTarget.DataContext.SaveAllAttachmentsCommand,
+                                                            RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        <MenuItem Header="_Open"
+                                                  Command="{Binding PlacementTarget.DataContext.OpenAttachmentCommand,
+                                                            RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                  CommandParameter="{Binding PlacementTarget.SelectedItem,
+                                                            RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                    </ContextMenu>
+                                </ListBox.ContextMenu>
+                            </ListBox>
+
+                            <Border Height="1" Margin="0,10,0,0" Background="{DynamicResource Theme.BorderSubtle}"/>
+                        </StackPanel>
+                        <!-- WebView2: real browser, proper arrow-key caret nav, screen-reader virtual cursor -->
+                        <wv2:WebView2 x:Name="MessageBody"
+                                      AutomationProperties.Name="Message body"
+                                      KeyboardNavigation.IsTabStop="True"
+                                      GotKeyboardFocus="MessageBody_GotKeyboardFocus"
+                                      MinHeight="80"/>
+                    </DockPanel>
+                </Border>
         </Grid>
+
 
         <!-- ── Status bar ── -->
         <!-- Each StatusBarItem is a distinct focus stop within the status bar.
@@ -2250,7 +2923,7 @@
              The StatusBar UIA control pattern enables screen readers' built-in
              status-bar read commands. -->
         <StatusBar x:Name="MainStatusBar"
-                   Grid.Row="3"
+                   Grid.Row="2" Grid.Column="1"
                    KeyboardNavigation.TabNavigation="None"
                    KeyboardNavigation.DirectionalNavigation="Contained"
                    AutomationProperties.Name="">
@@ -2329,7 +3002,8 @@
 
         <!-- First-run keyboard tutorial overlay (topmost, covers everything when active) -->
         <local:TutorialOverlay x:Name="TutorialOverlayControl"
-                               Grid.Row="0" Grid.RowSpan="4"
+                               Grid.Row="0" Grid.RowSpan="3" Grid.ColumnSpan="4"
                                Panel.ZIndex="1000"/>
     </Grid>
+    </Border>
 </Window>

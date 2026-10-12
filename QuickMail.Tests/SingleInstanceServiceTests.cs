@@ -35,7 +35,7 @@ public class SingleInstanceServiceTests
     public void ProfileKey_NoArgs_MatchesExplicitDefaultProfileDir()
     {
         var defaultDir = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "QuickMail");
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MailBoXX");
 
         Assert.Equal(
             SingleInstanceService.ProfileKey(Array.Empty<string>()),

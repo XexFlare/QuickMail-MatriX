@@ -24,7 +24,7 @@ public sealed class ProfileContext
     public static ProfileContext Default() =>
         new(Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "QuickMail"));
+            AppIdentity.DataFolderName));
 
     /// <summary>
     /// Extracts the value following --profileDir from the argument list.

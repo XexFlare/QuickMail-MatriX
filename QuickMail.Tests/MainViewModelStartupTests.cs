@@ -82,10 +82,54 @@ public class MainViewModelStartupTests
     }
 
     [Fact]
-    public async Task NoStartupFolderConfigured_LandsInAllMail()
+    public async Task NoStartupFolderConfigured_LandsInTheDefaultAccountsInbox()
     {
-        // The default, and what every existing install gets until it opts in.
+        // MailBoXX: Windows Mail opened on an account's Inbox, not on a combined view. With no
+        // account marked default, the first account; the sidebar follows it.
         var (vm, _, _) = MakeVm();
+
+        await vm.InitialLoadAsync();
+
+        Assert.Equal("INBOX", vm.SelectedFolder?.FullName);
+        Assert.Equal(WorkId, vm.SelectedFolder?.AccountId);
+        Assert.Equal(WorkId, vm.SelectedAccount?.Id);
+    }
+
+    [Fact]
+    public async Task Mailboxes_ShowsCombinedFolders_WithTotalsAcrossAccounts()
+    {
+        // MailBoXX: with Mailboxes (All Mail) open, the sidebar's folders are the combined ones and
+        // each count is the sum over accounts; choosing an account goes back to its own folders.
+        var (vm, _, store) = MakeVm();
+        store.SeededFolders[WorkId][0].UnreadCount = 4;                    // Work INBOX
+        store.SeededFolders[PersonalId][0].UnreadCount = 3;                // Personal INBOX
+        store.SeededFolders[WorkId].Add(Folder(WorkId, "Junk", "Junk", SpecialFolderKind.Junk));
+        store.SeededFolders[WorkId][^1].UnreadCount = 2;
+        store.SeededFolders[PersonalId].Add(Folder(PersonalId, "Spam", "Spam", SpecialFolderKind.Junk));
+        store.SeededFolders[PersonalId][^1].UnreadCount = 1;
+        await vm.InitialLoadAsync();
+
+        await vm.OpenAllMailCommand.ExecuteAsync(null);
+
+        Assert.True(vm.IsCombinedFolderView);
+        var byName = vm.MainFolders.ToDictionary(n => n.Folder!.FullName, n => n.UnreadCountText);
+        Assert.Equal("7", byName[MainViewModel.AllInboxesFolder.FullName]);
+        Assert.Equal("3", byName[MainViewModel.AllJunkFolder.FullName]);
+        Assert.True(byName.ContainsKey(MainViewModel.AllSentFolder.FullName));      // Work has Sent
+        Assert.False(byName.ContainsKey(MainViewModel.AllDraftsFolder.FullName));   // nobody has Drafts
+
+        // Choosing the combined Inbox opens All Inboxes and keeps the combined list.
+        await vm.OpenMainFolderAsync(vm.MainFolders.First(n => n.Folder!.FullName == MainViewModel.AllInboxesFolder.FullName));
+        Assert.Same(MainViewModel.AllInboxesFolder, vm.SelectedFolder);
+        Assert.True(vm.IsCombinedFolderView);
+    }
+
+    [Fact]
+    public async Task NoStartupFolderConfigured_AndNoInboxKnownYet_LandsInAllMail()
+    {
+        // A first run, before any account's folders have been fetched: QuickMail's default stands.
+        var (vm, _, store) = MakeVm();
+        store.SeededFolders.Clear();
 
         await vm.InitialLoadAsync();
 

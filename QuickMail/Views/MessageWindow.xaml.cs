@@ -301,7 +301,7 @@ public partial class MessageWindow : Window
         {
             var env = _sharedEnv ?? await CoreWebView2Environment.CreateAsync(null,
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                             "QuickMail", "WebView2"));
+                             AppIdentity.DataFolderName, "WebView2"));
             await MessageBody.EnsureCoreWebView2Async(env);
             _webViewReady = true;
             // Pictures sent inside a message are served from the message itself (#729).
@@ -633,7 +633,7 @@ public partial class MessageWindow : Window
         // Only QuickMail's own links, which carry this run's token; one the sender wrote does nothing.
         if (!QuickMailLinks.TryParse(uri, out var action))
         {
-            LogService.Log("MessageWindow: ignored a quickmail: link that QuickMail did not create.");
+            LogService.Log("MessageWindow: ignored a quickmail: link that MailBoXX did not create.");
             return;
         }
         switch (action)

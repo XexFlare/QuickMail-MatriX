@@ -19,8 +19,11 @@ public static class VelopackRuntime
         {
             // The source is never contacted here; construction only inspects the local
             // install layout via IsInstalled.
-            return new UpdateManager(
-                new GithubSource(Services.UpdateCheckService.RepoUrl, accessToken: null, prerelease: false))
+            // MailBoXX: with no release repository yet, point the (never contacted) source at the
+            // app folder — IsInstalled only inspects the local install layout.
+            return (Services.UpdateCheckService.RepoUrl.Length == 0
+                    ? new UpdateManager(AppContext.BaseDirectory)
+                    : new UpdateManager(new GithubSource(Services.UpdateCheckService.RepoUrl, accessToken: null, prerelease: false)))
                 .IsInstalled;
         }
         catch (Exception)

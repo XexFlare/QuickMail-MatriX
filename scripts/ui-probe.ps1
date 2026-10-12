@@ -39,7 +39,7 @@ param(
 $ErrorActionPreference = 'Stop'
 if (-not $Plan) { $Plan = Join-Path $PSScriptRoot 'ui-probe-plan.json' }
 $repoRoot = Split-Path $PSScriptRoot -Parent
-$exe      = Join-Path $repoRoot 'QuickMail\bin\Debug\QuickMail.exe'
+$exe      = Join-Path $repoRoot 'QuickMail\bin\Debug\MailBoXX.exe'
 $fixtures = Join-Path $repoRoot 'Tools\QuickMail.Fixtures\QuickMail.Fixtures.csproj'
 
 if (-not $RunDir) {

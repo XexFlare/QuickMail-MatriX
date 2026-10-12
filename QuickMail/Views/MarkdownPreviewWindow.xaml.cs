@@ -32,8 +32,8 @@ public partial class MarkdownPreviewWindow : Window
     public MarkdownPreviewWindow(string? subject, string htmlFragment, string? themeCss = null)
     {
         Title = string.IsNullOrWhiteSpace(subject)
-            ? "Compose — Preview — QuickMail"
-            : $"{subject.Trim()} — Preview — QuickMail";
+            ? "Compose — Preview — MailBoXX"
+            : $"{subject.Trim()} — Preview — MailBoXX";
 
         _html = BuildHtml(subject, htmlFragment, themeCss);
         InitializeComponent();
@@ -59,7 +59,7 @@ public partial class MarkdownPreviewWindow : Window
         {
             var dataFolder = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "QuickMail", "WebView2Preview");
+                AppIdentity.DataFolderName, "WebView2Preview");
             var env = await CoreWebView2Environment.CreateAsync(null, dataFolder);
             if (_cts.IsCancellationRequested) return;
             await PreviewBody.EnsureCoreWebView2Async(env);

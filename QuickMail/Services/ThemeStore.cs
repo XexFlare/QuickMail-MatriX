@@ -19,6 +19,8 @@ public class ThemeStore
     /// <summary>Embedded built-in theme resources, in display order.</summary>
     private static readonly string[] BuiltInResourceNames =
     {
+        "QuickMail.Themes.BuiltIn.mailboxx-light.json",
+        "QuickMail.Themes.BuiltIn.mailboxx-dark.json",
         "QuickMail.Themes.BuiltIn.light.json",
         "QuickMail.Themes.BuiltIn.dark.json",
         "QuickMail.Themes.BuiltIn.ember.json",

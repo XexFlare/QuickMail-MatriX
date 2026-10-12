@@ -349,6 +349,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
         FullName    = "\u0000AllArchive",
         DisplayName = "All Archive"
     };
+    /// <summary>MailBoXX: every account's Junk folder merged into one list, as All Trash does for Trash.</summary>
+    public static readonly MailFolderModel AllJunkFolder = new()
+    {
+        FullName    = "\u0000AllJunk",
+        DisplayName = "All Junk"
+    };
     public static readonly MailFolderModel AllFlaggedFolder = new()
     {
         FullName    = "\u0000AllFlagged",
@@ -517,7 +523,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             return "Select a folder in the folder tree first.";
 
         if (IsCalendarFolderName(folder.FullName))
-            return $"'{node.Label}' is a calendar, not a mail folder, so QuickMail cannot start there.";
+            return $"'{node.Label}' is a calendar, not a mail folder, so MailBoXX cannot start there.";
 
         var isVirtual = AllVirtualFolders.Any(v =>
             string.Equals(v.FullName, folder.FullName, StringComparison.Ordinal));
@@ -541,7 +547,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         cfg.StartupFolderLabel = folder.DisplayName;
         _configService.Save(cfg);
 
-        return $"QuickMail will open in {folder.DisplayName}.";
+        return $"MailBoXX will open in {folder.DisplayName}.";
     }
 
     /// <summary>
@@ -552,7 +558,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         var cfg = _configService.Load();
         if (string.IsNullOrEmpty(cfg.StartupFolder))
-            return "No startup folder is set. QuickMail already opens in All Mail.";
+            return "No startup folder is set. MailBoXX already opens in All Mail.";
 
         var previous = string.IsNullOrWhiteSpace(cfg.StartupFolderLabel)
             ? cfg.StartupFolder : cfg.StartupFolderLabel;
@@ -561,7 +567,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         cfg.StartupFolderLabel   = string.Empty;
         _configService.Save(cfg);
 
-        return $"Startup folder '{previous}' cleared. QuickMail will open in All Mail.";
+        return $"Startup folder '{previous}' cleared. MailBoXX will open in All Mail.";
     }
 
     // ── Folder tree expansion (#590) ─────────────────────────────────────────
@@ -849,6 +855,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
                string.Equals(folder.FullName, AllDraftsFolder.FullName, StringComparison.Ordinal) ||
                string.Equals(folder.FullName, AllSentFolder.FullName, StringComparison.Ordinal) ||
                string.Equals(folder.FullName, AllTrashFolder.FullName, StringComparison.Ordinal) ||
+               string.Equals(folder.FullName, AllJunkFolder.FullName, StringComparison.Ordinal) ||
                string.Equals(folder.FullName, AllArchiveFolder.FullName, StringComparison.Ordinal) ||
                string.Equals(folder.FullName, AllFlaggedFolder.FullName, StringComparison.Ordinal) ||
                string.Equals(folder.FullName, OutboxFolder.FullName, StringComparison.Ordinal) ||
@@ -1162,6 +1169,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [NotifyPropertyChangedFor(nameof(IsContactMailView))]
     [NotifyPropertyChangedFor(nameof(IsSearchResultsView))]
     [NotifyPropertyChangedFor(nameof(SearchResultsQuery))]
+    [NotifyPropertyChangedFor(nameof(IsAllMailOpen))]          // MailBoXX: the sidebar's Mailboxes button
+    [NotifyPropertyChangedFor(nameof(IsCombinedFolderView))]   // MailBoXX: combined folder list
     private MailFolderModel? _selectedFolder;
 
     // Selecting the calendar folder (or leaving it) swaps the View Mode menu between the mail
@@ -1170,9 +1179,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         RebuildViewModeOptions();
         UpdateRulesStatusText();   // the rule summary shows what applies in a shared mailbox's folders (#678)
+        RefreshMainFolders();      // MailBoXX: combined folders while Mailboxes is open, else the account's
     }
 
-    partial void OnSelectedAccountChanged(AccountModel? value) => UpdateRulesStatusText();
+    partial void OnSelectedAccountChanged(AccountModel? value)
+    {
+        UpdateRulesStatusText();
+        RefreshMainFolders();   // MailBoXX: the sidebar's short folder list follows the account
+    }
 
     [ObservableProperty]
     private BatchObservableCollection<MailMessageSummary> _messages = [];
@@ -1537,7 +1551,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private string ComputeWindowTitle()
     {
             if (IsMessageOpen && !string.IsNullOrWhiteSpace(MessageDetail?.Subject))
-                return $"{MessageDetail.Subject} - QuickMail";
+                return $"{MessageDetail.Subject} - MailBoXX";
             if (ActiveView != null)
             {
                 var suffix = IsSearchActive && !string.IsNullOrWhiteSpace(SearchText)
@@ -1545,7 +1559,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
                     : IsFilterActive
                     ? $" — {FilterLabel}"
                     : string.Empty;
-                return $"{ActiveView.Name}{suffix} - QuickMail";
+                return $"{ActiveView.Name}{suffix} - MailBoXX";
             }
             if (SelectedFolder != null && !SelectedFolder.IsHeader)
             {
@@ -1560,9 +1574,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
                     : IsFilterActive
                     ? $" — {FilterLabel}"
                     : string.Empty;
-                return $"{folderPart}{suffix} - QuickMail";
+                return $"{folderPart}{suffix} - MailBoXX";
             }
-            return "QuickMail";
+            return "MailBoXX";
     }
 
     // ── Tab & Window Management (Phase 6) ────────────────────────────────────────
@@ -3019,7 +3033,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             execute: () => TutorialRequested?.Invoke(this, EventArgs.Empty)));
 
         registry.Register(new CommandDefinition(
-            id: "help.about", category: "Help", title: "About QuickMail",
+            id: "help.about", category: "Help", title: "About MailBoXX",
             execute: () => AboutRequested?.Invoke(this, EventArgs.Empty)));
 
         registry.Register(new CommandDefinition(
@@ -3154,7 +3168,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     internal static readonly MailFolderModel[] AllVirtualFolders =
     [
         AllMailFolder, AllInboxesFolder, AllDraftsFolder, AllSentFolder,
-        AllArchiveFolder, AllTrashFolder, AllFlaggedFolder, AllWatchedFolder,
+        AllArchiveFolder, AllTrashFolder, AllJunkFolder, AllFlaggedFolder, AllWatchedFolder,
     ];
 
     /// <summary>
@@ -3309,7 +3323,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
         else
         {
-            SelectStartupFolder(startupFolder ?? AllMailFolder);
+            // MailBoXX: with no startup folder chosen, open the default account's Inbox rather
+            // than the combined All Mail; a chosen one (or its fallback notice) is unchanged.
+            SelectStartupFolder(startupFolder
+                ?? (string.IsNullOrWhiteSpace(startupCfg.StartupFolder) ? DefaultStartupInbox() : null)
+                ?? AllMailFolder);
         }
 
         var cached = startupView != null
@@ -4702,28 +4720,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
     /// client). Scoped per folder to the returned date range so messages older than the fetch window
     /// — simply not returned — are not wrongly dropped. Call after an aggregate/virtual merge.
     /// </summary>
-    private void RemoveVanishedMessages(IReadOnlyList<MailMessageSummary> newMessages)
+    /// <remarks>MailBoXX: the decision itself is <see cref="FindVanishedMessages"/>.</remarks>
+    private void RemoveVanishedMessages(IReadOnlyList<MailMessageSummary> newMessages,
+        IReadOnlyCollection<(Guid AccountId, string Folder)>? incrementalFolders = null)
     {
-        // Key by global message identity, not per-folder UID: in a deduped aggregate view the shown
-        // row is one representative copy, but a sibling copy in another folder keeps the message
-        // present. Removing on the per-folder key alone would drop the representative when only its
-        // home-folder copy vanished (e.g. a Gmail message archived out of INBOX while its All Mail
-        // copy remains) — a message that merely moved, not deleted (issue #220). CollapseKeyFor
-        // falls back to the per-folder key for messages with no Message-ID, preserving old behavior.
-        var fetchedKeys = new HashSet<string>(StringComparer.Ordinal);
-        var minDateByFolder = new Dictionary<(Guid, string), DateTimeOffset>();
-        foreach (var m in newMessages)
-        {
-            fetchedKeys.Add(MessageDeduplicator.CollapseKeyFor(m));
-            var fk = (m.AccountId, m.FolderName);
-            if (!minDateByFolder.TryGetValue(fk, out var min) || m.Date < min)
-                minDateByFolder[fk] = m.Date;
-        }
-
-        var vanished = Messages.Where(m =>
-            minDateByFolder.TryGetValue((m.AccountId, m.FolderName), out var min) &&
-            m.Date >= min &&
-            !fetchedKeys.Contains(MessageDeduplicator.CollapseKeyFor(m))).ToList();
+        var vanished = FindVanishedMessages(Messages, newMessages, incrementalFolders);
         if (vanished.Count == 0) return;
 
         // Mirror RemoveFromActiveViewAsync: remove from the backing _rawMessages too (else they
@@ -5037,7 +5038,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             // aggregate was present. ApplyViewAsync resolves a saved view's VirtualFolderKey
             // against this list, so a view saved over All Flagged fell through to a fabricated
             // folder instead of the live singleton.
-            AllArchiveFolder, AllTrashFolder, AllFlaggedFolder, AllWatchedFolder
+            AllArchiveFolder, AllTrashFolder, AllJunkFolder, AllFlaggedFolder, AllWatchedFolder
         };
         if (ShowOutboxFolder) items.Add(OutboxFolder);
 
@@ -5204,6 +5205,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         allMailGroup.Children.Add(new FolderTreeNode { Folder = AllSentFolder,    Label = AllSentFolder.DisplayName });
         allMailGroup.Children.Add(new FolderTreeNode { Folder = AllArchiveFolder, Label = AllArchiveFolder.DisplayName });
         allMailGroup.Children.Add(new FolderTreeNode { Folder = AllTrashFolder,   Label = AllTrashFolder.DisplayName });
+        allMailGroup.Children.Add(new FolderTreeNode { Folder = AllJunkFolder,    Label = AllJunkFolder.DisplayName });
         allMailGroup.Children.Add(new FolderTreeNode { Folder = AllFlaggedFolder, Label = AllFlaggedFolder.DisplayName });
         allMailGroup.Children.Add(new FolderTreeNode { Folder = AllWatchedFolder, Label = AllWatchedFolder.DisplayName });
         if (ShowOutboxFolder)
@@ -5270,6 +5272,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             MergeFolderNodes(FolderTree, roots);
         // New node objects start unmarked; restore the default calendar's marker on the rebuild.
         MarkDefaultCalendarNodes();
+        RefreshMainFolders();   // MailBoXX: a merge can add an account's folders without raising FolderTree
     }
 
     /// <summary>
@@ -6351,13 +6354,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
             var needsRecipientRepair = !OnlineMode && ViewMode == ViewMode.To &&
                 (cached.Any(m => string.IsNullOrWhiteSpace(m.To))
                     || await _localStore.HasSummariesMissingRecipientsAsync());
+            var incrementalFolders = new System.Collections.Concurrent.ConcurrentDictionary<(Guid AccountId, string Folder), byte>();
             var perAccountTasks = Accounts
                 // Connected, not merely cached: this phase issues live IMAP fetches, and since #516
                 // the folder cache is populated before any account connects.
                 .Where(a => _connectedAccountIds.Contains(a.Id) && !a.IsShared)   // #31: shared excluded from All Mail
                 .Select(account => (OnlineMode || needsRecipientRepair)
                     ? FetchAccountAllFoldersAsync(account, ct)
-                    : FetchAccountNewMessagesAsync(account, ct));
+                    : FetchAccountNewMessagesAsync(account, ct, incrementalFolders));
 
             var accountResults = await Task.WhenAll(perAccountTasks);
             var newMessages = accountResults.SelectMany(r => r).ToList();
@@ -6433,7 +6437,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 existingById[key] = msg;
             }
 
-            RemoveVanishedMessages(newMessages);
+            RemoveVanishedMessages(newMessages, incrementalFolders.Keys.ToList());
 
             if (!IsCurrentFolderLoad(loadVersion, AllMailFolder))
                 return;
@@ -6499,8 +6503,46 @@ public partial class MainViewModel : ObservableObject, IDisposable
     /// non-excluded folder belonging to <paramref name="account"/>.  Used by the
     /// Phase 2 incremental update in <see cref="FetchAllMailAsync"/>.
     /// </summary>
+    /// <summary>
+    /// Which shown messages a fetch shows to have vanished from the server. A folder's fetch result
+    /// is taken as a complete snapshot of that folder from its oldest returned date onward, so a shown
+    /// message in that span that was not returned is gone.
+    /// <para>MailBoXX fix: folders in <paramref name="incrementalFolders"/> were fetched with "UIDs
+    /// after the last one seen". That result is NOT a snapshot of any date span: by IMAP semantics an
+    /// "n:*" range with no newer mail still returns the highest-UID message, and UID order need not
+    /// follow date order (appended, imported or migrated mail). Treating it as a snapshot removed every
+    /// shown message dated after that one, so those folders are skipped; the periodic reconcile still
+    /// catches real server-side deletions.</para>
+    /// <para>Keyed by global message identity, not per-folder UID: in a deduped aggregate view the
+    /// shown row is one representative copy, and a sibling copy in another folder keeps the message
+    /// present (issue #220). CollapseKeyFor falls back to the per-folder key without a Message-ID.</para>
+    /// </summary>
+    internal static List<MailMessageSummary> FindVanishedMessages(
+        IEnumerable<MailMessageSummary> shown,
+        IReadOnlyList<MailMessageSummary> fetched,
+        IReadOnlyCollection<(Guid AccountId, string Folder)>? incrementalFolders = null)
+    {
+        var fetchedKeys = new HashSet<string>(StringComparer.Ordinal);
+        var minDateByFolder = new Dictionary<(Guid, string), DateTimeOffset>();
+        foreach (var m in fetched)
+        {
+            fetchedKeys.Add(MessageDeduplicator.CollapseKeyFor(m));
+            var fk = (m.AccountId, m.FolderName);
+            if (incrementalFolders is not null && incrementalFolders.Contains(fk))
+                continue;
+            if (!minDateByFolder.TryGetValue(fk, out var min) || m.Date < min)
+                minDateByFolder[fk] = m.Date;
+        }
+
+        return shown.Where(m =>
+            minDateByFolder.TryGetValue((m.AccountId, m.FolderName), out var min) &&
+            m.Date >= min &&
+            !fetchedKeys.Contains(MessageDeduplicator.CollapseKeyFor(m))).ToList();
+    }
+
     private async Task<List<MailMessageSummary>> FetchAccountNewMessagesAsync(
-        AccountModel account, CancellationToken ct)
+        AccountModel account, CancellationToken ct,
+        System.Collections.Concurrent.ConcurrentDictionary<(Guid AccountId, string Folder), byte>? incrementalFolders = null)
     {
         var result = new List<MailMessageSummary>();
         if (!_cachedFolders.TryGetValue(account.Id, out var folders)) return result;
@@ -6523,6 +6565,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
                     // Incremental sync: key-based is correct (fetch everything newer than last seen).
                     var initialCount = _configService.Load().InitialSyncCount;
                     msgs = await _imap.GetMessagesSinceAsync(account.Id, folder.FullName, maxKey, initialCount, ct);
+                    incrementalFolders?.TryAdd((account.Id, folder.FullName), 0);
                 }
                 result.AddRange(msgs);
             }
@@ -7355,9 +7398,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
             // ── Phase 2: IMAP fetch ────────────────────────────────────────────────
             ct.ThrowIfCancellationRequested();
             IsBusy = true;
+            var accountIncremental = new System.Collections.Concurrent.ConcurrentDictionary<(Guid AccountId, string Folder), byte>();
             var newMessages = OnlineMode
                 ? await FetchAccountAllFoldersAsync(account, ct)
-                : await FetchAccountNewMessagesAsync(account, ct);
+                : await FetchAccountNewMessagesAsync(account, ct, accountIncremental);
             if (!IsCurrentFolderLoad(loadVersion, expectedFolder)) return;
 
             // #423: per-account All Mail's incremental adds go through InsertMessageSorted (not
@@ -7404,7 +7448,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 existingById[key] = msg;
             }
 
-            RemoveVanishedMessages(newMessages);
+            RemoveVanishedMessages(newMessages, accountIncremental.Keys.ToList());
 
             if (!IsCurrentFolderLoad(loadVersion, expectedFolder)) return;
 
@@ -7448,6 +7492,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
          string.Equals(fullName, AllDraftsFolder.FullName,  StringComparison.Ordinal) ||
          string.Equals(fullName, AllSentFolder.FullName,    StringComparison.Ordinal) ||
          string.Equals(fullName, AllTrashFolder.FullName,   StringComparison.Ordinal) ||
+         string.Equals(fullName, AllJunkFolder.FullName,    StringComparison.Ordinal) ||
          string.Equals(fullName, AllArchiveFolder.FullName, StringComparison.Ordinal));
 
     /// <summary>True if the given account id belongs to a shared mailbox (#31) — used to keep shared
@@ -7494,6 +7539,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
                  : string.Equals(fullName, AllDraftsFolder.FullName,  StringComparison.Ordinal) ? SpecialFolderKind.Drafts
                  : string.Equals(fullName, AllSentFolder.FullName,    StringComparison.Ordinal) ? SpecialFolderKind.Sent
                  : string.Equals(fullName, AllTrashFolder.FullName,   StringComparison.Ordinal) ? SpecialFolderKind.Trash
+                 : string.Equals(fullName, AllJunkFolder.FullName,    StringComparison.Ordinal) ? SpecialFolderKind.Junk
                  : SpecialFolderKind.None;
         if (!isArchive && kind == SpecialFolderKind.None) yield break;
 
@@ -7527,6 +7573,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         : string.Equals(fullName, AllDraftsFolder.FullName,  StringComparison.Ordinal) ? AllDraftsFolder.DisplayName
         : string.Equals(fullName, AllSentFolder.FullName,    StringComparison.Ordinal) ? AllSentFolder.DisplayName
         : string.Equals(fullName, AllTrashFolder.FullName,   StringComparison.Ordinal) ? AllTrashFolder.DisplayName
+        : string.Equals(fullName, AllJunkFolder.FullName,    StringComparison.Ordinal) ? AllJunkFolder.DisplayName
         : string.Equals(fullName, AllArchiveFolder.FullName, StringComparison.Ordinal) ? AllArchiveFolder.DisplayName
         : throw new ArgumentOutOfRangeException(
             nameof(fullName), "Not a folder-scoped aggregate sentinel.");
@@ -7653,6 +7700,45 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         return Task.CompletedTask;
     }
+
+    /// <summary>
+    /// MailBoXX: the reverse of <see cref="MarkMessagesReadAsync"/> — optimistic in the list, then
+    /// the local store and the server (\Seen cleared), then a server-authoritative count refresh.
+    /// An open message stays open and stays unread: marking read happens only when a message is opened.
+    /// </summary>
+    public Task MarkMessagesUnreadAsync(IReadOnlyList<MailMessageSummary> messages)
+    {
+        var read = messages.Where(m => m.IsRead && !IsOutboxRow(m)).ToList();
+        if (read.Count == 0) return Task.CompletedTask;
+
+        foreach (var m in read)
+            m.IsRead = false;
+
+        var label = read.Count == 1 ? "message" : $"{read.Count} messages";
+        StatusText = $"Marked {label} as unread.";
+
+        _localStore.UpdateIsReadBatchAsync(
+                read.Select(m => (m.AccountId, m.FolderName, m.MessageId)), false)
+            .LogFaults("local store: update is-unread batch");
+
+        foreach (var group in read.GroupBy(m => (m.AccountId, m.FolderName)))
+        {
+            var uids = group.Select(m => m.MessageId).ToList();
+            _imap.MarkUnreadBatchAsync(group.Key.AccountId, group.Key.FolderName, uids)
+                .LogFaults($"mark unread batch ({group.Key.FolderName}, {uids.Count} messages)");
+        }
+
+        foreach (var accountId in read.Select(m => m.AccountId).Distinct())
+            ScheduleFolderCountRefresh(accountId);
+
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// MailBoXX: the row envelope. Any unread message among them → all read; otherwise all unread.
+    /// </summary>
+    public Task ToggleMessagesReadAsync(IReadOnlyList<MailMessageSummary> messages)
+        => messages.Any(m => !m.IsRead) ? MarkMessagesReadAsync(messages) : MarkMessagesUnreadAsync(messages);
 
     /// <summary>
     /// Moves selection and keyboard focus onto the row that will survive <paramref name="leaving"/>,
@@ -8947,9 +9033,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
         // shared accounts whose ParentAccountId points at nothing — unconnectable and unrepairable.
         var sharedChildren = AccountModel.SharedChildrenOf(account, Accounts);
         var prompt = sharedChildren.Count == 0
-            ? $"Remove the account '{account.AccountLabel}'? This only removes it from QuickMail — your mail on the server is not affected."
+            ? $"Remove the account '{account.AccountLabel}'? This only removes it from MailBoXX — your mail on the server is not affected."
             : $"Removing '{account.AccountLabel}' will also remove its shared mailbox{(sharedChildren.Count == 1 ? "" : "es")}: "
-              + $"{string.Join(", ", sharedChildren.Select(c => c.AccountLabel))}. This only removes them from QuickMail — your mail on the server is not affected.";
+              + $"{string.Join(", ", sharedChildren.Select(c => c.AccountLabel))}. This only removes them from MailBoXX — your mail on the server is not affected.";
         // Fail closed: an unwired or declined confirmation removes nothing.
         if (ConfirmationRequested?.Invoke(prompt, "Remove Account") != true) return;
 
@@ -9121,6 +9207,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             foreach (var n in FlattenAllNodes(FolderTree))
                 if (n.Folder is { } mf && mf.AccountId == accountId)
                     n.NotifyUnreadChanged();
+        RefreshMainFolders();   // MailBoXX: the combined folders' totals
     }
 
     /// <summary>
@@ -10174,7 +10261,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         // Per-attachment subfolder so two messages with the same attachment name
         // (invoice.pdf, invoice.pdf) don't overwrite each other in %TEMP%\QuickMail.
-        var tempDir = Path.Combine(Path.GetTempPath(), "QuickMail", Guid.NewGuid().ToString("N"));
+        var tempDir = Path.Combine(Path.GetTempPath(), "MailBoXX", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(tempDir);
         var tempPath = Path.Combine(tempDir, safeFileName);
         await File.WriteAllBytesAsync(tempPath, att.Content!);
@@ -10892,8 +10979,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
         // the existing x64 binary in current\. The user is still emulated, and because
         // NativeArmNoticeVersion was stamped above, this notice never says so again. Uninstalling
         // first is what keeps the switch from failing silently.
-        Announce("This PC has an ARM processor, and QuickMail has an ARM version that runs faster on it. " +
-                 "Switching means uninstalling QuickMail first, then installing the ARM version. " +
+        Announce("This PC has an ARM processor, and MailBoXX has an ARM version that runs faster on it. " +
+                 "Switching means uninstalling MailBoXX first, then installing the ARM version. " +
                  "See Get the ARM Version in the Help menu.", AnnouncementCategory.Result);
     }
 
@@ -10946,7 +11033,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         if (!ok && !cancellationToken.IsCancellationRequested)
             // No promise of a next-start install: when the download failed, nothing is
             // staged — the next launch re-checks and tries the download again.
-            Announce("The update could not be applied right now. QuickMail will try again the next time it starts.", AnnouncementCategory.Result);
+            Announce("The update could not be applied right now. MailBoXX will try again the next time it starts.", AnnouncementCategory.Result);
     }
 
     // Startup check: silent when already up to date (announcing "no updates" on every launch
@@ -10967,7 +11054,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 UpdateReleaseUrl    = info.HtmlUrl;
                 // Result, not Status: a one-time discovery outcome. Users who silence background
                 // Status chatter (the main reason that setting exists) must still hear this.
-                Announce($"QuickMail update available: version {info.Version}. Check the Help menu.", AnnouncementCategory.Result);
+                Announce($"MailBoXX update available: version {info.Version}. Check the Help menu.", AnnouncementCategory.Result);
             }
             else
             {

@@ -205,7 +205,7 @@ public partial class ComposeWindow
                 AccessibilityHelper.Announce(this,
                     rejection == ImageRejection.TooLarge
                         ? $"{name} has too many pixels to put in a message."
-                        : $"{name} is not a picture QuickMail can read.",
+                        : $"{name} is not a picture MailBoXX can read.",
                     category: AnnouncementCategory.Result);
         }
         ShowNextImageDialog();

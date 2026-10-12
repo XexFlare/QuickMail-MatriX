@@ -55,7 +55,7 @@ public partial class SettingsDialog : Window
         // disk. Leaving any diagnostic file behind because it happens to live elsewhere would
         // quietly defeat that, and nothing in the UI would hint that it still existed.
         var result = MessageBox.Show(
-            "Delete QuickMail's log files? This deletes the application log, the connection " +
+            "Delete MailBoXX's log files? This deletes the application log, the connection " +
             "diagnostics log, and any saved debug screenshots, and cannot be undone.",
             "Delete Logs",
             MessageBoxButton.YesNo,

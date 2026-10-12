@@ -102,6 +102,10 @@ public sealed class FolderTreeNode : INotifyPropertyChanged
     public string UnreadDisplay =>
         ShowUnread ? $"({Folder!.UnreadCount})" : string.Empty;
 
+    /// <summary>MailBoXX: the bare count for the sidebar's right-aligned badge ("5"); empty when none.</summary>
+    public string UnreadCountText =>
+        ShowUnread ? Folder!.UnreadCount.ToString("N0", System.Globalization.CultureInfo.CurrentCulture) : string.Empty;
+
     private bool _isExpanded;
 
     /// <summary>
@@ -131,6 +135,7 @@ public sealed class FolderTreeNode : INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutomationName)));
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ItemStatusLabel)));
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(UnreadDisplay)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(UnreadCountText)));
     }
 
     /// <summary>
@@ -162,8 +167,12 @@ public sealed class FolderTreeNode : INotifyPropertyChanged
         if (sharedChanged) Raise(nameof(IsSharedAccount));
         if (name   != AutomationName)  Raise(nameof(AutomationName));
         if (status != ItemStatusLabel) Raise(nameof(ItemStatusLabel));
-        if (badge  != UnreadDisplay)   Raise(nameof(UnreadDisplay));
+        if (badge  != UnreadDisplay) { Raise(nameof(UnreadDisplay)); Raise(nameof(UnreadCountText)); }
     }
+
+    // MailBoXX: the sidebar's main-folder ListBox binds these nodes; a screen reader falls back to
+    // ToString() for a Selector item (the container sets the real name, with the count).
+    public override string ToString() => Label;
 
     private void Raise(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 

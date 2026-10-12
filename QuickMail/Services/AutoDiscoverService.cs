@@ -76,7 +76,7 @@ public sealed class AutoDiscoverService : IAutoDiscoverService, IDisposable
             // buffer. A real autoconfig document is a few kilobytes.
             MaxResponseContentBufferSize = MaxResponseBytes,
         };
-        client.DefaultRequestHeaders.UserAgent.ParseAdd("QuickMail-Autoconfig/1.0");
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("MailBoXX-Autoconfig/1.0");
         return client;
     }
 

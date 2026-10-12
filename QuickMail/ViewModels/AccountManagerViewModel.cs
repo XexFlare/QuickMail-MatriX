@@ -229,7 +229,7 @@ public partial class AccountManagerViewModel : AccountEditorViewModel
                 SaveAccountsPreservingConversionMarkers();
                 // Pull an initial snapshot so contacts appear without waiting for the next launch.
                 _contactSync?.SyncAccountAsync(account).LogFaults("contact sync after enable");
-                StatusText = "Contact sync enabled — new contact data will be available in QuickMail.";
+                StatusText = "Contact sync enabled — new contact data will be available in MailBoXX.";
             }
             else
             {
@@ -351,7 +351,7 @@ public partial class AccountManagerViewModel : AccountEditorViewModel
             if (account.AuthType == AuthType.OAuth2Microsoft)
                 await _oauth.RequestContactsConsentAsync(account);
             _contactSync!.SyncAccountAsync(account).LogFaults("initial contact sync for new account");
-            StatusText = "Account added. Contact sync enabled — new contact data will be available in QuickMail.";
+            StatusText = "Account added. Contact sync enabled — new contact data will be available in MailBoXX.";
         }
         catch (Exception ex)
         {

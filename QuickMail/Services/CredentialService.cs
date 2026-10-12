@@ -6,7 +6,7 @@ namespace QuickMail.Services;
 
 public class CredentialService : ICredentialService
 {
-    private static string Key(Guid accountId) => $"QuickMail:{accountId}";
+    private static string Key(Guid accountId) => $"{AppIdentity.CredentialPrefix}:{accountId}";
 
     public void SavePassword(Guid accountId, string password)
     {

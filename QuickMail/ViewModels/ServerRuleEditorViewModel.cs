@@ -381,7 +381,7 @@ public partial class ServerRuleEditorViewModel : ObservableObject
     public string ServerOnlyOptionsDisabledReason => CanUseServerOnlyOptions
         ? string.Empty
         : (IsEditingClientRule && AccountSupportsServerRules
-            ? "This rule runs in QuickMail, and editing it doesn't change that, so these are turned off: "
+            ? "This rule runs in MailBoXX, and editing it doesn't change that, so these are turned off: "
             : "This account only has client-side rules, so these are turned off: ") + ServerOnlyOptionNames + ".";
 
     /// <summary>
@@ -818,11 +818,11 @@ public partial class ServerRuleEditorViewModel : ObservableObject
             // has none. Kept as the backstop for a caller that assembles a VM by hand.
             var serverOnly = ServerOnlyFeaturesUsed();
             if (serverOnly.Count > 0)
-                return $"This rule runs in QuickMail, but {Join(serverOnly)} isn't available in a client-side rule. Remove it to save.";
+                return $"This rule runs in MailBoXX, but {Join(serverOnly)} isn't available in a client-side rule. Remove it to save.";
 
             var limits = ClientModelLimits();
             if (limits.Count > 0)
-                return $"This rule runs in QuickMail, which {Join(limits)}. Change one to save.";
+                return $"This rule runs in MailBoXX, which {Join(limits)}. Change one to save.";
 
             // Nothing left but an actionless rule, which Validate refuses before this is read.
             return null;

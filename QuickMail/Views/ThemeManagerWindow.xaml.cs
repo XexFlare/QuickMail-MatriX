@@ -48,7 +48,7 @@ public partial class ThemeManagerWindow : Window
             {
                 Title    = "Export Theme",
                 FileName = suggestedName,
-                Filter   = "QuickMail theme (*.quickmailtheme)|*.quickmailtheme|All files (*.*)|*.*",
+                Filter   = "MailBoXX theme (*.quickmailtheme)|*.quickmailtheme|All files (*.*)|*.*",
                 DefaultExt = ".quickmailtheme",
             };
             return dlg.ShowDialog(this) == true ? dlg.FileName : null;
@@ -58,7 +58,7 @@ public partial class ThemeManagerWindow : Window
             var dlg = new Microsoft.Win32.OpenFileDialog
             {
                 Title  = "Import Theme",
-                Filter = "QuickMail theme (*.quickmailtheme;*.json)|*.quickmailtheme;*.json|All files (*.*)|*.*",
+                Filter = "MailBoXX theme (*.quickmailtheme;*.json)|*.quickmailtheme;*.json|All files (*.*)|*.*",
             };
             return dlg.ShowDialog(this) == true ? dlg.FileName : null;
         };

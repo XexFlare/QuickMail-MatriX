@@ -49,7 +49,7 @@ public partial class GoogleOAuthService : IGoogleOAuthService
     private static string[] MailContactsAndCalendarScopes => [.. Scopes, .. ContactsScopes, .. CalendarScopes];
 
     private static string TokenKey(string username)
-        => $"QuickMail:GoogleToken:{username.ToLowerInvariant()}";
+        => $"{AppIdentity.CredentialPrefix}:GoogleToken:{username.ToLowerInvariant()}";
 
     private readonly ICredentialService _credentialService;
 
